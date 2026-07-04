@@ -111,9 +111,16 @@ export default function Home() {
     <main className="overflow-hidden bg-paper">
       <section className="noise relative rounded-b-[42px] bg-ink px-4 pb-16 pt-5 text-white md:rounded-b-[72px] md:px-8 lg:px-12">
         <nav className="mx-auto flex max-w-7xl items-center justify-between">
-          <a href="#" className="flex items-center gap-2" aria-label="ORKA home">
-            <span className="grid size-8 place-items-center rounded-[8px] bg-violet text-xl font-black text-lime">O</span>
-            <span className="display text-2xl">ORKA</span>
+          <a href="#" className="flex items-center gap-2.5" aria-label="ORKA home">
+            <span className="grid size-10 place-items-center rounded-full bg-white p-1.5 shadow-[0_0_0_2px_rgba(255,255,255,0.22)]">
+              <img
+                src="/orka-logo.png"
+                alt=""
+                className="size-full object-contain"
+                aria-hidden="true"
+              />
+            </span>
+            <span className="display text-3xl">ORKA</span>
           </a>
           <div className="hidden items-center gap-7 text-xs font-black uppercase md:flex">
             <a href="#engines" className="hover:text-lime">Engines</a>
