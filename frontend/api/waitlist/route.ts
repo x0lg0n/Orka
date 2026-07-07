@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { getSupabase } from "../../../lib/supabase";
-import { getResend } from "../../../lib/resend";
+import { getSupabase } from "../../lib/supabase";
+import { getResend } from "../../lib/resend";
 
 export async function POST(request: Request) {
   try {

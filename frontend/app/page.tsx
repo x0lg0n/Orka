@@ -154,8 +154,9 @@ export default function Home() {
         {/* Nav */}
         <nav className="relative z-10 mx-auto flex max-w-7xl items-center justify-between">
           <a href="#" className="flex items-center gap-2.5" aria-label="ORKA home">
-            <span className="grid size-10 place-items-center rounded-full bg-white p-1.5 shadow-[0_0_0_2px_rgba(255,255,255,0.22)]">
+            <span className="grid size-10 place-items-center rounded-full bg-white  shadow-[0_0_0_2px_rgba(255,255,255,0.22)]">
               <img
+                className="size-full object-contain"
                 src="/orka-logo.png"
                 alt="ORKA"
               />
@@ -445,7 +446,7 @@ export default function Home() {
 
       {/* ── CTA / WAITLIST ─── */}
       <section id="waitlist" className="px-4 py-16 md:px-8 lg:px-12">
-        <div className="noise relative overflow-hidden mx-auto max-w-7xl rounded-[28px] bg-ink p-6 text-white md:p-10 lg:rounded-[36px]">
+        <div className=" relative overflow-hidden mx-auto max-w-7xl rounded-[28px] bg-ink p-6 text-white md:p-10 lg:rounded-[36px]">
           {/* Floating stickers */}
           <span className="sticker absolute right-[10%] top-[15%] rounded-full bg-coral px-4 py-2 text-xs font-black uppercase text-white shadow-hard hidden lg:block">
             Brand Strategy
@@ -456,19 +457,15 @@ export default function Home() {
           <span className="sticker absolute right-[5%] bottom-[15%] rounded-full bg-violet px-4 py-2 text-xs font-black uppercase text-white shadow-hard hidden lg:block" style={{ transform: "rotate(-3deg)" }}>
             Business Growth
           </span>
-          <span className="absolute right-[8%] bottom-[20%] text-4xl text-orange opacity-50 select-none hidden lg:block"></span>
+          <span className="absolute right-[8%] bottom-[20%] text-4xl text-orange opacity-50 select-none hidden lg:block">*</span>
           <span className="absolute left-[5%] top-[50%] text-2xl text-lime opacity-40 select-none hidden lg:block">+</span>
 
-          <div className="relative z-10 grid gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
-            <div>
-              <p className="section-label">Early access</p>
+          <div className="relative z-10 gap-8">
+            <div className=" text-center">
               <h2 className="display mt-2 text-5xl uppercase md:text-6xl lg:text-7xl">
                 Ready to partner with ORKA & unlock the{" "}
                 <span className="text-orange">full</span> potential?
               </h2>
-              <p className="mt-5 max-w-xl text-sm font-bold leading-6 text-white/70">
-                Join the waitlist for agency design partner slots, hackathon updates, and the first ORKA workflow previews.
-              </p>
             </div>
             <div className="rounded-[18px] bg-white p-5 text-ink md:p-6">
               <WaitlistForm />
@@ -482,10 +479,10 @@ export default function Home() {
         <div className="mx-auto flex max-w-7xl flex-col justify-between gap-8 border-t-2 border-ink/15 pt-8 md:flex-row">
           <div className="max-w-md">
             <div className="flex items-center gap-3">
-              <span className="grid size-12 place-items-center rounded-full bg-violet p-2">
+              <span className="grid size-12 place-items-center rounded-full">
                 <img src="/orka-logo.png" alt="ORKA" className="size-full object-contain" />
               </span>
-              <span className="display text-4xl uppercase">ORKA</span>
+              <span className="display text-[32px] uppercase">ORKA</span>
             </div>
             <p className="mt-4 text-sm font-bold leading-6 text-ink/60">
               Autonomous financial operations for the global service economy. AI-powered proposals, escrow, verification, and payouts.
