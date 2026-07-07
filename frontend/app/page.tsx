@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { FormEvent, useState } from "react";
 
 const engines = [
@@ -49,10 +50,29 @@ const faqs = [
   ["Is the product live?", "This landing page is for the early waitlist and design partners while the hackathon/pre-seed foundation is built."],
 ];
 
+type WaitlistResponse = {
+  success?: boolean;
+  message?: string;
+  error?: string;
+};
+
+function getFriendlyError(status: number, error?: string) {
+  if (status === 400) {
+    return error || "Please check your email and try again.";
+  }
+
+  if (status === 503) {
+    return "Waitlist is taking a short break. Please try again in a minute.";
+  }
+
+  return "We could not save your spot just now. Please try again shortly.";
+}
+
 function WaitlistForm({ compact = false }: { compact?: boolean }) {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const errorId = compact ? "hero-waitlist-error" : "footer-waitlist-error";
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -62,7 +82,7 @@ function WaitlistForm({ compact = false }: { compact?: boolean }) {
     const email = String(form.get("email") || "");
 
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      setError("Enter a valid email to join the waitlist.");
+      setError("Please add a valid email address.");
       return;
     }
 
@@ -76,17 +96,17 @@ function WaitlistForm({ compact = false }: { compact?: boolean }) {
         body: JSON.stringify({ name, email }),
       });
 
-      const data = await res.json();
+      const data = (await res.json().catch(() => ({}))) as WaitlistResponse;
 
       if (!res.ok) {
-        setError(data.error || "Something went wrong. Please try again.");
+        setError(getFriendlyError(res.status, data.error));
         return;
       }
 
       setSubmitted(true);
       formElement.reset();
     } catch {
-      setError("Network error. Please check your connection and try again.");
+      setError("We could not connect just now. Check your connection and try again.");
     } finally {
       setLoading(false);
     }
@@ -104,39 +124,54 @@ function WaitlistForm({ compact = false }: { compact?: boolean }) {
   }
 
   return (
-    <form onSubmit={onSubmit} className={compact ? "flex flex-col gap-3 sm:flex-row" : "flex flex-col gap-3 md:flex-row md:items-end"}>
-      <div className="flex-1">
-        <input
-          name="name"
-          placeholder="Your name"
-          className="min-h-12 w-full rounded-[10px] border-2 border-ink bg-white px-4 text-sm font-bold outline-none transition focus:border-violet focus:ring-4 focus:ring-violet/20"
-        />
-      </div>
-      <div className="flex-[1.5]">
-        <input
-          name="email"
-          type="email"
-          placeholder="Email address"
-          className="min-h-12 w-full rounded-[10px] border-2 border-ink bg-white px-4 text-sm font-bold outline-none transition focus:border-violet focus:ring-4 focus:ring-violet/20"
-          required
-        />
-      </div>
-      <button
-        type="submit"
-        disabled={loading}
-        className="flex min-h-12 items-center justify-center gap-2 rounded-full border-2 border-ink bg-lime px-7 text-sm font-black uppercase text-ink transition hover:-translate-y-0.5 hover:bg-orange hover:text-white disabled:cursor-wait disabled:opacity-70"
-      >
-        {loading ? "Joining..." : (
-          <>
-            Join waitlist
-            <span className="grid size-6 place-items-center rounded-full bg-ink text-white transition group-hover:bg-white group-hover:text-ink">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M7 17L17 7" /><path d="M7 7h10v10" /></svg>
-            </span>
-          </>
-        )}
-      </button>
-      {error ? <p className="text-sm font-bold text-coral">{error}</p> : null}
-    </form>
+    <div className="w-full">
+      <form onSubmit={onSubmit} className={compact ? "flex flex-col gap-3 sm:flex-row" : "flex flex-col gap-3 md:flex-row md:items-end"}>
+        <div className="flex-1">
+          <input
+            name="name"
+            placeholder="Your name"
+            className="min-h-12 w-full rounded-[10px] border-2 border-ink bg-white px-4 text-sm font-bold outline-none transition focus:border-violet focus:ring-4 focus:ring-violet/20"
+          />
+        </div>
+        <div className="flex-[1.5]">
+          <input
+            name="email"
+            type="email"
+            placeholder="Email address"
+            aria-invalid={Boolean(error)}
+            aria-describedby={error ? errorId : undefined}
+            className="min-h-12 w-full rounded-[10px] border-2 border-ink bg-white px-4 text-sm font-bold outline-none transition focus:border-violet focus:ring-4 focus:ring-violet/20"
+            required
+          />
+        </div>
+        <button
+          type="submit"
+          disabled={loading}
+          className="flex min-h-12 items-center justify-center gap-2 rounded-full border-2 border-ink bg-lime px-7 text-sm font-black uppercase text-ink transition hover:-translate-y-0.5 hover:bg-orange hover:text-white disabled:cursor-wait disabled:opacity-70"
+        >
+          {loading ? "Joining..." : (
+            <>
+              Join waitlist
+              <span className="grid size-6 place-items-center rounded-full bg-ink text-white transition group-hover:bg-white group-hover:text-ink">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M7 17L17 7" /><path d="M7 7h10v10" /></svg>
+              </span>
+            </>
+          )}
+        </button>
+      </form>
+      {error ? (
+        <div
+          id={errorId}
+          role="status"
+          className="mt-3 flex items-start gap-3 rounded-[14px] border-2 border-ink/15 bg-bone px-4 py-3 text-sm font-bold leading-5 text-ink shadow-[4px_4px_0_rgba(6,26,43,0.15)]"
+        >
+          <span className="grid size-6 shrink-0 place-items-center rounded-full bg-orange text-xs font-black text-white">
+            !
+          </span>
+          <p>{error}</p>
+        </div>
+      ) : null}
+    </div>
   );
 }
 
@@ -155,10 +190,12 @@ export default function Home() {
         <nav className="relative z-10 mx-auto flex max-w-7xl items-center justify-between">
           <a href="#" className="flex items-center gap-2.5" aria-label="ORKA home">
             <span className="grid size-10 place-items-center rounded-full bg-white  shadow-[0_0_0_2px_rgba(255,255,255,0.22)]">
-              <img
+              <Image
                 className="size-full object-contain"
                 src="/orka-logo.png"
                 alt="ORKA"
+                width={40}
+                height={40}
               />
             </span>
             <span className="display text-3xl">ORKA</span>
@@ -367,7 +404,7 @@ export default function Home() {
           </div>
 
           {/* Steps 2–4 */}
-          {steps.slice(1).map(([number, title, copy], index) => (
+          {steps.slice(1).map(([number, title, copy]) => (
             <div key={title} className="flex items-center gap-4 border-b-2 border-ink/12 py-7 md:gap-6">
               <span className="display text-6xl">{number}.</span>
               <div className="flex-1">
@@ -428,7 +465,7 @@ export default function Home() {
             </p>
           </div>
           <div className="grid gap-4">
-            {faqs.map(([question, answer], index) => (
+            {faqs.map(([question, answer]) => (
               <details key={question} className="group border-b-2 border-ink/12 pb-4">
                 <summary className="flex cursor-pointer list-none items-center gap-4 text-base font-black uppercase">
                   <span className="grid size-8 shrink-0 place-items-center rounded-full bg-ink text-white">
@@ -480,7 +517,7 @@ export default function Home() {
           <div className="max-w-md">
             <div className="flex items-center gap-3">
               <span className="grid size-12 place-items-center rounded-full">
-                <img src="/orka-logo.png" alt="ORKA" className="size-full object-contain" />
+                <Image src="/orka-logo.png" alt="ORKA" width={48} height={48} className="size-full object-contain" />
               </span>
               <span className="display text-[32px] uppercase">ORKA</span>
             </div>

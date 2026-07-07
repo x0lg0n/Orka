@@ -2,7 +2,7 @@
 
 ORKA is a landing page for an autonomous financial operating system for global service work. The product narrative positions ORKA as a Web2-friendly platform that uses AI operations and programmable financial infrastructure to automate proposals, escrow, milestone verification, payouts, invoices, and back-office finance for agencies, freelancers, remote startups, and service marketplaces.
 
-This repository contains the first production-ready marketing surface for ORKA: a responsive Next.js landing page with a Revento-inspired visual direction, ORKA-specific branding, and a mock waitlist flow.
+This repository contains the first production-ready marketing surface for ORKA: a responsive Next.js landing page with a Revento-inspired visual direction, ORKA-specific branding, and a Supabase/Resend-backed waitlist flow.
 
 ## Product Positioning
 
@@ -102,14 +102,15 @@ eslint.config.mjs  ESLint configuration
 
 ## Waitlist Behavior
 
-The waitlist form is currently a front-end mock:
+The waitlist form posts to `app/api/waitlist/route.ts`:
 
 - Validates that an email is present and formatted correctly
 - Shows a loading state on submit
-- Displays a success message after submission
-- Does not store submissions or call an API yet
+- Stores submissions in the Supabase `waitlist` table
+- Sends a confirmation email through Resend
+- Handles duplicate email submissions with a conflict response
 
-A future implementation can connect this form to a database, CRM, email platform, or server action without changing the landing page strategy.
+Run `supabase/waitlist.sql` in Supabase, then copy `.env.example` to `.env.local` and fill in the Supabase and Resend values.
 
 ## Brand Direction
 
@@ -129,13 +130,9 @@ For Vercel:
 
 No environment variables are required for the current landing page.
 
-## Roadmap Ideas
+## Roadmap
 
-- Persist waitlist submissions through a server action or API route
-- Add analytics for CTA clicks and form conversions
-- Add richer product visuals for the escrow and verification workflows
-- Add a design partner application flow
-- Connect the landing page to the future ORKA app once product routes exist
+The product roadmap is tracked in the repository root at `../ROADMAP.md`.
 
 ## License
 
