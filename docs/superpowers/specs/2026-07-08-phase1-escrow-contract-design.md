@@ -20,8 +20,14 @@ release_funds(milestone_id)                              // require_auth client 
 resolve_dispute(milestone_id, split_bp)                  // require_auth operator (arbiter)
 ```
 
-This design keeps that interface but clarifies the `approve` → `release_funds` semantics
-(see §2). `approve` is **intent only**; `release_funds` is the **multi-sig payout**.
+This design keeps that interface with two controlled clarifications:
+
+1. **`approve` → `release_funds` split** (see §2). `approve` is **intent only**; `release_funds`
+   is the **multi-sig payout**.
+2. **Hybrid dispute resolution** (see §2, user decision). `resolve_dispute` takes
+   `split_bp: Option<u32>` instead of a required `u32`. The contract also stores an *optional
+   pre-agreed* default split at `initialize`. Passing `Some(bp)` = arbiter override; passing
+   `None` = apply the pre-agreed default. This is the only signature change from the roadmap.
 
 ---
 
@@ -46,7 +52,14 @@ maps the project to this address.
       client: Address,
       freelancer: Address,
       asset: Address,      // the USDC Stellar Asset Contract (SAC) address
-      operator: Address,   // ORKA's multi-sig co-signer / arbiter key
+      operator: Address,   // ORKA's multi-sig co-sign/arbiter key
+      dispute_rules: Option<DisputeRules>,  // pre-agreed fallback split (hybrid model)
+  }
+
+  // Pre-agreed dispute fallback. Stored at initialize; the arbiter may still override at
+  // resolution time via resolve_dispute(Some(bp)). Extensible later (e.g. per-state splits).
+  struct DisputeRules {
+      default_split_bp: u32,   // 0..=10000, paid to freelancer if no explicit override
   }
   ```
 - **`milestones`** (instance) — `Map<u64, Milestone>`:
@@ -59,7 +72,8 @@ maps the project to this address.
       Draft, Funded, Submitted, Approved, Rejected, Refunded, Disputed, Released,
   }
   ```
-- `initialize(org, client, freelancer, asset, operator, milestones: Vec<MilestoneInit>)`
+- `initialize(org, client, freelancer, asset, operator, milestones: Vec<MilestoneInit>,
+  dispute_rules: Option<DisputeRules>)`
   where `MilestoneInit { amount: i128 }`. Milestone ids are assigned sequentially
   `0..n-1` in list order. Descriptions/labels live off-chain (Postgres), not in the contract.
 
@@ -103,10 +117,14 @@ and `token::TokenClient::new(env, asset)` for `transfer(from, to, amount)`.
   `transfer(contract → freelancer, amount)` → `Released`. Terminal.
   *This is the only normal payout path, and it requires both keys — the core safety guarantee.*
 
-- **`resolve_dispute(milestone_id, split_bp: u32)`** — `require_auth(operator)` (arbiter).
-  Must be `Disputed`; `split_bp` in `0..=10000` (else `InvalidSplitBp`).
-  Pays `amount * split_bp / 10000` to `freelancer`, remainder to `client` → `Released`. Terminal.
-  (Operator-only by design: the arbiter's resolution is the authorized override.)
+- **`resolve_dispute(milestone_id, split_bp: Option<u32>)`** — `require_auth(operator)` (arbiter).
+  Must be `Disputed`. **Hybrid model:**
+  - `split_bp = Some(bp)` → arbiter **override**; `bp` must be `0..=10000` (else `InvalidSplitBp`).
+  - `split_bp = None` → apply the **pre-agreed** `dispute_rules.default_split_bp` from `Config`.
+    If `dispute_rules` is `None`, error `NoDisputeRule` (arbiter must pass an explicit `Some(bp)`).
+  Pays `amount * effective_bp / 10000` to `freelancer`, remainder to `client` → `Released`. Terminal.
+  (The pre-agreed rule is the default the parties accepted up front; the arbiter override is the
+  authorized human judgment when evidence doesn't fit the default.)
 
 **Terminal-state invariant:** a `Released` or `Refunded` milestone rejects all further actions
 with `InvalidState`.
@@ -124,6 +142,7 @@ pub enum EscrowError {
     InvalidState { expected: MilestoneStatus, actual: MilestoneStatus } = 4,
     TransferFailed = 5,
     InvalidSplitBp = 6,
+    NoDisputeRule = 7,   // resolve_dispute(None) but no pre-agreed dispute_rules stored
 }
 ```
 
@@ -147,9 +166,14 @@ Test environment: Soroban `soroban_sdk::testutils`. No network required.
 3. `release_funds` **fails with `NotAuthorized` when only the client signs**; succeeds with
    client + operator; freelancer balance increases by `amount`; status = `Released`.
 4. `refund` returns the full milestone amount to the client; status = `Refunded`.
-5. `open_dispute` then `resolve_dispute(7000)` splits 70% → freelancer, 30% → client; status = `Released`.
-6. `release_funds` on an already-`Released` milestone is rejected (`InvalidState`).
-7. `submit`/`reject` transition `Funded → Submitted → Rejected → Submitted` correctly.
+5. **Dispute — override:** `initialize` with `dispute_rules = None`; `open_dispute` then
+   `resolve_dispute(Some(7000))` splits 70% → freelancer, 30% → client; status = `Released`.
+6. **Dispute — pre-agreed default:** `initialize` with `dispute_rules = Some({default_split_bp: 5000})`;
+   `open_dispute` then `resolve_dispute(None)` applies the 50/50 default; status = `Released`.
+7. **Dispute — default with no rules:** `initialize` with `dispute_rules = None`;
+   `resolve_dispute(None)` errors with `NoDisputeRule`.
+8. `release_funds` on an already-`Released` milestone is rejected (`InvalidState`).
+9. `submit`/`reject` transition `Funded → Submitted → Rejected → Submitted` correctly.
 
 ---
 
