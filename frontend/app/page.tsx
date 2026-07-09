@@ -180,7 +180,7 @@ export default function Home() {
   return (
     <main className="overflow-hidden bg-paper">
       {/* ─── HERO ─── */}
-      <section className="relative overflow-hidden rounded-b-[42px] bg-ink px-4 pb-16 pt-5 text-white md:rounded-b-[72px] md:px-8 lg:px-12">
+      <section className="noise relative overflow-hidden rounded-b-[42px] bg-ink px-4 pb-16 pt-5 text-white md:rounded-b-[72px] md:px-8 lg:px-12">
         {/* Floating decorations */}
         <span className="absolute left-[8%] top-[18%] text-3xl text-lime opacity-60 select-none">+</span>
         <span className="absolute right-[12%] top-[10%] text-2xl text-orange opacity-50 select-none">✦</span>
