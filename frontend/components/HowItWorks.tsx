@@ -3,17 +3,17 @@ import { steps } from "../lib/content";
 export default function HowItWorks() {
   return (
     <section id="method" className="px-4 py-16 md:px-8 lg:px-12">
-      <div className="mx-auto max-w-7xl">
+      <div className="mx-auto max-w-7xl text-center md:text-left">
         <p className="section-label text-coral">How It Work</p>
-        <h2 className="display mt-2 text-6xl uppercase md:text-7xl">Our working method.</h2>
+        <h2 className="display mt-2 text-4xl uppercase sm:text-5xl md:text-6xl lg:text-7xl">Our working method.</h2>
 
         {/* Step 1 — expanded */}
         <div className="mt-8 cut-corner rounded-[20px] bg-orange p-6 text-white md:p-8">
-          <div className="flex flex-col justify-between gap-4 md:flex-row md:items-start">
+          <div className="flex flex-col justify-between gap-4 text-left md:flex-row md:items-start">
             <div className="flex items-start gap-4">
-              <span className="display text-7xl">1.</span>
+              <span className="display text-5xl sm:text-7xl">1.</span>
               <div>
-                <h3 className="display text-4xl uppercase">Proposal is generated</h3>
+                <h3 className="display text-3xl uppercase sm:text-4xl">Proposal is generated</h3>
                 <p className="mt-2 max-w-md text-sm font-bold leading-6 opacity-80">
                   The service brief becomes a clear scope, timeline, agreement, and milestone schedule.
                 </p>
@@ -39,10 +39,10 @@ export default function HowItWorks() {
 
         {/* Steps 2–4 */}
         {steps.slice(1).map(([number, title, copy]) => (
-          <div key={title} className="flex items-center gap-4 border-b-2 border-ink/12 py-7 md:gap-6">
-            <span className="display text-6xl">{number}.</span>
+          <div key={title} className="flex items-center gap-4 border-b-2 border-ink/12 py-7 text-left md:gap-6">
+            <span className="display text-4xl sm:text-6xl">{number}.</span>
             <div className="flex-1">
-              <h3 className="display text-3xl uppercase">{title}</h3>
+              <h3 className="display text-2xl uppercase sm:text-3xl">{title}</h3>
               <p className="mt-1 text-sm font-bold leading-6 text-ink/70">{copy}</p>
             </div>
             <span className="grid size-11 shrink-0 place-items-center rounded-full bg-ink text-white">

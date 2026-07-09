@@ -17,9 +17,9 @@ export default function WaitlistCta() {
         <span className="absolute right-[58%] bottom-[30%] text-4xl text-orange select-none hidden lg:block">*</span>
         <span className="absolute left-[10%] top-[20%] text-2xl text-lime select-none hidden lg:block">+</span>
 
-        <div className="grid col-auto gap-20">
-          <div className=" text-center">
-            <h2 className="display mt-2 mr-4 text-5xl uppercase md:text-6xl lg:text-[80px] leading-[80px]">
+        <div className="grid col-auto gap-10 md:gap-20">
+          <div className="text-center">
+            <h2 className="display mt-2 text-4xl uppercase leading-[1.05] sm:text-5xl md:text-6xl lg:text-[80px] lg:leading-[80px]">
               Ready to partner with ORKA & unlock the{" "}
               <span className="text-orange">full</span> potential?
             </h2>

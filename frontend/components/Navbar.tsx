@@ -100,7 +100,7 @@ export default function Navbar() {
 
           {/* About */}
           <a
-            href="#"
+            href="/about"
             onClick={() => setProductOpen(false)}
             className="rounded-full px-4 py-2 text-sm font-normal uppercase text-white transition-all hover:bg-orange">
             About
@@ -108,7 +108,7 @@ export default function Navbar() {
 
           {/* Docs */}
           <a
-            href="#"
+            href="/docs"
             onClick={() => setProductOpen(false)}
             className="rounded-full px-4 py-2 text-sm font-normal uppercase text-white transition-all hover:bg-orange">
             Docs
@@ -182,7 +182,7 @@ export default function Navbar() {
 
             {/* About */}
             <a
-              href="#"
+              href="/about"
               onClick={closeMobileMenu}
               className="rounded-full px-4 py-3 text-sm font-black uppercase text-white transition-all hover:bg-orange">
               About
@@ -190,7 +190,7 @@ export default function Navbar() {
 
             {/* Docs */}
             <a
-              href="#"
+              href="/docs"
               onClick={closeMobileMenu}
               className="rounded-full px-4 py-3 text-sm font-black uppercase text-white transition-all hover:bg-orange">
               Docs

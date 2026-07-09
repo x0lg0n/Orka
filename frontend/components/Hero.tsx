@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Navbar from "./Navbar";
 import WaitlistForm from "./WaitlistForm";
 import { ArrowUpRight } from "lucide-react";
@@ -6,36 +7,62 @@ export default function Hero() {
   return (
     <section className="relative overflow-hidden rounded-b-[42px] bg-ink px-4 pb-16 pt-5 text-white md:rounded-b-[72px] md:px-8 lg:px-12">
       {/* Floating decorations */}
-      <span className="absolute left-[8%] top-[18%] text-3xl text-lime opacity-60 select-none">
-        +
-      </span>
-      <span className="absolute right-[12%] top-[10%] text-2xl text-orange opacity-50 select-none">
-        ✦
-      </span>
-      <span className="absolute left-[4%] bottom-[30%] text-xl text-violet opacity-40 select-none">
-        ★
-      </span>
-      <span className="absolute right-[6%] bottom-[20%] text-3xl text-coral opacity-40 select-none">
-        +
-      </span>
-
+      <Image
+        src="/Elements/Star-Violet.svg"
+        alt=""
+        aria-hidden
+        width={40}
+        height={40}
+        className="pointer-events-none absolute right-[14%] bottom-[52%] hidden w-8 object-contain md:block lg:w-10"
+      />
+      <Image
+        src="/Elements/Plus-Teal.svg"
+        alt=""
+        aria-hidden
+        width={36}
+        height={36}
+        className="pointer-events-none absolute left-[14%] top-[30%] hidden w-7 object-contain md:block lg:w-9"
+      />
+      <Image
+        src="/Elements/Star-Blue.svg"
+        alt=""
+        aria-hidden
+        width={28}
+        height={28}
+        className="pointer-events-none absolute left-[5%] bottom-[30%] hidden w-6 object-contain opacity-70 sm:block"
+      />
+      <Image
+        src="/Elements/Plus-Lime.svg"
+        alt=""
+        aria-hidden
+        width={32}
+        height={32}
+        className="pointer-events-none absolute right-[6%] bottom-[22%] hidden w-7 object-contain opacity-70 sm:block"
+      />
+      <Image
+        src="/Elements/Asterics-Orange.svg"
+        alt=""
+        aria-hidden
+        width={30}
+        height={30}
+        className="pointer-events-none absolute left-[8%] top-[52%] hidden w-6 object-contain lg:block"
+      />
       {/* Nav */}
       <Navbar />
-
       {/* Hero content */}
       <div className="relative z-10 mx-auto max-w-7xl pt-16 pb-8">
         <div className="flex flex-wrap items-center justify-center gap-3 mb-6">
-          <span className="text-[18px] font-medium text-white">
+          <span className="text-center text-[15px] font-medium text-white sm:text-[18px]">
             ❤️ #1 Financial OS for Service Work
           </span>
         </div>
 
-        <h1 className="display mx-auto max-w-5xl text-center text-[4.2rem] uppercase text-white sm:text-[6.4rem] lg:text-[7.3rem]">
+        <h1 className="display mx-auto max-w-5xl text-center text-[2.6rem] uppercase leading-[1.05] text-white sm:text-[4.4rem] md:text-[6.4rem] lg:text-[7.3rem]">
           Autonomous <span className="text-orange">financial OS</span> for{" "}
           global <span className="text-violet">service work.</span>
         </h1>
 
-        <p className="mx-auto mt-6 max-w-2xl text-center text-lg font-normal leading-8 text-white/78">
+        <p className="mx-auto mt-6 max-w-2xl text-center text-base font-normal leading-7 text-white/78 sm:text-lg sm:leading-8">
           ORKA eliminates the admin tax of proposals, escrow, milestone
           verification, payouts, invoices, and financial records for agencies
           and freelancers working across borders.
@@ -47,11 +74,10 @@ export default function Hero() {
           </div>
         </div>
       </div>
-
       {/* Stats + tag cloud row */}
-      <div className="relative z-10 mx-auto mt-12 flex max-w-7xl flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
+      <div className="relative z-10 mx-auto mt-12 flex max-w-7xl flex-col items-center gap-8 text-center lg:flex-row lg:items-end lg:justify-between lg:text-left">
         {/* Tag cloud */}
-        <div className="flex flex-wrap gap-2 max-w-md">
+        <div className="flex max-w-md flex-wrap justify-center gap-2 lg:justify-start">
           {[
             "Business Growth",
             "Success",
@@ -71,7 +97,7 @@ export default function Hero() {
               {tag}
             </span>
           ))}
-          <p className="w-full mt-3 font-medium text-[32px] uppercase text-white/90 leading-[35px]">
+          <p className="mt-3 w-full text-[24px] font-medium uppercase leading-[28px] text-white/90 sm:text-[32px] sm:leading-[35px]">
             5X achieved ROI on ad spend consistently! Average{" "}
             <span className="text-white/50">
               increase in ROI for our clients.
@@ -80,14 +106,14 @@ export default function Hero() {
         </div>
 
         {/* Stat cards */}
-        <div className="flex flex-wrap gap-4 max-w-md">
+        <div className="flex max-w-md flex-wrap justify-center gap-4 lg:justify-start">
           <div className="cut-corner rounded-[14px] bg-teal p-5 text-ink shadow-hard min-w-[160px]">
             <div className="flex items-end justify-between">
               <p className="display text-[40px]">50+</p>
               <ArrowUpRight size={40} className="shrink-0" />
             </div>
             <p className="mt-2 text-[14px] font-bold leading-6">
-              Design partners & early 
+              Design partners & early
               <br />
               adopters on the waitlist
             </p>
@@ -109,7 +135,6 @@ export default function Hero() {
           </p>
         </div>
       </div>
-
       {/* Sticker decorations */}
     </section>
   );

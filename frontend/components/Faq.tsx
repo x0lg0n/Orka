@@ -6,12 +6,12 @@ export default function Faq() {
     <section id="faq" className="px-4 py-16 md:px-8 lg:px-12">
       <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.7fr_1.3fr] lg:gap-16">
         {/* Left — heading + related */}
-        <div className="lg:sticky lg:top-10 lg:self-start">
+        <div className="text-center lg:sticky lg:top-10 lg:self-start lg:text-left">
           <p className="section-label text-violet">FAQ</p>
-          <h2 className="display mt-2 text-5xl uppercase md:text-[80px]">
+          <h2 className="display mt-2 text-4xl uppercase sm:text-5xl md:text-6xl lg:text-[80px]">
             Your questions answered.
           </h2>
-          <p className="mt-5 max-w-sm text-[18px] font-normal leading-7 text-ink/80">
+          <p className="mx-auto mt-5 max-w-sm text-base font-normal leading-7 text-ink/80 sm:text-[18px] lg:mx-0">
             Everything you need to know about ORKA. We have answers to your
             questions about our services and approach.
           </p>
@@ -25,11 +25,11 @@ export default function Faq() {
                 <span className="grid size-9 shrink-0 place-items-center rounded-full bg-ink text-white transition-all duration-300 group-open:rotate-45 group-open:bg-violet">
                   <Plus size={24} />
                 </span>
-                <span className="display text-[28px] font-normal uppercase leading-[39px] text-ink transition-colors duration-200 group-open:text-violet">
+                <span className="display text-[22px] font-normal uppercase leading-[30px] text-ink transition-colors duration-200 group-open:text-violet sm:text-[28px] sm:leading-[39px]">
                   {question}
                 </span>
               </summary>
-              <p className="mt-4 max-w-2xl text-[18px] leading-[31px] text-ink/70">
+              <p className="mt-4 max-w-2xl text-base leading-7 text-ink/70 sm:text-[18px] sm:leading-[31px]">
                 {answer}
               </p>
             </details>
