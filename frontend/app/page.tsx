@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { FormEvent, useState } from "react";
+import Navbar from "../components/Navbar";
 
 const engines = [
   {
@@ -179,7 +180,7 @@ export default function Home() {
   return (
     <main className="overflow-hidden bg-paper">
       {/* ─── HERO ─── */}
-      <section className="noise relative overflow-hidden rounded-b-[42px] bg-ink px-4 pb-16 pt-5 text-white md:rounded-b-[72px] md:px-8 lg:px-12">
+      <section className="relative overflow-hidden rounded-b-[42px] bg-ink px-4 pb-16 pt-5 text-white md:rounded-b-[72px] md:px-8 lg:px-12">
         {/* Floating decorations */}
         <span className="absolute left-[8%] top-[18%] text-3xl text-lime opacity-60 select-none">+</span>
         <span className="absolute right-[12%] top-[10%] text-2xl text-orange opacity-50 select-none">✦</span>
@@ -187,31 +188,7 @@ export default function Home() {
         <span className="absolute right-[6%] bottom-[20%] text-3xl text-coral opacity-40 select-none">+</span>
 
         {/* Nav */}
-        <nav className="relative z-10 mx-auto flex max-w-7xl items-center justify-between">
-          <a href="#" className="flex items-center gap-2.5" aria-label="ORKA home">
-            <span className="grid size-10 place-items-center rounded-full bg-white  shadow-[0_0_0_2px_rgba(255,255,255,0.22)]">
-              <Image
-                className="size-full object-contain"
-                src="/orka-logo.png"
-                alt="ORKA"
-                width={40}
-                height={40}
-              />
-            </span>
-            <span className="display text-3xl">ORKA</span>
-          </a>
-          <div className="hidden items-center gap-7 text-xs font-black uppercase md:flex">
-            <a href="#engines" className="hover:text-lime">Engines</a>
-            <a href="#method" className="hover:text-lime">Method</a>
-            <a href="#faq" className="hover:text-lime">FAQ</a>
-          </div>
-          <a href="#waitlist" className="flex items-center gap-2 rounded-full bg-white px-5 py-3 text-xs font-black uppercase text-ink transition hover:bg-lime">
-            Get early access
-            <span className="grid size-5 place-items-center rounded-full bg-ink text-white">
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M7 17L17 7" /><path d="M7 7h10v10" /></svg>
-            </span>
-          </a>
-        </nav>
+        <Navbar />
 
         {/* Hero content */}
         <div className="relative z-10 mx-auto max-w-7xl pt-16 pb-8">
@@ -517,7 +494,7 @@ export default function Home() {
           <div className="max-w-md">
             <div className="flex items-center gap-3">
               <span className="grid size-12 place-items-center rounded-full">
-                <Image src="/orka-logo.png" alt="ORKA" width={48} height={48} className="size-full object-contain" />
+                <Image src="/Logo/LOGO.svg" alt="ORKA" width={48} height={48} className="size-full object-contain" />
               </span>
               <span className="display text-[32px] uppercase">ORKA</span>
             </div>
