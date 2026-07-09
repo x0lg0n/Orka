@@ -4,7 +4,6 @@ import Engines from "../components/Engines";
 import WhyChooseUs from "../components/WhyChooseUs";
 import HowItWorks from "../components/HowItWorks";
 import Audience from "../components/Audience";
-import Dogfooding from "../components/Dogfooding";
 import Faq from "../components/Faq";
 import WaitlistCta from "../components/WaitlistCta";
 import Footer from "../components/Footer";
@@ -18,7 +17,6 @@ export default function Home() {
       <WhyChooseUs />
       <HowItWorks />
       <Audience />
-      <Dogfooding />
       <Faq />
       <WaitlistCta />
       <Footer />

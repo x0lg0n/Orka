@@ -1,27 +1,37 @@
+import { Plus } from "lucide-react";
 import { faqs } from "../lib/content";
 
 export default function Faq() {
   return (
-    <section id="faq" className="bg-white px-4 py-16 md:px-8 lg:px-12">
-      <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[0.75fr_1.25fr]">
-        <div>
-          <p className="section-label">FAQ</p>
-          <h2 className="display mt-2 text-6xl uppercase md:text-7xl">Your questions answered.</h2>
-          <p className="mt-5 text-sm font-bold leading-6 text-ink/70">
-            Everything you need to know about ORKA. We have answers to your questions about our services and approach.
+    <section id="faq" className="px-4 py-16 md:px-8 lg:px-12">
+      <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.7fr_1.3fr] lg:gap-16">
+        {/* Left — heading + related */}
+        <div className="lg:sticky lg:top-10 lg:self-start">
+          <p className="section-label text-violet">FAQ</p>
+          <h2 className="display mt-2 text-5xl uppercase md:text-[80px]">
+            Your questions answered.
+          </h2>
+          <p className="mt-5 max-w-sm text-[18px] font-normal leading-7 text-ink/80">
+            Everything you need to know about ORKA. We have answers to your
+            questions about our services and approach.
           </p>
         </div>
-        <div className="grid gap-4">
+
+        {/* Right — questions + answers */}
+        <div className="flex flex-col">
           {faqs.map(([question, answer]) => (
-            <details key={question} className="group border-b-2 border-ink/12 pb-4">
-              <summary className="flex cursor-pointer list-none items-center gap-4 text-base font-black uppercase">
-                <span className="grid size-8 shrink-0 place-items-center rounded-full bg-ink text-white">
-                  <span className="group-open:hidden text-lg leading-none">+</span>
-                  <span className="hidden group-open:inline text-lg leading-none">−</span>
+            <details key={question} className="group py-6">
+              <summary className="flex cursor-pointer gap-4">
+                <span className="grid size-9 shrink-0 place-items-center rounded-full bg-ink text-white transition-all duration-300 group-open:rotate-45 group-open:bg-violet">
+                  <Plus size={24} />
                 </span>
-                <span>{question}</span>
+                <span className="display text-[28px] font-normal uppercase leading-[39px] text-ink transition-colors duration-200 group-open:text-violet">
+                  {question}
+                </span>
               </summary>
-              <p className="mt-3 ml-12 max-w-3xl text-sm font-bold leading-6 text-ink/70">{answer}</p>
+              <p className="mt-4 max-w-2xl text-[18px] leading-[31px] text-ink/70">
+                {answer}
+              </p>
             </details>
           ))}
         </div>

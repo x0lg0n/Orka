@@ -20,7 +20,8 @@ body {
   background: #fffaf2;
   color: #061a2b;
   font-family:
-    DM Sans, Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    var(--font-dm-sans), "DM Sans", ui-sans-serif, system-ui, -apple-system,
+    BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
 button,
@@ -30,9 +31,10 @@ input {
 
 .display {
   font-family:
-    Anton, Impact, Haettenschweiler, "Arial Narrow Bold", "Arial Black", sans-serif;
+    var(--font-anton), "Anton", Impact, Haettenschweiler, "Arial Narrow Bold",
+    "Arial Black", sans-serif;
   letter-spacing: 0;
-  line-height: 0.9;
+  line-height: 1;
 }
 
 .sticker {
@@ -40,10 +42,12 @@ input {
 }
 
 .section-label {
-  color: #ff4f42;
-  font-size: 0.76rem;
-  font-weight: 900;
-  line-height: 1;
+  font-family:
+    var(--font-anton), "Anton", Impact, Haettenschweiler, "Arial Narrow Bold",
+    "Arial Black", sans-serif;
+  font-size: 28px;
+  font-weight: 400;
+  line-height: 39px;
   text-transform: uppercase;
 }
 
@@ -72,4 +76,50 @@ input {
     radial-gradient(circle at 77% 22%, rgba(148, 116, 255, 0.22) 0 1px, transparent 1px),
     radial-gradient(circle at 40% 78%, rgba(255, 138, 34, 0.18) 0 1px, transparent 1px);
   background-size: 36px 36px, 42px 42px, 54px 54px;
+}
+
+/* ── Navbar animations ── */
+@keyframes dropdown-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dropdown-panel {
+  animation: dropdown-in 0.18s ease-out;
+}
+
+@keyframes mobile-menu-in {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.mobile-menu {
+  animation: mobile-menu-in 0.25s ease-out;
+}
+
+@keyframes submenu-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.submenu {
+  animation: submenu-in 0.2s ease-out;
 }

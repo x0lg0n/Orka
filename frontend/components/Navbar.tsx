@@ -45,26 +45,26 @@ export default function Navbar() {
   return (
     <div className="relative z-20">
       {/* ── Main bar ── */}
-      <nav className="mx-auto flex max-w-7xl items-center gap-6 py-5">
+      <nav className="mx-auto flex max-w-7xl items-center gap-16 py-5">
         {/* Logo */}
-        <Link href="/" className="flex shrink-0 items-center gap-2.5" aria-label="ORKA home">
+        <Link href="/" className="flex shrink-0 items-center gap-4" aria-label="ORKA home">
           <Image
             src="/Logo/LOGO.svg"
             alt="ORKA"
-            width={48}
-            height={48}
+            width={40}
+            height={40}
             className="size-12 object-contain"
           />
-          <span className="display text-3xl text-white">ORKA</span>
+          <span className="display text-[40px] text-white">ORKA</span>
         </Link>
 
         {/* Desktop nav links — left of spacer */}
-        <div className="hidden items-center gap-1 md:flex">
+        <div className="hidden items-center gap-4 md:flex">
           {/* Product dropdown */}
           <div ref={productRef} className="relative">
             <button
               onClick={() => setProductOpen((v) => !v)}
-              className={`flex items-center gap-1 rounded-full px-4 py-2 text-sm font-black uppercase text-white transition-all ${
+              className={`flex items-center gap-2 rounded-full px-4 py-2 text-sm font-normal uppercase text-white transition-all ${
                 productOpen ? "bg-orange" : "hover:bg-orange"
               }`}
               aria-expanded={productOpen}
@@ -85,7 +85,7 @@ export default function Navbar() {
                     key={link.label}
                     href={link.href}
                     onClick={() => setProductOpen(false)}
-                    className="block rounded-full px-4 py-2 text-sm font-black uppercase text-white transition-all hover:bg-orange"
+                    className="block rounded-full px-4 py-2 text-sm font-normal uppercase text-white transition-all hover:bg-orange"
                   >
                     {link.label}
                   </a>
@@ -98,7 +98,7 @@ export default function Navbar() {
           <a
             href="#"
             onClick={() => setProductOpen(false)}
-            className="rounded-full px-4 py-2 text-sm font-black uppercase text-white transition-all hover:bg-orange"
+            className="rounded-full px-4 py-2 text-sm font-normal uppercase text-white transition-all hover:bg-orange"
           >
             About
           </a>
@@ -107,7 +107,7 @@ export default function Navbar() {
           <a
             href="#"
             onClick={() => setProductOpen(false)}
-            className="rounded-full px-4 py-2 text-sm font-black uppercase text-white transition-all hover:bg-orange"
+            className="rounded-full px-4 py-2 text-sm font-normal uppercase text-white transition-all hover:bg-orange"
           >
             Docs
           </a>
@@ -121,9 +121,9 @@ export default function Navbar() {
           href={GITHUB_URL}
           target="_blank"
           rel="noopener noreferrer"
-          className="hidden items-center gap-4 rounded-full border-2 border-white bg-white px-8 py-4 text-md font-black uppercase text-ink transition-all duration-200 hover:-translate-y-0.5 hover:bg-orange hover:text-white hover:border-orange hover:shadow-[0_8px_20px_rgba(255,138,34,0.35)] md:flex"
+          className="hidden items-center gap-4 rounded-full border-4 border-white bg-white px-6 py-3 text-[18px] font-black uppercase text-ink transition-all duration-200 hover:-translate-y-0.5 hover:bg-transparent hover:text-white hover:border-white md:flex"
         >
-          <Star size={16} className="shrink-0" />
+          <Star size={18} fill="current" className="shrink-0" />
           Star on GitHub
         </a>
 

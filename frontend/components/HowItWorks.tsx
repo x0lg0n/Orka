@@ -2,9 +2,9 @@ import { steps } from "../lib/content";
 
 export default function HowItWorks() {
   return (
-    <section id="method" className="bg-bone px-4 py-16 md:px-8 lg:px-12">
+    <section id="method" className="px-4 py-16 md:px-8 lg:px-12">
       <div className="mx-auto max-w-7xl">
-        <p className="section-label">How We Work</p>
+        <p className="section-label text-coral">How It Work</p>
         <h2 className="display mt-2 text-6xl uppercase md:text-7xl">Our working method.</h2>
 
         {/* Step 1 — expanded */}
