@@ -17,7 +17,10 @@ export default function Navbar() {
   // Close desktop product dropdown when clicking outside
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
-      if (productRef.current && !productRef.current.contains(e.target as Node)) {
+      if (
+        productRef.current &&
+        !productRef.current.contains(e.target as Node)
+      ) {
         setProductOpen(false);
       }
     }
@@ -47,7 +50,10 @@ export default function Navbar() {
       {/* ── Main bar ── */}
       <nav className="mx-auto flex max-w-7xl items-center gap-16 py-5">
         {/* Logo */}
-        <Link href="/" className="flex shrink-0 items-center gap-4" aria-label="ORKA home">
+        <Link
+          href="/"
+          className="flex shrink-0 items-center gap-4"
+          aria-label="ORKA home">
           <Image
             src="/Logo/LOGO.svg"
             alt="ORKA"
@@ -68,8 +74,7 @@ export default function Navbar() {
                 productOpen ? "bg-orange" : "hover:bg-orange"
               }`}
               aria-expanded={productOpen}
-              aria-haspopup="true"
-            >
+              aria-haspopup="true">
               Product
               <ChevronDown
                 size={16}
@@ -85,8 +90,7 @@ export default function Navbar() {
                     key={link.label}
                     href={link.href}
                     onClick={() => setProductOpen(false)}
-                    className="block rounded-full px-4 py-2 text-sm font-normal uppercase text-white transition-all hover:bg-orange"
-                  >
+                    className="block rounded-full px-4 py-2 text-sm font-normal uppercase text-white transition-all hover:bg-orange">
                     {link.label}
                   </a>
                 ))}
@@ -98,8 +102,7 @@ export default function Navbar() {
           <a
             href="#"
             onClick={() => setProductOpen(false)}
-            className="rounded-full px-4 py-2 text-sm font-normal uppercase text-white transition-all hover:bg-orange"
-          >
+            className="rounded-full px-4 py-2 text-sm font-normal uppercase text-white transition-all hover:bg-orange">
             About
           </a>
 
@@ -107,8 +110,7 @@ export default function Navbar() {
           <a
             href="#"
             onClick={() => setProductOpen(false)}
-            className="rounded-full px-4 py-2 text-sm font-normal uppercase text-white transition-all hover:bg-orange"
-          >
+            className="rounded-full px-4 py-2 text-sm font-normal uppercase text-white transition-all hover:bg-orange">
             Docs
           </a>
         </div>
@@ -116,13 +118,20 @@ export default function Navbar() {
         {/* Spacer */}
         <div className="flex-1" />
 
+        {/* CTA — Sign Up (desktop) */}
+        <a
+          href="/signup"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="hidden rounded-full px-6 py-3 text-[18px] font-black uppercase text-white transition-all duration-200 hover:-translate-y-0.5 hover:border-4 hover:border-white md:flex">
+          Sign Up
+        </a>
         {/* CTA — Star on GitHub (desktop) */}
         <a
           href={GITHUB_URL}
           target="_blank"
           rel="noopener noreferrer"
-          className="hidden items-center gap-4 rounded-full border-4 border-white bg-white px-6 py-3 text-[18px] font-black uppercase text-ink transition-all duration-200 hover:-translate-y-0.5 hover:bg-transparent hover:text-white hover:border-white md:flex"
-        >
+          className="hidden items-center gap-4 rounded-full border-4 border-white bg-white px-6 py-3 text-[18px] font-black uppercase text-ink transition-all duration-200 hover:-translate-y-0.5 hover:bg-transparent hover:text-white hover:border-white md:flex">
           <Star size={18} fill="current" className="shrink-0" />
           Star on GitHub
         </a>
@@ -132,13 +141,10 @@ export default function Navbar() {
           className="ml-auto flex size-10 items-center justify-center rounded-full text-white transition-all hover:bg-white/10 md:hidden"
           onClick={() => setMenuOpen((v) => !v)}
           aria-label={menuOpen ? "Close menu" : "Open menu"}
-          aria-expanded={menuOpen}
-        >
-          {menuOpen ? (
+          aria-expanded={menuOpen}>
+          {menuOpen ?
             <X size={22} />
-          ) : (
-            <Menu size={22} />
-          )}
+          : <Menu size={22} />}
         </button>
       </nav>
 
@@ -152,8 +158,7 @@ export default function Navbar() {
               aria-expanded={mobileProductOpen}
               className={`flex w-full items-center justify-between rounded-full px-4 py-3 text-sm font-black uppercase text-white transition-all ${
                 mobileProductOpen ? "bg-orange" : "hover:bg-orange"
-              }`}
-            >
+              }`}>
               Product
               <ChevronDown
                 size={16}
@@ -168,8 +173,7 @@ export default function Navbar() {
                     key={link.label}
                     href={link.href}
                     onClick={closeMobileMenu}
-                    className="block rounded-full px-4 py-2.5 text-sm font-black uppercase text-white/80 transition-all hover:bg-orange hover:text-white"
-                  >
+                    className="block rounded-full px-4 py-2.5 text-sm font-black uppercase text-white/80 transition-all hover:bg-orange hover:text-white">
                     {link.label}
                   </a>
                 ))}
@@ -180,8 +184,7 @@ export default function Navbar() {
             <a
               href="#"
               onClick={closeMobileMenu}
-              className="rounded-full px-4 py-3 text-sm font-black uppercase text-white transition-all hover:bg-orange"
-            >
+              className="rounded-full px-4 py-3 text-sm font-black uppercase text-white transition-all hover:bg-orange">
               About
             </a>
 
@@ -189,8 +192,7 @@ export default function Navbar() {
             <a
               href="#"
               onClick={closeMobileMenu}
-              className="rounded-full px-4 py-3 text-sm font-black uppercase text-white transition-all hover:bg-orange"
-            >
+              className="rounded-full px-4 py-3 text-sm font-black uppercase text-white transition-all hover:bg-orange">
               Docs
             </a>
 
@@ -200,8 +202,15 @@ export default function Navbar() {
               target="_blank"
               rel="noopener noreferrer"
               onClick={closeMobileMenu}
-              className="mt-2 flex items-center justify-center gap-2 rounded-full border-2 border-white bg-white px-5 py-3 text-sm font-black uppercase text-ink transition-all hover:border-orange hover:bg-orange hover:text-white"
-            >
+              className="mt-2 flex items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-black uppercase text-white transition-all hover:border-white hover:border-2  hover:text-white">
+              Sign Up
+            </a>
+            <a
+              href={GITHUB_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={closeMobileMenu}
+              className="mt-2 flex items-center justify-center gap-2 rounded-full border-2 border-white bg-white px-5 py-3 text-sm font-black uppercase text-ink transition-all hover:border-white hover:bg-transparent hover:text-white">
               <Star size={16} className="shrink-0" fill="currentColor" />
               Star on GitHub
             </a>
