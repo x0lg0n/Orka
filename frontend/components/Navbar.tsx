@@ -109,6 +109,7 @@ export default function Navbar() {
           {/* About */}
           <a
             href="#"
+            onClick={() => setProductOpen(false)}
             className="rounded-full px-4 py-2 text-sm font-black uppercase text-white transition-all hover:bg-orange"
           >
             About
@@ -117,6 +118,7 @@ export default function Navbar() {
           {/* Docs */}
           <a
             href="#"
+            onClick={() => setProductOpen(false)}
             className="rounded-full px-4 py-2 text-sm font-black uppercase text-white transition-all hover:bg-orange"
           >
             Docs
@@ -174,6 +176,7 @@ export default function Navbar() {
             {/* Product accordion */}
             <button
               onClick={() => setMobileProductOpen((v) => !v)}
+              aria-expanded={mobileProductOpen}
               className={`flex w-full items-center justify-between rounded-full px-4 py-3 text-sm font-black uppercase text-white transition-all ${
                 mobileProductOpen ? "bg-orange" : "hover:bg-orange"
               }`}
