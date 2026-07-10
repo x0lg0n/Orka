@@ -119,13 +119,11 @@ export default function Navbar() {
         <div className="flex-1" />
 
         {/* CTA — Sign Up (desktop) */}
-        <a
+        <Link
           href="/signup"
-          target="_blank"
-          rel="noopener noreferrer"
           className="hidden rounded-full px-6 py-3 text-[18px] font-black uppercase text-white transition-all duration-200 hover:-translate-y-0.5 hover:border-4 hover:border-white md:flex">
           Sign Up
-        </a>
+        </Link>
         {/* CTA — Star on GitHub (desktop) */}
         <a
           href={GITHUB_URL}
@@ -197,14 +195,12 @@ export default function Navbar() {
             </a>
 
             {/* CTA */}
-            <a
-              href={GITHUB_URL}
-              target="_blank"
-              rel="noopener noreferrer"
+            <Link
+              href="/signup"
               onClick={closeMobileMenu}
-              className="mt-2 flex items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-black uppercase text-white transition-all hover:border-white hover:border-2  hover:text-white">
+              className="mt-2 flex items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-black uppercase text-white transition-all hover:border-white hover:border-2 hover:text-white">
               Sign Up
-            </a>
+            </Link>
             <a
               href={GITHUB_URL}
               target="_blank"
