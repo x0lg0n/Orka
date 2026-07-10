@@ -77,8 +77,10 @@ public client. This is production-grade and required for the later `/dashboard`.
 - Email/password: `supabase.auth.signUp({ email, password, options: { data: {
   full_name, role, custody_mode: "orka" } } })`.
 - Google: `supabase.auth.signInWithOAuth({ provider: "google", options: { redirectTo,
-  ... } })`; Google also lands on the same profile-creation path (metadata carries
-  name/role if collected, else prompted).
+  data: { full_name, role, custody_mode: "orka" } } })`. Supabase accepts a `data`
+  payload on the OAuth request, so the currently selected `role` is captured at init
+  (the on-page role selector is not bypassed — it is read before the redirect). Google
+  supplies `full_name`/`email`; `custody_mode` is forced to `"orka"`.
 
 ### 5.2 Mode B — Freighter self-custody
 - "Connect Freighter" button → `@stellar/freighter-api` `getPublicKey()` (real browser
@@ -179,7 +181,8 @@ by a server component that checks existing session and redirects if logged in).
 - Map Supabase errors to friendly copy: email already registered, weak password,
   invalid email, unexpected. Inline error banner.
 - **Freighter not installed:** detect missing `window.freighter` / failed `getPublicKey`
-  → friendly message, submit disabled.
+  → friendly "Install Freighter to continue" message; the email/password form stays
+  hidden until a key is successfully connected.
 - **Email confirmation:** if Supabase requires confirmation, after `signUp` show a
   "Check your inbox to confirm your email" success state. Once confirmed, the session
   resolves via middleware and the user is redirected to `/dashboard`. If auto-confirm
