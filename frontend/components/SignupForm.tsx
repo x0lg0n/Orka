@@ -56,17 +56,13 @@ export default function SignupForm() {
 
   async function connectFreighter() {
     setFreighterError("");
-    if (typeof window === "undefined" || !(window as unknown as { freighter?: unknown }).freighter) {
-      setFreighterError("Install Freighter to continue.");
-      return;
-    }
     try {
       const allowed = await isAllowed();
       if (!allowed) await requestAccess();
       const { address } = await getAddress();
       setStellarAddress(address);
     } catch {
-      setFreighterError("Could not connect to Freighter. Please try again.");
+      setFreighterError("Install Freighter to continue.");
     }
   }
 
