@@ -93,57 +93,58 @@ public client. This is production-grade and required for the later `/dashboard`.
 
 ## 6. Data model
 
-New Postgres table (Supabase SQL editor / migration):
+The Phase 1.1 schema already exists at `frontend/supabase/phase1_schema.sql` and
+defines `profiles` (with `full_name`, `stellar_address`, `custody_mode` enum,
+`created_at`, `updated_at`), org-scoped RLS helpers, and a `handle_new_user()`
+trigger. **We extend that file** — we do NOT redefine `profiles`.
+
+Two gaps to close for signup:
+1. The existing `profiles` has **no `role` column**. We add `role`
+   (`agency | freelancer | client`) to capture the signup choice.
+2. The existing `handle_new_user()` only copies `full_name`. We update it to also
+   copy `role`, `custody_mode`, and `stellar_address` from `raw_user_meta_data`.
+
+Idempotent SQL to **append** to `phase1_schema.sql`:
 
 ```sql
-create table if not exists public.profiles (
-  id uuid primary key references auth.users (id) on delete cascade,
-  full_name text,
-  role text not null check (role in ('agency','freelancer','client')),
-  custody_mode text not null check (custody_mode in ('orka','freighter')),
-  stellar_address text,
-  created_at timestamptz not null default now()
-);
+-- 1.1.3b — capture the signup role on profiles
+alter table public.profiles
+  add column if not exists role text
+    check (role in ('agency','freelancer','client'));
 
-alter table public.profiles enable row level security;
-
-create policy "Profiles are viewable by owner"
-  on public.profiles for select
-  using (auth.uid() = id);
-
-create policy "Users can insert own profile"
-  on public.profiles for insert
-  with check (auth.uid() = id);
-
-create policy "Users can update own profile"
-  on public.profiles for update
-  using (auth.uid() = id);
-
--- Copy auth.users.raw_user_meta_data -> profiles on signup
+-- 1.1.11b — copy the full signup metadata into profiles
 create or replace function public.handle_new_user()
-returns trigger language plpgsql security definer set search_path = public as $$
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
 begin
   insert into public.profiles (id, full_name, role, custody_mode, stellar_address)
   values (
     new.id,
-    new.raw_user_meta_data ->> 'full_name',
-    coalesce(new.raw_user_meta_data ->> 'role', 'agency'),
-    coalesce(new.raw_user_meta_data ->> 'custody_mode', 'orka'),
-    new.raw_user_meta_data ->> 'stellar_address'
+    new.raw_user_meta_data->>'full_name',
+    new.raw_user_meta_data->>'role',
+    new.raw_user_meta_data->>'custody_mode',
+    new.raw_user_meta_data->>'stellar_address'
   )
-  on conflict (id) do nothing;
+  on conflict (id) do update set
+    full_name     = coalesce(excluded.full_name, profiles.full_name),
+    role          = coalesce(excluded.role, profiles.role),
+    custody_mode  = coalesce(excluded.custody_mode, profiles.custody_mode),
+    stellar_address = coalesce(excluded.stellar_address, profiles.stellar_address);
   return new;
 end;
 $$;
-
-drop trigger if exists on_auth_user_created on auth.users;
-create trigger on_auth_user_created
-  after insert on auth.users
-  for each row execute function public.handle_new_user();
 ```
 
-RLS is scoped to the owner (`auth.uid() = id`) — consistent with ROADMAP §1.1's
-workspace-scoped RLS principle (org scoping added when `organizations` lands).
+Notes:
+- `custody_mode` stays **nullable** (as in the base schema) so other inserts are not
+  broken; the signup flow always supplies it.
+- RLS on `profiles` already exists in the base schema (owner + org-share read) — no
+  change needed; we only add the column and enrich the trigger.
+- The `role` captured here is the user's signup role; when a workspace is created
+  later, it is mirrored into `organization_members.role` (owner/admin/member).
 
 ## 7. Page design
 
