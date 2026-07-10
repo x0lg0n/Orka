@@ -13,7 +13,7 @@ export default function Hero() {
         aria-hidden
         width={40}
         height={40}
-        className="pointer-events-none absolute right-[14%] bottom-[52%] hidden w-8 object-contain md:block lg:w-10"
+        className="pointer-events-none absolute right-[14%] bottom-[52%] hidden w-8 object-contain md:block lg:w-10 float-1"
       />
       <Image
         src="/Elements/Plus-Teal.svg"
@@ -21,7 +21,7 @@ export default function Hero() {
         aria-hidden
         width={36}
         height={36}
-        className="pointer-events-none absolute left-[14%] top-[30%] hidden w-7 object-contain md:block lg:w-9"
+        className="pointer-events-none absolute left-[14%] top-[30%] hidden w-7 object-contain md:block lg:w-9 float-2"
       />
       <Image
         src="/Elements/Star-Blue.svg"
@@ -29,7 +29,7 @@ export default function Hero() {
         aria-hidden
         width={28}
         height={28}
-        className="pointer-events-none absolute left-[5%] bottom-[30%] hidden w-6 object-contain opacity-70 sm:block"
+        className="pointer-events-none absolute left-[5%] bottom-[30%] hidden w-6 object-contain opacity-70 sm:block float-3"
       />
       <Image
         src="/Elements/Plus-Lime.svg"
@@ -37,7 +37,7 @@ export default function Hero() {
         aria-hidden
         width={32}
         height={32}
-        className="pointer-events-none absolute right-[6%] bottom-[22%] hidden w-7 object-contain opacity-70 sm:block"
+        className="pointer-events-none absolute right-[6%] bottom-[22%] hidden w-7 object-contain opacity-70 sm:block float-4"
       />
       <Image
         src="/Elements/Asterics-Orange.svg"
@@ -45,7 +45,7 @@ export default function Hero() {
         aria-hidden
         width={30}
         height={30}
-        className="pointer-events-none absolute left-[8%] top-[52%] hidden w-6 object-contain lg:block"
+        className="pointer-events-none absolute left-[8%] top-[52%] hidden w-6 object-contain lg:block float-5"
       />
       {/* Nav */}
       <Navbar />
@@ -107,10 +107,10 @@ export default function Hero() {
 
         {/* Stat cards */}
         <div className="flex max-w-md flex-wrap justify-center gap-4 lg:justify-start">
-          <div className="cut-corner rounded-[14px] bg-teal p-5 text-ink shadow-hard min-w-[160px]">
+          <div className="cut-corner group rounded-[14px] bg-teal p-5 text-ink shadow-hard transition-transform duration-300 hover:-translate-y-1 min-w-[160px]">
             <div className="flex items-end justify-between">
               <p className="display text-[40px]">50+</p>
-              <ArrowUpRight size={40} className="shrink-0" />
+              <ArrowUpRight size={40} className="shrink-0 transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1" />
             </div>
             <p className="mt-2 text-[14px] font-bold leading-6">
               Design partners & early
@@ -118,10 +118,10 @@ export default function Hero() {
               adopters on the waitlist
             </p>
           </div>
-          <div className="cut-corner rounded-[14px] bg-lime p-5 text-ink shadow-hard min-w-[160px]">
+          <div className="cut-corner group rounded-[14px] bg-lime p-5 text-ink shadow-hard transition-transform duration-300 hover:-translate-y-1 min-w-[160px]">
             <div className="flex items-end justify-between">
               <p className="display text-[40px]">99%</p>
-              <ArrowUpRight size={40} className="shrink-0" />
+              <ArrowUpRight size={40} className="shrink-0 transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1" />
             </div>
             <p className="mt-2 text-[14px] font-bold leading-6">
               Admin tasks & workload

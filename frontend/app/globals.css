@@ -123,3 +123,99 @@ input {
 .submenu {
   animation: submenu-in 0.2s ease-out;
 }
+
+/* ── Floating decorations (Hero) ── */
+@keyframes float-y {
+  0%,
+  100% {
+    transform: translateY(0) rotate(var(--float-rot, 0deg));
+  }
+  50% {
+    transform: translateY(-16px) rotate(var(--float-rot, 0deg));
+  }
+}
+
+@keyframes float-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(12px);
+  }
+}
+
+@keyframes float-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.float-1 {
+  --float-rot: -8deg;
+  animation: float-y 6s ease-in-out infinite;
+}
+.float-2 {
+  --float-rot: 12deg;
+  animation: float-bob 7.5s ease-in-out infinite;
+  animation-delay: -1.5s;
+}
+.float-3 {
+  animation: float-bob 5.5s ease-in-out infinite;
+}
+.float-4 {
+  --float-rot: 20deg;
+  animation: float-y 8s ease-in-out infinite;
+  animation-delay: -3s;
+}
+.float-5 {
+  animation: float-spin 14s linear infinite;
+}
+
+/* ── Idle / attention icons ── */
+@keyframes icon-pulse {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+.icon-pulse {
+  animation: icon-pulse 2.4s ease-in-out infinite;
+}
+
+@keyframes star-wiggle {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-18deg) scale(1.15);
+  }
+  75% {
+    transform: rotate(18deg) scale(1.15);
+  }
+}
+
+.star-wiggle:hover {
+  animation: star-wiggle 0.6s ease-in-out;
+}
+
+/* ── Respect reduced-motion preferences ── */
+@media (prefers-reduced-motion: reduce) {
+  .float-1,
+  .float-2,
+  .float-3,
+  .float-4,
+  .float-5,
+  .icon-pulse,
+  .star-wiggle:hover {
+    animation: none !important;
+  }
+}

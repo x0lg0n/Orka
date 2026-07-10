@@ -23,7 +23,7 @@ export default function Faq() {
             <details key={question} className="group py-6">
               <summary className="flex cursor-pointer gap-4">
                 <span className="grid size-9 shrink-0 place-items-center rounded-full bg-ink text-white transition-all duration-300 group-open:rotate-45 group-open:bg-violet">
-                  <Plus size={24} />
+                  <Plus size={24} className="transition-transform duration-200 group-hover:scale-110" />
                 </span>
                 <span className="display text-[22px] font-normal uppercase leading-[30px] text-ink transition-colors duration-200 group-open:text-violet sm:text-[28px] sm:leading-[39px]">
                   {question}

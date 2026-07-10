@@ -1,55 +1,154 @@
-import { steps } from "../lib/content";
+"use client";
+
+import { useState } from "react";
+import { ArrowRight, Briefcase, Check, ChevronDown, Coins, Sparkles, User, X } from "lucide-react";
+import { steps, type FlowActor } from "../lib/content";
+
+const actorIcon: Record<FlowActor, typeof User> = {
+  Client: User,
+  Freelancer: Briefcase,
+  "ORKA AI": Sparkles,
+  Stellar: Coins,
+};
+
+const actorColor: Record<FlowActor, string> = {
+  Client: "bg-violet text-white",
+  Freelancer: "bg-teal text-white",
+  "ORKA AI": "bg-orange text-white",
+  Stellar: "bg-ink text-white",
+};
 
 export default function HowItWorks() {
+  const [open, setOpen] = useState<number | null>(0);
+
   return (
     <section id="method" className="px-4 py-16 md:px-8 lg:px-12">
       <div className="mx-auto max-w-7xl text-center md:text-left">
-        <p className="section-label text-coral">How It Work</p>
-        <h2 className="display mt-2 text-4xl uppercase sm:text-5xl md:text-6xl lg:text-7xl">Our working method.</h2>
+        <p className="section-label text-coral">How It Works</p>
+        <h2 className="display mt-2 text-4xl uppercase sm:text-5xl md:text-6xl lg:text-7xl">
+          Our working method.
+        </h2>
+        <p className="mx-auto mt-4 max-w-2xl text-base font-normal leading-7 text-ink/80 sm:text-[18px] md:mx-0">
+          Four steps take a project from a rough brief to paid and reconciled.
+          Tap any step to see exactly what happens, who does it, and how ORKA
+          compares to doing it the old way.
+        </p>
 
-        {/* Step 1 — expanded */}
-        <div className="mt-8 cut-corner rounded-[20px] bg-orange p-6 text-white md:p-8">
-          <div className="flex flex-col justify-between gap-4 text-left md:flex-row md:items-start">
-            <div className="flex items-start gap-4">
-              <span className="display text-5xl sm:text-7xl">1.</span>
-              <div>
-                <h3 className="display text-3xl uppercase sm:text-4xl">Proposal is generated</h3>
-                <p className="mt-2 max-w-md text-sm font-bold leading-6 opacity-80">
-                  The service brief becomes a clear scope, timeline, agreement, and milestone schedule.
-                </p>
-              </div>
-            </div>
-            <span className="grid size-11 shrink-0 place-items-center rounded-full bg-white text-ink">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M18 15l-6-6-6 6" /></svg>
-            </span>
-          </div>
-          <div className="mt-6 grid gap-4 md:grid-cols-3">
-            {steps[0][3]?.map((group, gi) => (
-              <div key={gi} className="rounded-[12px] bg-white p-4 text-ink">
-                <p className="text-xs font-black uppercase opacity-60">Phase {gi + 1}</p>
-                <div className="mt-2 flex flex-wrap gap-1.5">
-                  {group.map((tag) => (
-                    <span key={tag} className="rounded-full bg-ink/10 px-3 py-1 text-xs font-bold">{tag}</span>
-                  ))}
+        <div className="mt-8 flex flex-col gap-4">
+          {steps.map((step, i) => {
+            const isOpen = open === i;
+            return (
+              <div
+                key={step.title}
+                className={`cut-corner overflow-hidden rounded-[20px] border-2 border-ink shadow-hard transition-colors duration-300 ${
+                  isOpen ? "bg-orange text-white" : "bg-white text-ink"
+                }`}>
+                <button
+                  type="button"
+                  onClick={() => setOpen(isOpen ? null : i)}
+                  aria-expanded={isOpen}
+                  className="flex w-full items-center gap-4 px-6 py-5 text-left md:gap-6">
+                  <span className="display text-4xl sm:text-6xl">{step.number}.</span>
+                  <div className="flex-1">
+                    <h3 className="display text-2xl uppercase sm:text-3xl">{step.title}</h3>
+                    <p className="mt-1 text-sm font-medium leading-6 text-ink/70 md:hidden">
+                      {step.summary}
+                    </p>
+                  </div>
+                  <span className="grid size-11 shrink-0 place-items-center rounded-full bg-ink text-white transition-transform duration-300 hover:scale-110">
+                    <ChevronDown
+                      size={18}
+                      strokeWidth={3}
+                      className={`transition-transform duration-300 ${
+                        isOpen ? "rotate-180" : ""
+                      }`}
+                    />
+                  </span>
+                </button>
+
+                <div
+                  className={`grid transition-all duration-300 ease-out ${
+                    isOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+                  }`}>
+                  <div className="overflow-hidden">
+                    <div className="px-6 pb-6 text-left">
+                      <p className="max-w-2xl text-sm font-bold leading-6 opacity-80">
+                        {step.summary}
+                      </p>
+
+                      {step.phases && (
+                        <div className="mt-6 grid gap-4 md:grid-cols-3">
+                          {step.phases.map((group, gi) => (
+                            <div
+                              key={gi}
+                              className="rounded-[12px] bg-white p-4 text-ink">
+                              <p className="text-xs font-black uppercase opacity-60">
+                                Phase {gi + 1}
+                              </p>
+                              <div className="mt-2 flex flex-wrap gap-1.5">
+                                {group.map((tag) => (
+                                  <span
+                                    key={tag}
+                                    className="rounded-full bg-ink/10 px-3 py-1 text-xs font-bold">
+                                    {tag}
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* How it flows */}
+                      <p className="mt-6 flex items-center gap-2 text-xs font-black uppercase tracking-wide opacity-80">
+                        <ArrowRight size={14} /> How it flows
+                      </p>
+                      <ol className="mt-3 flex flex-col gap-3">
+                        {step.flow.map((item, fi) => {
+                          const Icon = actorIcon[item.actor];
+                          return (
+                            <li
+                              key={fi}
+                              className="flex items-start gap-3 rounded-[12px] bg-white p-3 text-ink">
+                              <span
+                                className={`grid size-8 shrink-0 place-items-center rounded-full ${actorColor[item.actor]}`}>
+                                <Icon size={16} />
+                              </span>
+                              <div>
+                                <p className="text-xs font-black uppercase opacity-60">
+                                  {item.actor}
+                                </p>
+                                <p className="text-sm font-bold leading-6">{item.text}</p>
+                              </div>
+                            </li>
+                          );
+                        })}
+                      </ol>
+
+                      {/* Before / After */}
+                      <div className="mt-6 grid gap-4 md:grid-cols-2">
+                        <div className="rounded-[12px] bg-ink/15 p-4 text-white">
+                          <div className="flex items-center gap-2 text-sm font-black uppercase">
+                            <X size={16} className="text-white/70" /> Before ORKA
+                          </div>
+                          <p className="mt-2 text-sm font-medium leading-6 text-white/85">
+                            {step.traditional}
+                          </p>
+                        </div>
+                        <div className="rounded-[12px] bg-white p-4 text-ink">
+                          <div className="flex items-center gap-2 text-sm font-black uppercase text-teal">
+                            <Check size={16} /> With ORKA
+                          </div>
+                          <p className="mt-2 text-sm font-bold leading-6">{step.orka}</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
-            ))}
-          </div>
+            );
+          })}
         </div>
-
-        {/* Steps 2–4 */}
-        {steps.slice(1).map(([number, title, copy]) => (
-          <div key={title} className="flex items-center gap-4 border-b-2 border-ink/12 py-7 text-left md:gap-6">
-            <span className="display text-4xl sm:text-6xl">{number}.</span>
-            <div className="flex-1">
-              <h3 className="display text-2xl uppercase sm:text-3xl">{title}</h3>
-              <p className="mt-1 text-sm font-bold leading-6 text-ink/70">{copy}</p>
-            </div>
-            <span className="grid size-11 shrink-0 place-items-center rounded-full bg-ink text-white">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M6 9l6 6 6-6" /></svg>
-            </span>
-          </div>
-        ))}
       </div>
     </section>
   );

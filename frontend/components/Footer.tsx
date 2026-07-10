@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { ArrowUpRight } from "lucide-react";
 
 const socials = [
   { label: "X", href: "https://x.com", src: "/Icons/x (1).svg" },
@@ -32,7 +33,7 @@ export default function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={label}
-                className="block size-6 bg-background transition-colors hover:bg-orange"
+                className="block size-6 bg-background transition-[transform,background-color] duration-200 hover:scale-110 hover:bg-orange"
                 style={{
                   maskImage: `url("${src}")`,
                   WebkitMaskImage: `url("${src}")`,
@@ -62,20 +63,9 @@ export default function Footer() {
               <a
                 key={label}
                 href={href}
-                className="display flex items-center gap-3 text-2xl font-normal uppercase text-background transition hover:text-orange sm:text-[28px]">
-                <span className="grid size-8 place-items-center rounded-full bg-violet hover:bg-orange text-white">
-                  <svg
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="3"
-                    strokeLinecap="round"
-                    strokeLinejoin="round">
-                    <path d="M7 17L17 7" />
-                    <path d="M7 7h10v10" />
-                  </svg>
+                className="group display flex items-center gap-3 text-2xl font-normal uppercase text-background transition hover:text-orange sm:text-[28px]">
+                 <span className="grid size-8 place-items-center rounded-full bg-violet text-white transition-colors duration-300 group-hover:bg-orange">
+                  <ArrowUpRight size={16} strokeWidth={3} className="transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1" />
                 </span>
                 {label}
               </a>
