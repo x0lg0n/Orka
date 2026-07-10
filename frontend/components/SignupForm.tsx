@@ -78,7 +78,7 @@ export default function SignupForm() {
       const { error: googleError } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: `${window.location.origin}/dashboard`,
+          redirectTo: `${window.location.origin}/auth/callback?next=/dashboard`,
         },
       });
       if (googleError) setError(getFriendlyError(googleError.message));
@@ -128,7 +128,7 @@ export default function SignupForm() {
         password,
         options: {
           data: meta,
-          emailRedirectTo: `${window.location.origin}/dashboard`,
+          emailRedirectTo: `${window.location.origin}/auth/callback?next=/dashboard`,
         },
       });
 
