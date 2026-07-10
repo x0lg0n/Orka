@@ -3,9 +3,9 @@
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Chrome, Eye, EyeOff, Wallet, CheckCircle2 } from "lucide-react";
+import { Mail, Eye, EyeOff, Wallet, CheckCircle2 } from "lucide-react";
 import { createClient } from "../lib/supabase/client";
-import { getPublicKey, requestAccess, isAllowed } from "@stellar/freighter-api";
+import { getAddress, requestAccess, isAllowed } from "@stellar/freighter-api";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const ROLES = [
@@ -63,8 +63,8 @@ export default function SignupForm() {
     try {
       const allowed = await isAllowed();
       if (!allowed) await requestAccess();
-      const key = await getPublicKey();
-      setStellarAddress(key);
+      const { address } = await getAddress();
+      setStellarAddress(address);
     } catch {
       setFreighterError("Could not connect to Freighter. Please try again.");
     }
@@ -79,7 +79,6 @@ export default function SignupForm() {
         provider: "google",
         options: {
           redirectTo: `${window.location.origin}/dashboard`,
-          data: { full_name: name.trim(), role: role || "client", custody_mode: "orka" },
         },
       });
       if (googleError) setError(getFriendlyError(googleError.message));
@@ -320,7 +319,7 @@ export default function SignupForm() {
                 onClick={onGoogle}
                 disabled={googleLoading}
                 className="flex min-h-12 items-center justify-center gap-2 rounded-full border-2 border-ink bg-white px-7 text-sm font-black uppercase text-ink transition hover:-translate-y-0.5 hover:bg-bone disabled:cursor-wait disabled:opacity-70">
-                <Chrome size={18} /> Continue with Google
+                <Mail size={18} /> Continue with Google
               </button>
             </>
           : null}
