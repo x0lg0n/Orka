@@ -1,0 +1,254 @@
+"use server";
+
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
+import { createClient } from "../../lib/supabase/server";
+import { fakeTx, getActiveOrgId } from "../../lib/orka";
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+export async function createOrg(formData: FormData) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect("/signup");
+
+  const name = String(formData.get("name") || "").trim();
+  if (!name) return { error: "Workspace name is required." };
+
+  const { data: org, error } = await supabase
+    .from("organizations")
+    .insert({ name })
+    .select("id")
+    .single();
+  if (error) return { error: error.message };
+
+  await supabase
+    .from("organization_members")
+    .insert({ org_id: org.id, user_id: user.id, role: "owner" });
+
+  revalidatePath("/projects");
+  redirect("/projects");
+}
+
+export async function createProject(formData: FormData) {
+  const supabase = await createClient();
+  const orgId = await getActiveOrgId(supabase);
+  if (!orgId) redirect("/onboarding");
+
+  const title = String(formData.get("title") || "").trim();
+  const description = String(formData.get("description") || "").trim();
+  const clientName = String(formData.get("clientName") || "").trim();
+  const clientEmail = String(formData.get("clientEmail") || "").trim();
+  const freelancerName = String(formData.get("freelancerName") || "").trim();
+  const freelancerEmail = String(formData.get("freelancerEmail") || "").trim();
+
+  if (!title) return { error: "Project title is required." };
+  if (clientEmail && !EMAIL_RE.test(clientEmail))
+    return { error: "Client email is invalid." };
+  if (freelancerEmail && !EMAIL_RE.test(freelancerEmail))
+    return { error: "Freelancer email is invalid." };
+
+  const { error } = await supabase.from("projects").insert({
+    org_id: orgId,
+    title,
+    description,
+    client_name: clientName,
+    client_email: clientEmail,
+    freelancer_name: freelancerName,
+    freelancer_email: freelancerEmail,
+    status: "draft",
+  });
+  if (error) return { error: error.message };
+
+  revalidatePath("/projects");
+  redirect("/projects");
+}
+
+export async function addMilestone(formData: FormData) {
+  const supabase = await createClient();
+  const orgId = await getActiveOrgId(supabase);
+  if (!orgId) redirect("/onboarding");
+
+  const projectId = String(formData.get("projectId") || "");
+  const title = String(formData.get("title") || "").trim();
+  const amount = Number(formData.get("amount"));
+
+  if (!projectId) return { error: "Missing project." };
+  if (!title) return { error: "Milestone title is required." };
+  if (!Number.isFinite(amount) || amount <= 0)
+    return { error: "Amount must be greater than 0." };
+
+  const { error } = await supabase.from("milestones").insert({
+    org_id: orgId,
+    project_id: projectId,
+    title,
+    amount,
+    status: "draft",
+  });
+  if (error) return { error: error.message };
+
+  revalidatePath(`/projects/${projectId}`);
+}
+
+async function recordLedger(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  orgId: string,
+  projectId: string,
+  milestoneId: string,
+  eventType: string,
+  amount: number,
+) {
+  await supabase.from("ledger_events").insert({
+    org_id: orgId,
+    project_id: projectId,
+    milestone_id: milestoneId,
+    chain_tx: fakeTx(),
+    event_type: eventType,
+    amount,
+    asset: "USDC",
+    status: "confirmed",
+  });
+}
+
+export async function fundMilestone(formData: FormData) {
+  const supabase = await createClient();
+  const orgId = await getActiveOrgId(supabase);
+  if (!orgId) redirect("/onboarding");
+  const id = String(formData.get("milestoneId") || "");
+  const { data: m, error } = await supabase
+    .from("milestones")
+    .update({ status: "funded" })
+    .eq("id", id)
+    .eq("org_id", orgId)
+    .select("project_id, amount")
+    .single();
+  if (error) return { error: error.message };
+  await recordLedger(supabase, orgId, m.project_id, id, "fund", Number(m.amount));
+  revalidatePath(`/projects/${m.project_id}`);
+}
+
+export async function submitMilestone(formData: FormData) {
+  const supabase = await createClient();
+  const orgId = await getActiveOrgId(supabase);
+  if (!orgId) redirect("/onboarding");
+  const id = String(formData.get("milestoneId") || "");
+  const { data: m, error } = await supabase
+    .from("milestones")
+    .update({ status: "in_review" })
+    .eq("id", id)
+    .eq("org_id", orgId)
+    .select("project_id")
+    .single();
+  if (error) return { error: error.message };
+  revalidatePath(`/projects/${m.project_id}`);
+}
+
+export async function releaseMilestone(formData: FormData) {
+  const supabase = await createClient();
+  const orgId = await getActiveOrgId(supabase);
+  if (!orgId) redirect("/onboarding");
+  const id = String(formData.get("milestoneId") || "");
+  const { data: m, error } = await supabase
+    .from("milestones")
+    .update({ status: "released" })
+    .eq("id", id)
+    .eq("org_id", orgId)
+    .select("project_id, amount")
+    .single();
+  if (error) return { error: error.message };
+
+  await recordLedger(supabase, orgId, m.project_id, id, "release", Number(m.amount));
+  const { data: proj } = await supabase
+    .from("projects")
+    .select("title, client_name, freelancer_name")
+    .eq("id", m.project_id)
+    .single();
+  await supabase.from("invoices").insert({
+    org_id: orgId,
+    project_id: m.project_id,
+    milestone_id: id,
+    invoice_number: `INV-${Date.now().toString().slice(-6)}`,
+    amount: Number(m.amount),
+    currency: "USD",
+    status: "issued",
+  });
+  void proj;
+  revalidatePath(`/projects/${m.project_id}`);
+  revalidatePath("/invoices");
+}
+
+export async function refundMilestone(formData: FormData) {
+  const supabase = await createClient();
+  const orgId = await getActiveOrgId(supabase);
+  if (!orgId) redirect("/onboarding");
+  const id = String(formData.get("milestoneId") || "");
+  const { data: m, error } = await supabase
+    .from("milestones")
+    .update({ status: "refunded" })
+    .eq("id", id)
+    .eq("org_id", orgId)
+    .select("project_id, amount")
+    .single();
+  if (error) return { error: error.message };
+  await recordLedger(supabase, orgId, m.project_id, id, "refund", Number(m.amount));
+  revalidatePath(`/projects/${m.project_id}`);
+}
+
+export async function openDispute(formData: FormData) {
+  const supabase = await createClient();
+  const orgId = await getActiveOrgId(supabase);
+  if (!orgId) redirect("/onboarding");
+  const id = String(formData.get("milestoneId") || "");
+  const { data: m, error } = await supabase
+    .from("milestones")
+    .update({ status: "disputed" })
+    .eq("id", id)
+    .eq("org_id", orgId)
+    .select("project_id")
+    .single();
+  if (error) return { error: error.message };
+  revalidatePath(`/projects/${m.project_id}`);
+}
+
+export async function resolveDispute(formData: FormData) {
+  const supabase = await createClient();
+  const orgId = await getActiveOrgId(supabase);
+  if (!orgId) redirect("/onboarding");
+  const id = String(formData.get("milestoneId") || "");
+  const splitBp = Number(formData.get("splitBp"));
+  if (!Number.isFinite(splitBp) || splitBp < 0 || splitBp > 10000)
+    return { error: "Split must be 0–10000 basis points." };
+  const { data: m, error } = await supabase
+    .from("milestones")
+    .update({ status: "released" })
+    .eq("id", id)
+    .eq("org_id", orgId)
+    .select("project_id, amount")
+    .single();
+  if (error) return { error: error.message };
+  await supabase.from("disputes").insert({
+    org_id: orgId,
+    project_id: m.project_id,
+    milestone_id: id,
+    split_bp: splitBp,
+    status: "resolved",
+  });
+  await recordLedger(supabase, orgId, m.project_id, id, "dispute_resolve", Number(m.amount));
+  revalidatePath(`/projects/${m.project_id}`);
+}
+
+export async function inviteMember(formData: FormData) {
+  const supabase = await createClient();
+  const orgId = await getActiveOrgId(supabase);
+  if (!orgId) redirect("/onboarding");
+  const email = String(formData.get("email") || "").trim();
+  const role = String(formData.get("role") || "member");
+  if (!EMAIL_RE.test(email)) return { error: "A valid email is required." };
+  const { error } = await supabase
+    .from("invitations")
+    .insert({ org_id: orgId, email, role });
+  if (error) return { error: error.message };
+  revalidatePath(`/projects`);
+}
