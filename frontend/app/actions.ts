@@ -2,8 +2,8 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { createClient } from "../../lib/supabase/server";
-import { fakeTx, getActiveOrgId } from "../../lib/orka";
+import { createClient } from "../lib/supabase/server";
+import { fakeTx, getActiveOrgId } from "../lib/orka";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -15,14 +15,18 @@ export async function createOrg(formData: FormData) {
   if (!user) redirect("/signup");
 
   const name = String(formData.get("name") || "").trim();
-  if (!name) return { error: "Workspace name is required." };
+  if (!name) {
+    redirect("/onboarding?error=Workspace name is required.");
+  }
 
   const { data: org, error } = await supabase
     .from("organizations")
     .insert({ name })
     .select("id")
     .single();
-  if (error) return { error: error.message };
+  if (error) {
+    redirect(`/onboarding?error=${encodeURIComponent(error.message)}`);
+  }
 
   await supabase
     .from("organization_members")
@@ -44,11 +48,11 @@ export async function createProject(formData: FormData) {
   const freelancerName = String(formData.get("freelancerName") || "").trim();
   const freelancerEmail = String(formData.get("freelancerEmail") || "").trim();
 
-  if (!title) return { error: "Project title is required." };
+  if (!title) redirect("/projects/new?error=Project title is required.");
   if (clientEmail && !EMAIL_RE.test(clientEmail))
-    return { error: "Client email is invalid." };
+    redirect("/projects/new?error=Client email is invalid.");
   if (freelancerEmail && !EMAIL_RE.test(freelancerEmail))
-    return { error: "Freelancer email is invalid." };
+    redirect("/projects/new?error=Freelancer email is invalid.");
 
   const { error } = await supabase.from("projects").insert({
     org_id: orgId,
@@ -60,7 +64,7 @@ export async function createProject(formData: FormData) {
     freelancer_email: freelancerEmail,
     status: "draft",
   });
-  if (error) return { error: error.message };
+  if (error) redirect(`/projects/new?error=${encodeURIComponent(error.message)}`);
 
   revalidatePath("/projects");
   redirect("/projects");
@@ -75,10 +79,10 @@ export async function addMilestone(formData: FormData) {
   const title = String(formData.get("title") || "").trim();
   const amount = Number(formData.get("amount"));
 
-  if (!projectId) return { error: "Missing project." };
-  if (!title) return { error: "Milestone title is required." };
+  if (!projectId) redirect(`/projects?error=Missing project.`);
+  if (!title) redirect(`/${projectId}?error=Milestone title is required.`);
   if (!Number.isFinite(amount) || amount <= 0)
-    return { error: "Amount must be greater than 0." };
+    redirect(`/${projectId}?error=Amount must be greater than 0.`);
 
   const { error } = await supabase.from("milestones").insert({
     org_id: orgId,
@@ -87,7 +91,7 @@ export async function addMilestone(formData: FormData) {
     amount,
     status: "draft",
   });
-  if (error) return { error: error.message };
+  if (error) redirect(`/${projectId}?error=${encodeURIComponent(error.message)}`);
 
   revalidatePath(`/projects/${projectId}`);
 }
@@ -124,7 +128,7 @@ export async function fundMilestone(formData: FormData) {
     .eq("org_id", orgId)
     .select("project_id, amount")
     .single();
-  if (error) return { error: error.message };
+  if (error || !m) redirect(`/projects?error=${encodeURIComponent(error?.message ?? "Failed")}`);
   await recordLedger(supabase, orgId, m.project_id, id, "fund", Number(m.amount));
   revalidatePath(`/projects/${m.project_id}`);
 }
@@ -141,7 +145,7 @@ export async function submitMilestone(formData: FormData) {
     .eq("org_id", orgId)
     .select("project_id")
     .single();
-  if (error) return { error: error.message };
+  if (error || !m) redirect(`/projects?error=${encodeURIComponent(error?.message ?? "Failed")}`);
   revalidatePath(`/projects/${m.project_id}`);
 }
 
@@ -157,7 +161,7 @@ export async function releaseMilestone(formData: FormData) {
     .eq("org_id", orgId)
     .select("project_id, amount")
     .single();
-  if (error) return { error: error.message };
+  if (error || !m) redirect(`/projects?error=${encodeURIComponent(error?.message ?? "Failed")}`);
 
   await recordLedger(supabase, orgId, m.project_id, id, "release", Number(m.amount));
   const { data: proj } = await supabase
@@ -165,7 +169,7 @@ export async function releaseMilestone(formData: FormData) {
     .select("title, client_name, freelancer_name")
     .eq("id", m.project_id)
     .single();
-  await supabase.from("invoices").insert({
+await supabase.from("invoices").insert({
     org_id: orgId,
     project_id: m.project_id,
     milestone_id: id,
@@ -191,7 +195,7 @@ export async function refundMilestone(formData: FormData) {
     .eq("org_id", orgId)
     .select("project_id, amount")
     .single();
-  if (error) return { error: error.message };
+  if (error || !m) redirect(`/projects?error=${encodeURIComponent(error?.message ?? "Failed")}`);
   await recordLedger(supabase, orgId, m.project_id, id, "refund", Number(m.amount));
   revalidatePath(`/projects/${m.project_id}`);
 }
@@ -208,7 +212,7 @@ export async function openDispute(formData: FormData) {
     .eq("org_id", orgId)
     .select("project_id")
     .single();
-  if (error) return { error: error.message };
+  if (error || !m) redirect(`/projects?error=${encodeURIComponent(error?.message ?? "Failed")}`);
   revalidatePath(`/projects/${m.project_id}`);
 }
 
@@ -219,7 +223,7 @@ export async function resolveDispute(formData: FormData) {
   const id = String(formData.get("milestoneId") || "");
   const splitBp = Number(formData.get("splitBp"));
   if (!Number.isFinite(splitBp) || splitBp < 0 || splitBp > 10000)
-    return { error: "Split must be 0–10000 basis points." };
+    redirect(`/projects?error=Split must be 0–10000 basis points.`);
   const { data: m, error } = await supabase
     .from("milestones")
     .update({ status: "released" })
@@ -227,7 +231,7 @@ export async function resolveDispute(formData: FormData) {
     .eq("org_id", orgId)
     .select("project_id, amount")
     .single();
-  if (error) return { error: error.message };
+  if (error || !m) redirect(`/projects?error=${encodeURIComponent(error?.message ?? "Failed")}`);
   await supabase.from("disputes").insert({
     org_id: orgId,
     project_id: m.project_id,
@@ -245,10 +249,10 @@ export async function inviteMember(formData: FormData) {
   if (!orgId) redirect("/onboarding");
   const email = String(formData.get("email") || "").trim();
   const role = String(formData.get("role") || "member");
-  if (!EMAIL_RE.test(email)) return { error: "A valid email is required." };
+  if (!EMAIL_RE.test(email)) redirect(`/projects?error=${encodeURIComponent("A valid email is required.")}`);
   const { error } = await supabase
     .from("invitations")
     .insert({ org_id: orgId, email, role });
-  if (error) return { error: error.message };
+  if (error) redirect(`/projects?error=${encodeURIComponent(error.message)}`);
   revalidatePath(`/projects`);
 }

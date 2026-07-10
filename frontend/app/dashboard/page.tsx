@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "../../lib/supabase/server";
 import SignOutButton from "../../components/SignOutButton";
@@ -57,6 +58,26 @@ export default async function DashboardPage() {
             <Row label="Stellar address" value={profile?.stellar_address ?? "—"} />
             <Row label="User ID" value={user.id} />
           </dl>
+          <div className="mt-6 flex flex-wrap gap-3">
+            <Link
+              href="/projects"
+              className="rounded-full bg-lime px-5 py-2 text-sm font-black uppercase text-ink transition hover:-translate-y-0.5 hover:bg-orange hover:text-white"
+            >
+              Projects
+            </Link>
+            <Link
+              href="/invoices"
+              className="rounded-full border-2 border-ink bg-white px-5 py-2 text-sm font-black uppercase text-ink transition hover:bg-bone"
+            >
+              Invoices
+            </Link>
+            <Link
+              href="/onboarding"
+              className="rounded-full border-2 border-ink bg-white px-5 py-2 text-sm font-black uppercase text-ink transition hover:bg-bone"
+            >
+              New workspace
+            </Link>
+          </div>
         </div>
       </div>
     </main>
