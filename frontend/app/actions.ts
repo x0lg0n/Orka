@@ -4,8 +4,70 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "../lib/supabase/server";
 import { fakeTx, getActiveOrgId } from "../lib/orka";
+import { callServices } from "../lib/backend";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+const SERVICES_URL = process.env.SERVICES_URL;
+
+const EVENT_PATH: Record<string, string | undefined> = {
+  fund: "/escrow/fund",
+  submit: "/escrow/submit",
+  approve: "/escrow/approve",
+  release: "/escrow/release",
+};
+
+async function onChainTx(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  _orgId: string,
+  projectId: string,
+  milestoneId: string,
+  eventType: string,
+  _amount: number,
+): Promise<string> {
+  if (!SERVICES_URL) return fakeTx();
+  const path = EVENT_PATH[eventType];
+  if (!path) return fakeTx();
+
+  const userId = (await supabase.auth.getUser()).data.user?.id ?? "";
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("id,custody_mode")
+    .eq("id", userId)
+    .maybeSingle();
+  if (profile?.custody_mode !== "orka") return fakeTx();
+
+  const { data: proj } = await supabase
+    .from("projects")
+    .select("contract_id")
+    .eq("id", projectId)
+    .maybeSingle();
+  if (!proj?.contract_id) return fakeTx();
+
+  const { data: m } = await supabase
+    .from("milestones")
+    .select("chain_index")
+    .eq("id", milestoneId)
+    .maybeSingle();
+
+  const milestoneKey = eventType === "fund" ? "milestone_ids" : "milestone_id";
+  const body: Record<string, unknown> = {
+    contract_id: proj.contract_id,
+    mode: "orka",
+    user_id: profile.id,
+    [milestoneKey]:
+      eventType === "fund"
+        ? [Number(m?.chain_index ?? 0)]
+        : Number(m?.chain_index ?? 0),
+  };
+
+  try {
+    const r = await callServices(path, body);
+    return r.tx_hash ?? fakeTx();
+  } catch {
+    return fakeTx();
+  }
+}
 
 export async function createOrg(formData: FormData) {
   const supabase = await createClient();
@@ -103,12 +165,13 @@ async function recordLedger(
   milestoneId: string,
   eventType: string,
   amount: number,
+  chainTx: string,
 ) {
   await supabase.from("ledger_events").insert({
     org_id: orgId,
     project_id: projectId,
     milestone_id: milestoneId,
-    chain_tx: fakeTx(),
+    chain_tx: chainTx,
     event_type: eventType,
     amount,
     asset: "USDC",
@@ -129,7 +192,8 @@ export async function fundMilestone(formData: FormData) {
     .select("project_id, amount")
     .single();
   if (error || !m) redirect(`/projects?error=${encodeURIComponent(error?.message ?? "Failed")}`);
-  await recordLedger(supabase, orgId, m.project_id, id, "fund", Number(m.amount));
+  const tx = await onChainTx(supabase, orgId, m.project_id, id, "fund", Number(m.amount));
+  await recordLedger(supabase, orgId, m.project_id, id, "fund", Number(m.amount), tx);
   revalidatePath(`/projects/${m.project_id}`);
 }
 
@@ -163,7 +227,8 @@ export async function releaseMilestone(formData: FormData) {
     .single();
   if (error || !m) redirect(`/projects?error=${encodeURIComponent(error?.message ?? "Failed")}`);
 
-  await recordLedger(supabase, orgId, m.project_id, id, "release", Number(m.amount));
+  const tx = await onChainTx(supabase, orgId, m.project_id, id, "release", Number(m.amount));
+  await recordLedger(supabase, orgId, m.project_id, id, "release", Number(m.amount), tx);
   const { data: proj } = await supabase
     .from("projects")
     .select("title, client_name, freelancer_name")
@@ -196,7 +261,8 @@ export async function refundMilestone(formData: FormData) {
     .select("project_id, amount")
     .single();
   if (error || !m) redirect(`/projects?error=${encodeURIComponent(error?.message ?? "Failed")}`);
-  await recordLedger(supabase, orgId, m.project_id, id, "refund", Number(m.amount));
+  const tx = await onChainTx(supabase, orgId, m.project_id, id, "refund", Number(m.amount));
+  await recordLedger(supabase, orgId, m.project_id, id, "refund", Number(m.amount), tx);
   revalidatePath(`/projects/${m.project_id}`);
 }
 
@@ -239,7 +305,8 @@ export async function resolveDispute(formData: FormData) {
     split_bp: splitBp,
     status: "resolved",
   });
-  await recordLedger(supabase, orgId, m.project_id, id, "dispute_resolve", Number(m.amount));
+  const tx = await onChainTx(supabase, orgId, m.project_id, id, "dispute_resolve", Number(m.amount));
+  await recordLedger(supabase, orgId, m.project_id, id, "dispute_resolve", Number(m.amount), tx);
   revalidatePath(`/projects/${m.project_id}`);
 }
 
