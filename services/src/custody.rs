@@ -227,6 +227,18 @@ pub fn routes(_state: &AppState) -> Router {
     Router::new()
 }
 
+/// Helper: decrypt a user's seed from the Kms into a fixed 32-byte array.
+/// Used by stellar.rs for Mode A client-side signing.
+pub fn kms_decrypt_seed(kms: &dyn Kms, user_id: &str) -> Result<[u8; 32], CustodyError> {
+    let seed = kms.decrypt(user_id, b"")?;
+    if seed.len() != 32 {
+        return Err(CustodyError::InvalidKey);
+    }
+    let mut out = [0u8; 32];
+    out.copy_from_slice(&seed);
+    Ok(out)
+}
+
 // ---------------------------------------------------------------------------
 // Stellar strkey (G...) encode — dependency-free
 // ---------------------------------------------------------------------------

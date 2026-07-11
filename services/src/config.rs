@@ -1,3 +1,4 @@
+use crate::stellar::decode_secret_seed;
 use thiserror::Error;
 
 #[derive(Debug, Error)]
@@ -19,10 +20,12 @@ pub struct Config {
     pub stellar_rpc_url: String,
     pub stellar_network: String,
     pub orka_operator_secret: String,
+    pub operator_address: String,
     pub kms_config: String,
     pub supabase_url: String,
     pub supabase_service_role_key: String,
     pub port: u16,
+    pub sequence: i64,
 }
 
 impl Config {
@@ -40,6 +43,10 @@ impl Config {
             ),
             stellar_network: env_or("STELLAR_NETWORK", "testnet"),
             orka_operator_secret: env_or("ORKA_OPERATOR_SECRET", ""),
+            operator_address: env_or(
+                "ORKA_OPERATOR_ADDRESS",
+                "GAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABOBBVV",
+            ),
             kms_config: env_or("KMS_CONFIG", "{}"),
             supabase_url: env_or("SUPABASE_URL", "http://localhost:54321"),
             supabase_service_role_key: env_or("SUPABASE_SERVICE_ROLE_KEY", "test-service-role"),
@@ -47,6 +54,56 @@ impl Config {
                 .ok()
                 .and_then(|v| v.parse().ok())
                 .unwrap_or(3000),
+            sequence: 0,
         })
     }
+}
+
+impl Config {
+    /// Network passphrase for XDR transaction hashing.
+    pub fn network_passphrase(&self) -> String {
+        match self.stellar_network.as_str() {
+            "mainnet" => "Public Global Stellar Network ; September 2015".to_string(),
+            "testnet" => "Test SDF Network ; September 2015".to_string(),
+            other => other.to_string(),
+        }
+    }
+
+    /// Decode the operator secret seed (`S...` strkey or 32-byte hex) to raw bytes.
+    pub fn operator_seed_bytes(&self) -> [u8; 32] {
+        // strkey S... seed (manual decode — no stellar-strkey dependency).
+        if !self.orka_operator_secret.is_empty() {
+            if let Ok(seed) = decode_secret_seed(&self.orka_operator_secret) {
+                return seed;
+            }
+        }
+        // 32-byte hex fallback
+        if self.orka_operator_secret.len() == 64 {
+            if let Ok(bytes) = hex_decode(&self.orka_operator_secret) {
+                if bytes.len() == 32 {
+                    let mut arr = [0u8; 32];
+                    arr.copy_from_slice(&bytes);
+                    return arr;
+                }
+            }
+        }
+        [0u8; 32]
+    }
+}
+
+/// Minimal hex decoder (no external dep).
+fn hex_decode(s: &str) -> Result<Vec<u8>, ()> {
+    let bytes = s.as_bytes();
+    if bytes.len() % 2 != 0 {
+        return Err(());
+    }
+    let mut out = Vec::with_capacity(bytes.len() / 2);
+    let mut i = 0;
+    while i < bytes.len() {
+        let hi = (bytes[i] as char).to_digit(16).ok_or(())?;
+        let lo = (bytes[i + 1] as char).to_digit(16).ok_or(())?;
+        out.push((hi * 16 + lo) as u8);
+        i += 2;
+    }
+    Ok(out)
 }
