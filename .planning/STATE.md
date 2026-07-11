@@ -5,8 +5,8 @@ progress:
   total_phases: 3
   completed_phases: 0
   total_plans: 6
-  completed_plans: 5
-  percent: 83
+  completed_plans: 6
+  percent: 100
 ---
 
 # Project State
@@ -16,16 +16,16 @@ progress:
 See: .planning/PROJECT.md
 
 **Core value:** Stellar/Soroban escrow hidden behind a Web2 UX — backend-first.
-**Current focus:** Phase 1 — Rust Backend Services
+**Current focus:** Phase 2 — Wire Frontend to Real Backend (Phase 1 complete)
 
 ## Current Position
 
-Phase: 1 of 3 (Rust Backend Services)
-Plan: 6 of 6 in current phase (01-01..01-05 done; next 01-06 TS client)
-Status: In progress
-Last activity: 2026-07-11 — 01-05 bridge.rs complete (22 tests pass, stable 1.97.0). Starting 01-06.
+Phase: 1 of 3 (Rust Backend Services — COMPLETE: 01-01..01-06 done)
+Plan: Phase 1 closed (6/6). Next: Phase 2 / 02-01 (replace fakeTx with stellar-sdk).
+Status: Phase 1 done; ready for Phase 2
+Last activity: 2026-07-11 — 01-06 packages/stellar-sdk complete (4 vitest tests pass). Phase 1 closed.
 
-Progress: [█████████░] 83%
+Progress: [██████████] 100% (Phase 1)
 
 ## Performance Metrics
 
@@ -56,6 +56,7 @@ Progress: [█████████░] 83%
 - JWKS base64url encoding required for RSA key components (not standard base64).
 - WSL stable Rust updated 1.93.1 → 1.97.0 (1.93.1 ICEs in dead-code lint on this crate; use 1.97.0+).
 - `LedgerSink` trait uses `async-trait` (native `async fn` in traits is not dyn-compatible; `apply_chain_event` takes `&dyn LedgerSink`).
+- `packages/stellar-sdk` is a standalone pnpm TS package (no runtime deps, native `fetch`); strict tsc + vitest.
 
 ### Pending Todos
 
@@ -74,5 +75,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-07-11
-Stopped at: 01-05 complete (22 tests pass); about to implement 01-06.
+Stopped at: Phase 1 complete (01-06 shipped, 4 client tests pass). Phase 2 / 02-01 next.
 Resume file: None
