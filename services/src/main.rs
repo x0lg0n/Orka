@@ -2,6 +2,7 @@ pub mod auth;
 pub mod bridge;
 pub mod config;
 pub mod custody;
+pub mod indexer;
 pub mod router;
 pub mod state;
 pub mod stellar;
@@ -19,6 +20,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let config = Config::from_env()?;
     let state = state::AppState::new(config);
+    indexer::start_indexer(state.clone());
     let addr = std::net::SocketAddr::from(([0, 0, 0, 0], state.config.port));
     let listener = tokio::net::TcpListener::bind(addr).await?;
     tracing::info!("orka-services listening on http://{addr}");
