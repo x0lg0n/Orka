@@ -92,6 +92,7 @@ export default async function PaymentsPage() {
                     contractId={m.contract_id}
                     milestoneIds={m.chain_index != null ? [m.chain_index] : []}
                     milestoneId={m.chain_index ?? 0}
+                    dbId={m.id}
                     eventType={m.status === "draft" ? "fund" : "release"}
                     label={m.status === "draft" ? "Fund" : "Release"}
                   />

@@ -121,6 +121,7 @@ export default async function ProjectPage({
                       contractId={project.contract_id}
                       milestoneIds={m.chain_index != null ? [m.chain_index] : []}
                       milestoneId={m.chain_index ?? 0}
+                      dbId={m.id}
                       eventType="fund"
                       label="Fund"
                     />
@@ -154,6 +155,7 @@ export default async function ProjectPage({
                       contractId={project.contract_id}
                       milestoneIds={m.chain_index != null ? [m.chain_index] : []}
                       milestoneId={m.chain_index ?? 0}
+                      dbId={m.id}
                       eventType="release"
                       label="Release"
                     />

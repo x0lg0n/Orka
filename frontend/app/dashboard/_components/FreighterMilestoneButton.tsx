@@ -8,12 +8,14 @@ export default function FreighterMilestoneButton({
   contractId,
   milestoneIds,
   milestoneId,
+  dbId,
   eventType,
   label,
 }: {
   contractId: string;
   milestoneIds: number[];
   milestoneId: number;
+  dbId: string;
   eventType: "fund" | "release";
   label: string;
 }) {
@@ -33,7 +35,7 @@ export default function FreighterMilestoneButton({
       const txHash = await submitFreighterXdr(txXdr);
 
       const fd = new FormData();
-      fd.set("milestoneId", String(milestoneId));
+      fd.set("milestoneId", String(dbId));
       fd.set("eventType", eventType);
       fd.set("txHash", txHash);
       await freighterApplyTx(fd);
