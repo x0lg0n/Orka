@@ -297,6 +297,24 @@ drop policy if exists "ledger_insert" on public.ledger_events;
 create policy "ledger_insert" on public.ledger_events
   for insert with check (public.auth_is_org_member(org_id));
 
+-- ---------- 1.1.9b escrow_contracts (indexer resolution map) ----------
+-- Maps a deployed Soroban escrow contract address to its workspace project and
+-- to each on-chain milestone index -> DB milestone uuid, so the indexer can
+-- resolve (contract_address, milestone_index) -> (org_id, project_id, milestone_id).
+create table if not exists public.escrow_contracts (
+  contract_address text primary key,
+  org_id uuid not null,
+  project_id uuid not null,
+  mapping jsonb not null default '{}'::jsonb,
+  created_at timestamptz not null default now()
+);
+
+alter table public.escrow_contracts enable row level security;
+
+drop policy if exists "escrow_contracts_service" on public.escrow_contracts;
+create policy "escrow_contracts_service" on public.escrow_contracts
+  for all using (true) with check (true);
+
 -- ---------- 1.1.10 disputes ----------
 do $$ begin
   create type public.dispute_status as enum ('open', 'resolved', 'cancelled');

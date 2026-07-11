@@ -591,6 +591,34 @@ struct CreateReq {
     milestones: Vec<MilestoneInitReq>,
     dispute_rules: Option<u32>,
     mode: String,
+    /// DB uuid (string) of the project this escrow belongs to.
+    project_id: String,
+    /// DB uuids (strings) of each milestone, parallel to `milestones` by index.
+    milestone_ids: Vec<String>,
+}
+
+/// Build the insert payload for the `escrow_contracts` table.
+///
+/// `mapping` maps the on-chain milestone INDEX (as a string) to the DB
+/// milestone uuid, so the indexer can resolve
+/// `(contract_address, milestone_index) -> (org_id, project_id, milestone_id)`.
+pub(crate) fn build_contract_mapping(
+    contract_address: &str,
+    org_id: &str,
+    project_id: &str,
+    milestone_ids: &[String],
+) -> serde_json::Value {
+    let mapping: serde_json::Map<String, serde_json::Value> = milestone_ids
+        .iter()
+        .enumerate()
+        .map(|(i, id)| (i.to_string(), serde_json::Value::String(id.clone())))
+        .collect();
+    serde_json::json!({
+        "contract_address": contract_address,
+        "org_id": org_id,
+        "project_id": project_id,
+        "mapping": mapping,
+    })
 }
 
 #[derive(Serialize)]
@@ -1009,12 +1037,49 @@ pub fn routes(state: &AppState) -> Router {
                                     _ => return err_json("unexpected_return"),
                                 };
                                 let contract_id = encode_contract(&id);
+
+                                // Best-effort: record the contract -> project ->
+                                // milestone mapping so the indexer can resolve
+                                // (contract_address, milestone_index). A DB failure
+                                // here must NOT fail the create response — the
+                                // contract is already deployed and can be repaired.
+                                let mapping = build_contract_mapping(
+                                    &contract_id,
+                                    &body.org_id,
+                                    &body.project_id,
+                                    &body.milestone_ids,
+                                );
+                                let supabase = st.supabase.clone();
+                                let url = format!("{}/escrow_contracts", supabase.base_url);
+                                if let Err(err) = supabase
+                                    .client
+                                    .post(&url)
+                                    .header("apikey", supabase.key.clone())
+                                    .header(
+                                        "Authorization",
+                                        format!("Bearer {}", supabase.key),
+                                    )
+                                    .json(&mapping)
+                                    .send()
+                                    .await
+                                {
+                                    eprintln!(
+                                        "[escrow/create] mapping insert failed (non-fatal): {err}"
+                                    );
+                                }
+
                                 axum::Json(serde_json::json!({ "contract_id": contract_id }))
                             }
                             CustodyMode::Freighter => {
                                 // Wallet signs in-browser as the operator; backend
                                 // returns the unsigned XDR. (Operator-as-Freighter is
                                 // not fully wired for MVP — documented deviation.)
+                                //
+                                // GAP: in Freighter mode the deployed contract
+                                // address is not known at request time, so the
+                                // escrow_contracts mapping is NOT inserted here. A
+                                // later `initialize` indexer event could backfill it
+                                // (out of scope for this task).
                                 axum::Json(serde_json::json!({ "tx_xdr": xdr }))
                             }
                         }
@@ -1393,5 +1458,38 @@ mod tests {
             ScVal::Address(ScAddress::Contract(Hash(h))) => assert_eq!(h, [7u8; 32]),
             _ => panic!("expected contract address return value"),
         }
+    }
+
+    #[test]
+    fn build_contract_mapping_payload() {
+        // Offline-only: no network. Maps on-chain milestone INDEX -> DB uuid.
+        let payload = build_contract_mapping(
+            "CABCDEF",
+            "org-uuid",
+            "proj-uuid",
+            &["m0-uuid".to_string(), "m1-uuid".to_string()],
+        );
+        assert_eq!(payload["contract_address"], "CABCDEF");
+        assert_eq!(payload["org_id"], "org-uuid");
+        assert_eq!(payload["project_id"], "proj-uuid");
+
+        let mapping = payload["mapping"]
+            .as_object()
+            .expect("mapping must be an object");
+        assert_eq!(mapping.len(), 2);
+        assert_eq!(mapping.get("0").and_then(|v| v.as_str()), Some("m0-uuid"));
+        assert_eq!(mapping.get("1").and_then(|v| v.as_str()), Some("m1-uuid"));
+        // Keys are the contract milestone INDEX as strings, in order.
+        assert!(mapping.contains_key("0"));
+        assert!(mapping.contains_key("1"));
+        assert!(!mapping.contains_key("2"));
+    }
+
+    #[test]
+    fn build_contract_mapping_empty() {
+        let payload = build_contract_mapping("CXYZ", "o", "p", &[]);
+        assert_eq!(payload["contract_address"], "CXYZ");
+        let mapping = payload["mapping"].as_object().unwrap();
+        assert!(mapping.is_empty());
     }
 }
