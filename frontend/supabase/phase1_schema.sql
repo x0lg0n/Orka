@@ -395,3 +395,25 @@ begin
   return new;
 end;
 $$;
+
+-- ---------- 1.1.12 proposals ----------
+create table if not exists public.proposals (
+  id uuid primary key default gen_random_uuid(),
+  org_id uuid not null references public.organizations(id) on delete cascade,
+  client_address text not null,
+  freelancer_address text not null,
+  asset text not null default 'CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC',
+  milestones jsonb not null,           -- [{amount:number, description:string}]
+  status text not null default 'draft' check (status in ('draft','active','closed')),
+  contract_id text,
+  project_id uuid,
+  created_at timestamptz not null default now()
+);
+
+alter table public.proposals enable row level security;
+
+drop policy if exists "proposals_org" on public.proposals;
+create policy "proposals_org" on public.proposals
+  for all
+  using (public.auth_is_org_member(org_id))
+  with check (public.auth_is_org_member(org_id));

@@ -1,7 +1,7 @@
 export async function callServices(
   path: string,
   body: unknown,
-): Promise<{ tx_hash?: string; tx_xdr?: string }> {
+): Promise<{ tx_hash?: string; tx_xdr?: string; contract_id?: string }> {
   const base = process.env.SERVICES_URL;
   if (!base) throw new Error("SERVICES_URL not set");
   const res = await fetch(`${base}${path}`, {

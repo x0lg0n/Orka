@@ -310,6 +310,158 @@ export async function resolveDispute(formData: FormData) {
   revalidatePath(`/projects/${m.project_id}`);
 }
 
+const TESTNET_USDC =
+  "CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC";
+
+type ProposalMilestone = { amount: number; description: string };
+
+export async function createProposal(formData: FormData) {
+  const supabase = await createClient();
+  const orgId = await getActiveOrgId(supabase);
+  if (!orgId) redirect("/onboarding");
+
+  const client_address = String(formData.get("client_address") || "").trim();
+  const freelancer_address = String(formData.get("freelancer_address") || "").trim();
+  const asset = String(formData.get("asset") || "").trim() || TESTNET_USDC;
+
+  if (!client_address) redirect("/dashboard/proposals/new?error=Client address is required.");
+  if (!freelancer_address)
+    redirect("/dashboard/proposals/new?error=Freelancer address is required.");
+
+  const amounts = formData.getAll("amount");
+  const descriptions = formData.getAll("description");
+  const milestones: ProposalMilestone[] = [];
+  for (let i = 0; i < amounts.length; i++) {
+    const amount = Number(amounts[i]);
+    const description = String(descriptions[i] || "").trim();
+    if (!Number.isFinite(amount) || amount <= 0) continue;
+    milestones.push({ amount, description });
+  }
+  if (milestones.length === 0)
+    redirect("/dashboard/proposals/new?error=At least one milestone with an amount is required.");
+
+  const { error } = await supabase.from("proposals").insert({
+    org_id: orgId,
+    client_address,
+    freelancer_address,
+    asset,
+    milestones,
+    status: "draft",
+  });
+  if (error)
+    redirect(`/dashboard/proposals/new?error=${encodeURIComponent(error.message)}`);
+
+  revalidatePath("/dashboard/proposals");
+  redirect("/dashboard/proposals");
+}
+
+export async function acceptProposal(proposalId: string) {
+  const supabase = await createClient();
+  const orgId = await getActiveOrgId(supabase);
+  if (!orgId) redirect("/onboarding");
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect("/signup");
+
+  const { data: proposal, error: pErr } = await supabase
+    .from("proposals")
+    .select("id, client_address, freelancer_address, asset, milestones, status")
+    .eq("id", proposalId)
+    .eq("org_id", orgId)
+    .maybeSingle();
+  if (pErr || !proposal) redirect("/dashboard/proposals?error=Proposal not found.");
+  if (proposal.status !== "draft")
+    redirect("/dashboard/proposals?error=Only draft proposals can be accepted.");
+
+  const { data: created, error: projErr } = await supabase
+    .from("projects")
+    .insert({
+      org_id: orgId,
+      title: `Proposal ${proposal.id.slice(0, 8)}`,
+      status: "draft",
+    })
+    .select("id")
+    .single();
+  if (projErr || !created)
+    redirect(`/dashboard/proposals?error=${encodeURIComponent(projErr?.message ?? "Failed to create project.")}`);
+
+  const projectId = created.id;
+  const milestones = (proposal.milestones ?? []) as ProposalMilestone[];
+  const milestoneRows = milestones.map((m, i) => ({
+    project_id: projectId,
+    org_id: orgId,
+    title: m.description || `Milestone ${i + 1}`,
+    amount: m.amount,
+    chain_index: i,
+    status: "draft",
+  }));
+
+  const { data: inserted, error: mErr } = await supabase
+    .from("milestones")
+    .insert(milestoneRows)
+    .select("id");
+  if (mErr || !inserted)
+    redirect(`/dashboard/proposals?error=${encodeURIComponent(mErr?.message ?? "Failed to create milestones.")}`);
+
+  const milestone_ids = inserted.map((m) => m.id);
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("custody_mode")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  const orkaActive = SERVICES_URL && profile?.custody_mode === "orka";
+
+  if (!orkaActive) {
+    const { error: updErr } = await supabase
+      .from("proposals")
+      .update({ status: "active", project_id: projectId })
+      .eq("id", proposalId);
+    if (updErr)
+      redirect(`/dashboard/proposals?error=${encodeURIComponent(updErr.message)}`);
+    revalidatePath("/dashboard/proposals");
+    redirect(`/dashboard/projects/${projectId}`);
+  }
+
+  try {
+    const r = await callServices("/escrow/create", {
+      org_id: orgId,
+      client: proposal.client_address,
+      freelancer: proposal.freelancer_address,
+      asset: proposal.asset,
+      operator: null,
+      milestones: proposal.milestones,
+      dispute_rules: null,
+      mode: "orka",
+      user_id: user.id,
+      project_id: projectId,
+      milestone_ids,
+    });
+    const contract_id = r.contract_id ?? null;
+    if (contract_id) {
+      await supabase.from("projects").update({ contract_id }).eq("id", projectId);
+    }
+    await supabase
+      .from("proposals")
+      .update({ status: "active", contract_id, project_id: projectId })
+      .eq("id", proposalId);
+    revalidatePath("/dashboard/proposals");
+    redirect(`/dashboard/projects/${projectId}`);
+  } catch {
+    const { error: updErr } = await supabase
+      .from("proposals")
+      .update({ status: "active", project_id: projectId })
+      .eq("id", proposalId);
+    if (updErr)
+      redirect(`/dashboard/proposals?error=${encodeURIComponent(updErr.message)}`);
+    revalidatePath("/dashboard/proposals");
+    redirect(`/dashboard/projects/${projectId}`);
+  }
+}
+
 export async function inviteMember(formData: FormData) {
   const supabase = await createClient();
   const orgId = await getActiveOrgId(supabase);
