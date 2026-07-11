@@ -508,6 +508,77 @@ export async function updateProfile(formData: FormData) {
   redirect("/dashboard/settings");
 }
 
+export async function saveStellarAddress(formData: FormData) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect("/signup");
+
+  const address = String(formData.get("address") || "").trim();
+  const { error } = await supabase
+    .from("profiles")
+    .update({ stellar_address: address })
+    .eq("id", user.id);
+  if (error) {
+    redirect(`/dashboard/settings?error=${encodeURIComponent(error.message)}`);
+  }
+
+  revalidatePath("/dashboard/settings");
+}
+
+export async function freighterApplyTx(formData: FormData) {
+  const supabase = await createClient();
+  const orgId = await getActiveOrgId(supabase);
+  if (!orgId) redirect("/onboarding");
+
+  const milestoneId = String(formData.get("milestoneId") || "");
+  const eventType = String(formData.get("eventType") || "");
+  const txHash = String(formData.get("txHash") || "");
+
+  if (eventType !== "fund" && eventType !== "release") {
+    redirect("/dashboard/projects?error=Invalid Freighter event type.");
+  }
+
+  const { data: m, error } = await supabase
+    .from("milestones")
+    .update({ status: eventType === "fund" ? "funded" : "released" })
+    .eq("id", milestoneId)
+    .eq("org_id", orgId)
+    .select("project_id, amount")
+    .single();
+  if (error || !m) {
+    redirect(
+      `/dashboard/projects?error=${encodeURIComponent(error?.message ?? "Failed")}`,
+    );
+  }
+
+  await recordLedger(
+    supabase,
+    orgId,
+    m.project_id,
+    milestoneId,
+    eventType,
+    Number(m.amount),
+    txHash,
+  );
+
+  if (eventType === "release") {
+    await supabase.from("invoices").insert({
+      org_id: orgId,
+      project_id: m.project_id,
+      milestone_id: milestoneId,
+      invoice_number: `INV-${Date.now().toString().slice(-6)}`,
+      amount: Number(m.amount),
+      currency: "USD",
+      status: "issued",
+    });
+  }
+
+  revalidatePath(`/dashboard/projects/${m.project_id}`);
+  revalidatePath("/dashboard/payments");
+}
+
 export async function inviteMember(formData: FormData) {
   const supabase = await createClient();
   const orgId = await getActiveOrgId(supabase);

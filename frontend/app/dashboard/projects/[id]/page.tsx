@@ -8,6 +8,7 @@ import {
   approveMilestone,
   releaseMilestone,
 } from "../../../../app/actions";
+import FreighterMilestoneButton from "../../_components/FreighterMilestoneButton";
 
 const STATUS_PILL: Record<string, string> = {
   draft: "bg-one text-ink",
@@ -36,6 +37,7 @@ type ProjectRow = {
   description: string | null;
   client_name: string | null;
   freelancer_name: string | null;
+  contract_id: string | null;
 };
 
 export const metadata = { title: "Project · ORKA" };
@@ -52,6 +54,13 @@ export default async function ProjectPage({
   } = await supabase.auth.getUser();
   if (!user) redirect("/signup");
   if (!(await getActiveOrgId(supabase))) redirect("/onboarding");
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("custody_mode")
+    .eq("id", user.id)
+    .maybeSingle();
+  const freighterMode = profile?.custody_mode === "freighter";
 
   const { data: project } = (await supabase
     .from("projects")
@@ -105,12 +114,27 @@ export default async function ProjectPage({
             <p className="text-sm font-bold text-ink/70">{m.amount} USDC</p>
 
             <div className="mt-3 flex flex-wrap gap-2">
-              {m.status === "draft" && (
-                <form action={fundMilestone}>
-                  <input type="hidden" name="milestoneId" value={m.id} />
-                  <button className={`${btn} bg-lime`}>Fund</button>
-                </form>
-              )}
+              {m.status === "draft" &&
+                (freighterMode ? (
+                  project?.contract_id ? (
+                    <FreighterMilestoneButton
+                      contractId={project.contract_id}
+                      milestoneIds={m.chain_index != null ? [m.chain_index] : []}
+                      milestoneId={m.chain_index ?? 0}
+                      eventType="fund"
+                      label="Fund"
+                    />
+                  ) : (
+                    <span className={`${btn} bg-lime opacity-40`}>
+                      No contract
+                    </span>
+                  )
+                ) : (
+                  <form action={fundMilestone}>
+                    <input type="hidden" name="milestoneId" value={m.id} />
+                    <button className={`${btn} bg-lime`}>Fund</button>
+                  </form>
+                ))}
               {m.status === "funded" && (
                 <form action={submitMilestone}>
                   <input type="hidden" name="milestoneId" value={m.id} />
@@ -123,12 +147,27 @@ export default async function ProjectPage({
                   <button className={`${btn} bg-lime`}>Approve</button>
                 </form>
               )}
-              {m.status === "approved" && (
-                <form action={releaseMilestone}>
-                  <input type="hidden" name="milestoneId" value={m.id} />
-                  <button className={`${btn} bg-teal text-white`}>Release</button>
-                </form>
-              )}
+              {m.status === "approved" &&
+                (freighterMode ? (
+                  project?.contract_id ? (
+                    <FreighterMilestoneButton
+                      contractId={project.contract_id}
+                      milestoneIds={m.chain_index != null ? [m.chain_index] : []}
+                      milestoneId={m.chain_index ?? 0}
+                      eventType="release"
+                      label="Release"
+                    />
+                  ) : (
+                    <span className={`${btn} bg-teal text-white opacity-40`}>
+                      No contract
+                    </span>
+                  )
+                ) : (
+                  <form action={releaseMilestone}>
+                    <input type="hidden" name="milestoneId" value={m.id} />
+                    <button className={`${btn} bg-teal text-white`}>Release</button>
+                  </form>
+                ))}
             </div>
           </div>
         ))}

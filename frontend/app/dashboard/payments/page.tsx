@@ -6,6 +6,7 @@ import {
   releaseMilestone,
 } from "../../../app/actions";
 import type { MilestoneStatus } from "../../../lib/orka";
+import FreighterMilestoneButton from "../_components/FreighterMilestoneButton";
 
 type MilestoneRow = {
   id: string;
@@ -13,6 +14,8 @@ type MilestoneRow = {
   amount: number | null;
   status: MilestoneStatus | string | null;
   project_title: string | null;
+  chain_index: number | null;
+  contract_id: string | null;
 };
 
 export default async function PaymentsPage() {
@@ -20,9 +23,20 @@ export default async function PaymentsPage() {
   const orgId = await getActiveOrgId(supabase);
   if (!orgId) redirect("/onboarding");
 
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect("/signup");
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("custody_mode")
+    .eq("id", user.id)
+    .maybeSingle();
+  const freighterMode = profile?.custody_mode === "freighter";
+
   const { data: milestones } = await supabase
     .from("milestones")
-    .select("id, title, amount, status, projects(title)")
+    .select("id, title, amount, status, chain_index, projects(title, contract_id)")
     .eq("org_id", orgId)
     .in("status", ["draft", "approved"])
     .order("created_at", { ascending: false });
@@ -33,6 +47,8 @@ export default async function PaymentsPage() {
     amount: m.amount,
     status: m.status,
     project_title: m.projects?.title ?? null,
+    chain_index: m.chain_index ?? null,
+    contract_id: m.projects?.contract_id ?? null,
   }));
 
   return (
@@ -70,7 +86,21 @@ export default async function PaymentsPage() {
                   : "—"}
               </p>
 
-              {m.status === "draft" ? (
+              {freighterMode ? (
+                m.contract_id ? (
+                  <FreighterMilestoneButton
+                    contractId={m.contract_id}
+                    milestoneIds={m.chain_index != null ? [m.chain_index] : []}
+                    milestoneId={m.chain_index ?? 0}
+                    eventType={m.status === "draft" ? "fund" : "release"}
+                    label={m.status === "draft" ? "Fund" : "Release"}
+                  />
+                ) : (
+                  <p className="mt-4 text-xs font-bold uppercase text-ink/50">
+                    No contract deployed for this project yet.
+                  </p>
+                )
+              ) : m.status === "draft" ? (
                 <form action={fundMilestone} className="mt-4">
                   <input type="hidden" name="milestoneId" value={m.id} />
                   <button

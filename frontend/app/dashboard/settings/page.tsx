@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "../../../lib/supabase/server";
 import { updateProfile } from "../../../app/actions";
+import ConnectFreighter from "./_components/ConnectFreighter";
 
 type ProfileRow = {
   id: string;
@@ -28,6 +29,7 @@ export default async function SettingsPage({
 
   const row = (profile as ProfileRow | null) ?? null;
   const { error } = await searchParams;
+  const custodyMode = row?.custody_mode ?? "orka";
 
   return (
     <div className="mx-auto w-full max-w-2xl">
@@ -75,6 +77,19 @@ export default async function SettingsPage({
           </button>
         </form>
       </div>
+
+      {custodyMode === "freighter" ? (
+        <div className="mt-6">
+          <ConnectFreighter currentAddress={row?.stellar_address ?? null} />
+        </div>
+      ) : (
+        <div className="mt-6 rounded-[28px] bg-white p-6 text-ink shadow-hard md:p-8">
+          <p className="text-sm font-bold text-ink/70">
+            Orka-managed custody is active. Switch the custody mode above to
+            Freighter to connect your own wallet.
+          </p>
+        </div>
+      )}
     </div>
   );
 }
