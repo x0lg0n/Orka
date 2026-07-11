@@ -35,7 +35,7 @@ Plans:
 - [ ] 01-02: auth.rs — JWT (Mode A) + Freighter session (Mode B) verify, custody_mode enforcement
 - [ ] 01-03: custody.rs — Mode A key lifecycle (provisionManagedAccount + signForUser, KMS-backed)
 - [ ] 01-04: stellar.rs — Stellar SDK client, sponsored fee_bump, submit to RPC
-- [ ] 01-05: bridge.rs — applyChainEvent() reconciler to Supabase
+- [x] 01-05: bridge.rs — applyChainEvent() reconciler to Supabase
 - [ ] 01-06: packages/stellar-sdk — thin TS client
 
 ### Phase 2: Wire Frontend to Real Backend
@@ -69,6 +69,6 @@ Phases execute in numeric order: 1 → 2 → 3
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Rust Backend Services | 4/6 | In progress | 01-04 |
+| 1. Rust Backend Services | 5/6 | In progress | 01-05 |
 | 2. Wire Frontend | 0/2 | Not started | - |
 | 3. Linear Dashboard | 0/2 | Not started | - |

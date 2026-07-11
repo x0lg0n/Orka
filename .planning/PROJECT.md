@@ -6,7 +6,7 @@
 **Current state (verified via git + code):**
 - Frontend workspace MVP: DONE (mocked chain via `lib/orka.ts` `fakeTx`).
 - Soroban escrow contract (`contracts/escrow`): DONE (lib.rs + test.rs).
-- Rust backend (`services/`): IN PROGRESS (4/6 plans done: 01-01 auth, 01-02 custody config, 01-03 custody KMS, 01-04 stellar; next 01-05 bridge, 01-06 TS client).
+- Rust backend (`services/`): IN PROGRESS (5/6 plans done: 01-01 auth, 01-02 custody config, 01-03 custody KMS, 01-04 stellar, 01-05 bridge; next 01-06 TS client).
 - `packages/stellar-sdk` (TS client): NOT STARTED (empty scaffold only).
 - Frontend↔backend wiring: NOT STARTED (UI calls `fakeTx`).
 
