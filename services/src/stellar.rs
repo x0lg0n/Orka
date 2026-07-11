@@ -131,6 +131,11 @@ pub fn encode_account(pk: &[u8; 32]) -> String {
     encode_strkey(ACCOUNT_VERSION, pk)
 }
 
+/// Encode a 32-byte contract id as a `C...` contract strkey.
+pub fn encode_contract(id: &[u8; 32]) -> String {
+    encode_strkey(CONTRACT_VERSION, id)
+}
+
 // ---------------------------------------------------------------------------
 // Network id (sha256 of passphrase)
 // ---------------------------------------------------------------------------
@@ -168,6 +173,28 @@ fn sc_bytes(bytes: &[u8]) -> ScVal {
 
 fn sc_u64(v: u64) -> ScVal {
     ScVal::U64(v)
+}
+
+fn sc_i128(v: i128) -> ScVal {
+    ScVal::I128(Int128Parts {
+        hi: (v >> 64) as i64,
+        lo: v as u64,
+    })
+}
+
+/// Build the `Vec<MilestoneInit>` argument. The on-chain `MilestoneInit`
+/// contracttype is `{ amount: i128 }` (a single-field struct), so each
+/// milestone maps to a 1-element `ScVal::Vec` of the i128 amount.
+fn sc_milestones(ms: &[MilestoneInitReq]) -> ScVal {
+    let items: Vec<ScVal> = ms
+        .iter()
+        .map(|m| {
+            ScVal::Vec(Some(ScVec(
+                vec![sc_i128(m.amount)].try_into().unwrap(),
+            )))
+        })
+        .collect();
+    ScVal::Vec(Some(ScVec(items.try_into().unwrap())))
 }
 
 fn sc_vec_u64(values: &[u64]) -> ScVal {
@@ -537,6 +564,35 @@ struct ApproveReq {
     user_address: Option<String>,
 }
 
+/// One milestone in a `create_escrow` proposal.
+///
+/// NOTE: the on-chain `MilestoneInit` contracttype is `{ amount: i128 }`
+/// (no `description` field). The `description` is kept here for API
+/// ergonomics/forward-compat but is NOT serialized into the Soroban call.
+#[derive(Deserialize)]
+struct MilestoneInitReq {
+    amount: i128,
+    #[allow(dead_code)]
+    description: String,
+}
+
+/// `POST /escrow/create` body.
+///
+/// `dispute_rules` maps to the on-chain `Option<DisputeRules>` argument,
+/// where the contract defines `type DisputeRules = u32` (a basis-points
+/// split value, not a struct). So it is a plain `Option<u32>`.
+#[derive(Deserialize)]
+struct CreateReq {
+    org_id: String,
+    client: String,
+    freelancer: String,
+    asset: String,
+    operator: Option<String>,
+    milestones: Vec<MilestoneInitReq>,
+    dispute_rules: Option<u32>,
+    mode: String,
+}
+
 #[derive(Serialize)]
 struct XdrResp {
     tx_xdr: String,
@@ -869,6 +925,104 @@ pub fn routes(state: &AppState) -> Router {
             },
         )
         .route(
+            "/escrow/create",
+            {
+                let st = state.clone();
+                post(move |Json(body): Json<CreateReq>| {
+                    let st = st.clone();
+                    async move {
+                        let mode = parse_mode(&body.mode).unwrap_or(CustodyMode::Orka);
+                        let pass = st.config.network_passphrase();
+
+                        // Operator defaults to the configured Orka operator account.
+                        let op_addr = body
+                            .operator
+                            .clone()
+                            .unwrap_or_else(|| st.config.operator_address.clone());
+
+                        // Build `factory.create_escrow` args in declaration order:
+                        // org: Bytes, client: Address, freelancer: Address,
+                        // asset: Address, operator: Address, milestones: Vec<MilestoneInit>,
+                        // dispute_rules: Option<u32>.
+                        let org_arg = sc_bytes(body.org_id.as_bytes());
+                        let client_arg = sc_account(&body.client);
+                        let freelancer_arg = sc_account(&body.freelancer);
+                        let asset_arg = sc_contract(&body.asset);
+                        let operator_arg = sc_account(&op_addr);
+                        let milestones_arg = sc_milestones(&body.milestones);
+                        let dispute_arg = match body.dispute_rules {
+                            Some(bp) => ScVal::U32(bp),
+                            None => ScVal::Void,
+                        };
+                        let args = vec![
+                            org_arg,
+                            client_arg,
+                            freelancer_arg,
+                            asset_arg,
+                            operator_arg,
+                            milestones_arg,
+                            dispute_arg,
+                        ];
+
+                        // Operator signs the inner tx (escrow.initialize requires
+                        // operator auth), so operator_inner_sig = true and the
+                        // inner tx source account is the operator account.
+                        let xdr = build_sponsored(
+                            &pass,
+                            &st.config.escrow_factory_address,
+                            "create_escrow",
+                            args,
+                            &op_addr,
+                            &st.config.operator_seed_bytes(),
+                            st.config.sequence,
+                            200,
+                            None,
+                            true,
+                        );
+                        let xdr = match xdr {
+                            Ok(x) => x,
+                            Err(_) => return err_json("build_failed"),
+                        };
+
+                        match mode {
+                            CustodyMode::Orka => {
+                                let hash = match submit_to_rpc(
+                                    &st.config.stellar_rpc_url,
+                                    &xdr,
+                                )
+                                .await
+                                {
+                                    Ok(h) => h,
+                                    Err(_) => return err_json("rpc_submit_failed"),
+                                };
+                                let ret = match get_tx_result(
+                                    &st.config.stellar_rpc_url,
+                                    &hash,
+                                )
+                                .await
+                                {
+                                    Ok(r) => r,
+                                    Err(_) => return err_json("rpc_result_failed"),
+                                };
+                                let id = match ScVal::from_xdr_base64(&ret, Limits::none()) {
+                                    Ok(ScVal::Address(ScAddress::Contract(Hash(h)))) => h,
+                                    _ => return err_json("unexpected_return"),
+                                };
+                                let contract_id = encode_contract(&id);
+                                axum::Json(serde_json::json!({ "contract_id": contract_id }))
+                            }
+                            CustodyMode::Freighter => {
+                                // Wallet signs in-browser as the operator; backend
+                                // returns the unsigned XDR. (Operator-as-Freighter is
+                                // not fully wired for MVP — documented deviation.)
+                                axum::Json(serde_json::json!({ "tx_xdr": xdr }))
+                            }
+                        }
+                    }
+                })
+            },
+        )
+        .route(
             "/escrow/state",
             get(|| async {
                 axum::Json(serde_json::json!({ "note": "fetch_via_rpc_getLedgerEntries" }))
@@ -1065,6 +1219,65 @@ mod tests {
                 FeeBumpTransactionInnerTx::Tx(v1) => {
                     // Inner tx carries client + operator signatures (multi-sig).
                     assert_eq!(v1.signatures.as_slice().len(), 2);
+                }
+            },
+            _ => panic!("expected FeeBump envelope"),
+        }
+    }
+
+    #[test]
+    fn create_escrow_builds_correct_invocation() {
+        let factory = contract_strkey(); // C... [9u8; 32]
+        let operator = account_strkey(); // G... [3u8; 32]
+        let milestones = vec![MilestoneInitReq {
+            amount: 1_000_000,
+            description: String::new(),
+        }];
+        let args = vec![
+            sc_bytes(b"org-123"),
+            sc_account(&account_strkey()),
+            sc_account(&account_strkey()),
+            sc_contract(&contract_strkey()),
+            sc_account(&operator),
+            sc_milestones(&milestones),
+            ScVal::U32(5000),
+        ];
+        let xdr = build_sponsored(
+            PASSPHRASE,
+            &factory,
+            "create_escrow",
+            args,
+            &operator,
+            &operator_seed(),
+            42,
+            200,
+            None,
+            true,
+        )
+        .unwrap();
+
+        let env = TransactionEnvelope::from_xdr_base64(&xdr, Limits::none()).unwrap();
+        match env {
+            TransactionEnvelope::TxFeeBump(fb) => match fb.tx.inner_tx {
+                FeeBumpTransactionInnerTx::Tx(v1) => {
+                    // operator_inner_sig = true → exactly 1 inner signature.
+                    assert_eq!(v1.signatures.as_slice().len(), 1);
+                    match &v1.tx.operations.as_slice()[0].body {
+                        OperationBody::InvokeHostFunction(op) => match &op.host_function {
+                            HostFunction::InvokeContract(a) => {
+                                assert_eq!(a.function_name.to_string(), "create_escrow");
+                                match &a.contract_address {
+                                    ScAddress::Contract(Hash(h)) => assert_eq!(*h, [9u8; 32]),
+                                    _ => panic!("expected contract address"),
+                                }
+                                // 7 args: org, client, freelancer, asset,
+                                // operator, milestones, dispute_rules.
+                                assert_eq!(a.args.as_slice().len(), 7);
+                            }
+                            _ => panic!("expected InvokeContract"),
+                        },
+                        _ => panic!("expected InvokeHostFunction"),
+                    }
                 }
             },
             _ => panic!("expected FeeBump envelope"),
