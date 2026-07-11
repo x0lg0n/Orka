@@ -482,6 +482,32 @@ export async function acceptProposal(proposalId: string) {
   }
 }
 
+export async function updateProfile(formData: FormData) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect("/signup");
+
+  const full_name = String(formData.get("full_name") || "").trim();
+  const custody_mode = String(formData.get("custody_mode") || "").trim();
+
+  if (custody_mode !== "orka" && custody_mode !== "freighter") {
+    redirect("/dashboard/settings?error=Invalid custody mode.");
+  }
+
+  const { error } = await supabase
+    .from("profiles")
+    .update({ full_name, custody_mode })
+    .eq("id", user.id);
+  if (error) {
+    redirect(`/dashboard/settings?error=${encodeURIComponent(error.message)}`);
+  }
+
+  revalidatePath("/dashboard/settings");
+  redirect("/dashboard/settings");
+}
+
 export async function inviteMember(formData: FormData) {
   const supabase = await createClient();
   const orgId = await getActiveOrgId(supabase);
