@@ -388,6 +388,38 @@ pub fn build_sponsored(
     sponsor_and_submit(passphrase, inner, operator_seed, sigs, bump_fee)
 }
 
+/// Derive a `G...` Stellar address from a raw ed25519 seed. Used in Orka mode so
+/// the inner tx source account matches the key that will sign it.
+fn address_from_seed(seed: &[u8; 32]) -> String {
+    let pk = SigningKey::from_bytes(seed).verifying_key().to_bytes();
+    encode_account(&pk)
+}
+
+/// Build an inner client signature for a sponsored contract invocation, mirroring
+/// the pattern in `release_funds_sponsored`. The signature is over the exact same
+/// inner tx that `build_sponsored` will reconstruct (same source/contract/fn/args/
+/// sequence/fee=100), so it verifies on-chain.
+fn build_inner_client_sig(
+    passphrase: &str,
+    user_source: &str,
+    contract_id: &str,
+    fn_name: &str,
+    args: Vec<ScVal>,
+    sequence: i64,
+    client_seed: &[u8; 32],
+) -> Result<DecoratedSignature, StellarError> {
+    let inner = build_contract_tx(user_source, contract_id, fn_name, args, sequence, 100)?;
+    let inner_v1 = TransactionV1Envelope {
+        tx: inner,
+        signatures: vec![].try_into().map_err(|_| StellarError::Xdr)?,
+    };
+    let payload = TransactionSignaturePayload {
+        network_id: network_id(passphrase),
+        tagged_transaction: TransactionSignaturePayloadTaggedTransaction::Tx(inner_v1.tx.clone()),
+    };
+    Ok(sign_payload(client_seed, &payload))
+}
+
 // ---------------------------------------------------------------------------
 // RPC helpers (best-effort; no live RPC required for tests)
 // ---------------------------------------------------------------------------
@@ -487,6 +519,24 @@ struct ReleaseReq {
     user_address: Option<String>,
 }
 
+#[derive(Deserialize)]
+struct SubmitReq {
+    contract_id: String,
+    milestone_id: u64,
+    mode: String,
+    user_id: Option<String>,
+    user_address: Option<String>,
+}
+
+#[derive(Deserialize)]
+struct ApproveReq {
+    contract_id: String,
+    milestone_id: u64,
+    mode: String,
+    user_id: Option<String>,
+    user_address: Option<String>,
+}
+
 #[derive(Serialize)]
 struct XdrResp {
     tx_xdr: String,
@@ -517,24 +567,53 @@ pub fn routes(state: &AppState) -> Router {
                         let pass = st.config.network_passphrase();
                         match mode {
                             CustodyMode::Orka => {
-                                let xdr = build_tx_for_freighter(
+                                // Backend signs with the user's KMS seed, then broadcasts.
+                                let user_id = match &body.user_id {
+                                    Some(u) => u.clone(),
+                                    None => return err_json("user_id_required"),
+                                };
+                                let client_seed = match custody::kms_decrypt_seed(&*st.kms, &user_id) {
+                                    Ok(s) => s,
+                                    Err(_) => return err_json("seed_decrypt_failed"),
+                                };
+                                let client_addr = address_from_seed(&client_seed);
+                                let args = vec![sc_vec_u64(&body.milestone_ids)];
+                                let client_sig = match build_inner_client_sig(
+                                    &pass,
+                                    &client_addr,
+                                    &body.contract_id,
+                                    "fund",
+                                    args.clone(),
+                                    st.config.sequence,
+                                    &client_seed,
+                                ) {
+                                    Ok(s) => s,
+                                    Err(_) => return err_json("sign_failed"),
+                                };
+                                let xdr = build_sponsored(
                                     &pass,
                                     &body.contract_id,
                                     "fund",
-                                    vec![sc_vec_u64(&body.milestone_ids)],
-                                    &st.config.operator_address,
+                                    args,
+                                    &client_addr,
                                     &st.config.operator_seed_bytes(),
                                     st.config.sequence,
                                     200,
+                                    Some(client_sig),
+                                    false,
                                 );
                                 match xdr {
-                                    Ok(x) => axum::Json(serde_json::json!({ "tx_xdr": x })),
+                                    Ok(x) => match submit_to_rpc(&st.config.stellar_rpc_url, &x).await {
+                                        Ok(hash) => axum::Json(serde_json::json!({ "tx_hash": hash })),
+                                        Err(_) => err_json("rpc_submit_failed"),
+                                    },
                                     Err(_) => err_json("build_failed"),
                                 }
                             }
                             CustodyMode::Freighter => {
+                                // Wallet signs in-browser; backend returns unsigned XDR.
                                 let addr = body.user_address.clone().unwrap_or_default();
-                                let xdr = build_tx_for_freighter(
+                                let xdr = build_sponsored(
                                     &pass,
                                     &body.contract_id,
                                     "fund",
@@ -543,6 +622,162 @@ pub fn routes(state: &AppState) -> Router {
                                     &st.config.operator_seed_bytes(),
                                     st.config.sequence,
                                     200,
+                                    None,
+                                    false,
+                                );
+                                match xdr {
+                                    Ok(x) => axum::Json(serde_json::json!({ "tx_xdr": x })),
+                                    Err(_) => err_json("build_failed"),
+                                }
+                            }
+                        }
+                    }
+                })
+            },
+        )
+        .route(
+            "/escrow/submit",
+            {
+                let st = state.clone();
+                post(move |Json(body): Json<SubmitReq>| {
+                    let st = st.clone();
+                    async move {
+                        let mode = parse_mode(&body.mode).unwrap_or(CustodyMode::Orka);
+                        let pass = st.config.network_passphrase();
+                        match mode {
+                            CustodyMode::Orka => {
+                                let user_id = match &body.user_id {
+                                    Some(u) => u.clone(),
+                                    None => return err_json("user_id_required"),
+                                };
+                                let client_seed = match custody::kms_decrypt_seed(&*st.kms, &user_id) {
+                                    Ok(s) => s,
+                                    Err(_) => return err_json("seed_decrypt_failed"),
+                                };
+                                let client_addr = address_from_seed(&client_seed);
+                                let args = vec![sc_u64(body.milestone_id)];
+                                let client_sig = match build_inner_client_sig(
+                                    &pass,
+                                    &client_addr,
+                                    &body.contract_id,
+                                    "submit",
+                                    args.clone(),
+                                    st.config.sequence,
+                                    &client_seed,
+                                ) {
+                                    Ok(s) => s,
+                                    Err(_) => return err_json("sign_failed"),
+                                };
+                                let xdr = build_sponsored(
+                                    &pass,
+                                    &body.contract_id,
+                                    "submit",
+                                    args,
+                                    &client_addr,
+                                    &st.config.operator_seed_bytes(),
+                                    st.config.sequence,
+                                    200,
+                                    Some(client_sig),
+                                    false,
+                                );
+                                match xdr {
+                                    Ok(x) => match submit_to_rpc(&st.config.stellar_rpc_url, &x).await {
+                                        Ok(hash) => axum::Json(serde_json::json!({ "tx_hash": hash })),
+                                        Err(_) => err_json("rpc_submit_failed"),
+                                    },
+                                    Err(_) => err_json("build_failed"),
+                                }
+                            }
+                            CustodyMode::Freighter => {
+                                let addr = body.user_address.clone().unwrap_or_default();
+                                let xdr = build_sponsored(
+                                    &pass,
+                                    &body.contract_id,
+                                    "submit",
+                                    vec![sc_u64(body.milestone_id)],
+                                    &addr,
+                                    &st.config.operator_seed_bytes(),
+                                    st.config.sequence,
+                                    200,
+                                    None,
+                                    false,
+                                );
+                                match xdr {
+                                    Ok(x) => axum::Json(serde_json::json!({ "tx_xdr": x })),
+                                    Err(_) => err_json("build_failed"),
+                                }
+                            }
+                        }
+                    }
+                })
+            },
+        )
+        .route(
+            "/escrow/approve",
+            {
+                let st = state.clone();
+                post(move |Json(body): Json<ApproveReq>| {
+                    let st = st.clone();
+                    async move {
+                        let mode = parse_mode(&body.mode).unwrap_or(CustodyMode::Orka);
+                        let pass = st.config.network_passphrase();
+                        match mode {
+                            CustodyMode::Orka => {
+                                let user_id = match &body.user_id {
+                                    Some(u) => u.clone(),
+                                    None => return err_json("user_id_required"),
+                                };
+                                let client_seed = match custody::kms_decrypt_seed(&*st.kms, &user_id) {
+                                    Ok(s) => s,
+                                    Err(_) => return err_json("seed_decrypt_failed"),
+                                };
+                                let client_addr = address_from_seed(&client_seed);
+                                let args = vec![sc_u64(body.milestone_id)];
+                                let client_sig = match build_inner_client_sig(
+                                    &pass,
+                                    &client_addr,
+                                    &body.contract_id,
+                                    "approve",
+                                    args.clone(),
+                                    st.config.sequence,
+                                    &client_seed,
+                                ) {
+                                    Ok(s) => s,
+                                    Err(_) => return err_json("sign_failed"),
+                                };
+                                let xdr = build_sponsored(
+                                    &pass,
+                                    &body.contract_id,
+                                    "approve",
+                                    args,
+                                    &client_addr,
+                                    &st.config.operator_seed_bytes(),
+                                    st.config.sequence,
+                                    200,
+                                    Some(client_sig),
+                                    false,
+                                );
+                                match xdr {
+                                    Ok(x) => match submit_to_rpc(&st.config.stellar_rpc_url, &x).await {
+                                        Ok(hash) => axum::Json(serde_json::json!({ "tx_hash": hash })),
+                                        Err(_) => err_json("rpc_submit_failed"),
+                                    },
+                                    Err(_) => err_json("build_failed"),
+                                }
+                            }
+                            CustodyMode::Freighter => {
+                                let addr = body.user_address.clone().unwrap_or_default();
+                                let xdr = build_sponsored(
+                                    &pass,
+                                    &body.contract_id,
+                                    "approve",
+                                    vec![sc_u64(body.milestone_id)],
+                                    &addr,
+                                    &st.config.operator_seed_bytes(),
+                                    st.config.sequence,
+                                    200,
+                                    None,
+                                    false,
                                 );
                                 match xdr {
                                     Ok(x) => axum::Json(serde_json::json!({ "tx_xdr": x })),
@@ -565,12 +800,53 @@ pub fn routes(state: &AppState) -> Router {
                         let pass = st.config.network_passphrase();
                         match mode {
                             CustodyMode::Orka => {
-                                // Multi-sig requires Kms; documented seam for 01-05 bridge.
-                                axum::Json(serde_json::json!({ "note": "mode_a_multisig_requires_kms" }))
+                                // Client KMS sig + operator inner sig (release_funds requires both).
+                                let user_id = match &body.user_id {
+                                    Some(u) => u.clone(),
+                                    None => return err_json("user_id_required"),
+                                };
+                                let client_seed = match custody::kms_decrypt_seed(&*st.kms, &user_id) {
+                                    Ok(s) => s,
+                                    Err(_) => return err_json("seed_decrypt_failed"),
+                                };
+                                let client_addr = address_from_seed(&client_seed);
+                                let args = vec![sc_u64(body.milestone_id)];
+                                let client_sig = match build_inner_client_sig(
+                                    &pass,
+                                    &client_addr,
+                                    &body.contract_id,
+                                    "release_funds",
+                                    args.clone(),
+                                    st.config.sequence,
+                                    &client_seed,
+                                ) {
+                                    Ok(s) => s,
+                                    Err(_) => return err_json("sign_failed"),
+                                };
+                                let xdr = build_sponsored(
+                                    &pass,
+                                    &body.contract_id,
+                                    "release_funds",
+                                    args,
+                                    &client_addr,
+                                    &st.config.operator_seed_bytes(),
+                                    st.config.sequence,
+                                    200,
+                                    Some(client_sig),
+                                    true,
+                                );
+                                match xdr {
+                                    Ok(x) => match submit_to_rpc(&st.config.stellar_rpc_url, &x).await {
+                                        Ok(hash) => axum::Json(serde_json::json!({ "tx_hash": hash })),
+                                        Err(_) => err_json("rpc_submit_failed"),
+                                    },
+                                    Err(_) => err_json("build_failed"),
+                                }
                             }
                             CustodyMode::Freighter => {
+                                // Backend adds operator inner sig; wallet adds client sig in-browser.
                                 let addr = body.user_address.clone().unwrap_or_default();
-                                let xdr = build_tx_for_freighter(
+                                let xdr = build_sponsored(
                                     &pass,
                                     &body.contract_id,
                                     "release_funds",
@@ -579,6 +855,8 @@ pub fn routes(state: &AppState) -> Router {
                                     &st.config.operator_seed_bytes(),
                                     st.config.sequence,
                                     200,
+                                    None,
+                                    true,
                                 );
                                 match xdr {
                                     Ok(x) => axum::Json(serde_json::json!({ "tx_xdr": x })),
@@ -806,6 +1084,87 @@ mod tests {
                 diagnostic_events: Vec::new().try_into().unwrap(),
             }),
         })
+    }
+
+    #[test]
+    fn sponsored_inner_fn_name_matches_both_modes() {
+        fn check(fn_name: &str, args: Vec<ScVal>) {
+            // Orka mode: inner user sig present, no operator inner sig.
+            let inner = build_contract_tx(
+                &account_strkey(),
+                &contract_strkey(),
+                fn_name,
+                args.clone(),
+                42,
+                100,
+            )
+            .unwrap();
+            let inner_v1 = TransactionV1Envelope {
+                tx: inner.clone(),
+                signatures: vec![].try_into().unwrap(),
+            };
+            let inner_payload = TransactionSignaturePayload {
+                network_id: network_id(PASSPHRASE),
+                tagged_transaction: TransactionSignaturePayloadTaggedTransaction::Tx(
+                    inner_v1.tx.clone(),
+                ),
+            };
+            let client_sig = sign_payload(&[5u8; 32], &inner_payload);
+
+            let xdr_orka = build_sponsored(
+                PASSPHRASE,
+                &contract_strkey(),
+                fn_name,
+                args.clone(),
+                &account_strkey(),
+                &operator_seed(),
+                42,
+                200,
+                Some(client_sig),
+                false,
+            )
+            .unwrap();
+
+            // Freighter mode: no inner user sig.
+            let xdr_freighter = build_sponsored(
+                PASSPHRASE,
+                &contract_strkey(),
+                fn_name,
+                args.clone(),
+                &account_strkey(),
+                &operator_seed(),
+                42,
+                200,
+                None,
+                false,
+            )
+            .unwrap();
+
+            for xdr in [xdr_orka, xdr_freighter] {
+                let env = TransactionEnvelope::from_xdr_base64(&xdr, Limits::none()).unwrap();
+                match env {
+                    TransactionEnvelope::TxFeeBump(fb) => match fb.tx.inner_tx {
+                        FeeBumpTransactionInnerTx::Tx(v1) => {
+                            match &v1.tx.operations.as_slice()[0].body {
+                                OperationBody::InvokeHostFunction(op) => {
+                                    match &op.host_function {
+                                        HostFunction::InvokeContract(a) => {
+                                            assert_eq!(a.function_name.to_string(), fn_name);
+                                        }
+                                        _ => panic!("expected InvokeContract"),
+                                    }
+                                }
+                                _ => panic!("expected InvokeHostFunction"),
+                            }
+                        }
+                    },
+                    _ => panic!("expected FeeBump envelope"),
+                }
+            }
+        }
+
+        check("fund", vec![sc_vec_u64(&[1, 2, 3])]);
+        check("release_funds", vec![sc_u64(1)]);
     }
 
     #[test]
