@@ -5,6 +5,7 @@ mod errors;
 mod test;
 mod types;
 
+use soroban_sdk::contractclient;
 use soroban_sdk::token::TokenClient;
 use soroban_sdk::{contract, contractimpl, contracttype, Address, Bytes, Env, Map, Symbol, Vec};
 
@@ -16,7 +17,23 @@ fn emit(env: &Env, event: &str, id: u64, amount: i128) {
 }
 
 use errors::EscrowError;
-use types::{Config, DisputeRules, Milestone, MilestoneInit, MilestoneStatus, Milestones};
+use types::{Config, Milestone, MilestoneStatus, Milestones};
+
+pub use types::{DisputeRules, MilestoneInit};
+
+#[contractclient(name = "EscrowClient")]
+trait EscrowClientInterface {
+    fn initialize(
+        env: Env,
+        org: Bytes,
+        client: Address,
+        freelancer: Address,
+        asset: Address,
+        operator: Address,
+        milestones: Vec<MilestoneInit>,
+        dispute_rules: Option<DisputeRules>,
+    ) -> Result<Address, EscrowError>;
+}
 
 #[contracttype]
 pub enum DataKey {
