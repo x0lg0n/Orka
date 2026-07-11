@@ -356,6 +356,38 @@ pub fn build_tx_for_freighter(
     sponsor_and_submit(passphrase, inner, operator_seed, vec![], bump_fee)
 }
 
+/// Unified sponsored-tx builder that replaces the ad-hoc
+/// `build_tx_for_freighter` usage. Builds the inner contract invocation tx from
+/// `user_source`, optionally attaches a pre-built client signature
+/// (`inner_user_sig`) and/or an operator signature (`operator_inner_sig`), then
+/// wraps it in an operator-sponsored fee-bump and returns base64 XDR.
+pub fn build_sponsored(
+    passphrase: &str,
+    contract_id: &str,
+    fn_name: &str,
+    args: Vec<ScVal>,
+    user_source: &str,
+    operator_seed: &[u8; 32],
+    sequence: i64,
+    bump_fee: i64,
+    inner_user_sig: Option<DecoratedSignature>,
+    operator_inner_sig: bool,
+) -> Result<String, StellarError> {
+    let inner = build_contract_tx(user_source, contract_id, fn_name, args, sequence, 100)?;
+    let mut sigs: Vec<DecoratedSignature> = Vec::new();
+    if let Some(s) = inner_user_sig {
+        sigs.push(s);
+    }
+    if operator_inner_sig {
+        let payload = TransactionSignaturePayload {
+            network_id: network_id(passphrase),
+            tagged_transaction: TransactionSignaturePayloadTaggedTransaction::Tx(inner.clone()),
+        };
+        sigs.push(sign_payload(operator_seed, &payload));
+    }
+    sponsor_and_submit(passphrase, inner, operator_seed, sigs, bump_fee)
+}
+
 // ---------------------------------------------------------------------------
 // RPC helpers (best-effort; no live RPC required for tests)
 // ---------------------------------------------------------------------------
@@ -389,6 +421,48 @@ pub async fn submit_to_rpc(rpc_url: &str, xdr_base64: &str) -> Result<String, St
         .and_then(|h| h.as_str())
         .map(|s| s.to_string())
         .ok_or(StellarError::Rpc)
+}
+
+/// Fetch a transaction's result meta via RPC `getTransaction` and return the
+/// contract-call return value re-encoded as a base64 XDR string.
+pub async fn get_tx_result(rpc_url: &str, tx_hash: &str) -> Result<String, StellarError> {
+    let body = RpcRequest {
+        jsonrpc: "2.0",
+        id: 1,
+        method: "getTransaction",
+        params: serde_json::json!({ "hash": tx_hash }),
+    };
+    let client = reqwest::Client::new();
+    let resp = client
+        .post(rpc_url)
+        .json(&body)
+        .send()
+        .await
+        .map_err(|_| StellarError::Rpc)?;
+    let json: serde_json::Value = resp.json().await.map_err(|_| StellarError::Rpc)?;
+    let meta = json
+        .get("result")
+        .and_then(|r| r.get("resultMetaXdr"))
+        .and_then(|m| m.as_str())
+        .ok_or(StellarError::Rpc)?;
+    extract_return_value(meta)
+}
+
+/// Decode a `resultMetaXdr` base64 string and extract the Soroban contract-call
+/// return value as a base64 XDR string. Kept private + standalone so the decode
+/// path is unit-testable without any network access.
+fn extract_return_value(meta_base64: &str) -> Result<String, StellarError> {
+    let meta = TransactionMeta::from_xdr_base64(meta_base64, Limits::none())
+        .map_err(|_| StellarError::Xdr)?;
+    let v3 = match meta {
+        TransactionMeta::V3(v3) => v3,
+        _ => return Err(StellarError::Rpc),
+    };
+    let soroban = v3.soroban_meta.ok_or(StellarError::Rpc)?;
+    soroban
+        .return_value
+        .to_xdr_base64(Limits::none())
+        .map_err(|_| StellarError::Xdr)
 }
 
 // ---------------------------------------------------------------------------
@@ -667,6 +741,85 @@ mod tests {
                 }
             },
             _ => panic!("expected FeeBump envelope"),
+        }
+    }
+
+    #[test]
+    fn sponsored_release_has_operator_inner_sig() {
+        let inner = build_contract_tx(
+            &account_strkey(),
+            &contract_strkey(),
+            "release_funds",
+            vec![sc_u64(1)],
+            42,
+            100,
+        )
+        .unwrap();
+        let inner_v1 = TransactionV1Envelope {
+            tx: inner.clone(),
+            signatures: vec![].try_into().unwrap(),
+        };
+        let inner_payload = TransactionSignaturePayload {
+            network_id: network_id(PASSPHRASE),
+            tagged_transaction: TransactionSignaturePayloadTaggedTransaction::Tx(
+                inner_v1.tx.clone(),
+            ),
+        };
+        let inner_user_sig = sign_payload(&[5u8; 32], &inner_payload);
+
+        let xdr = build_sponsored(
+            PASSPHRASE,
+            &contract_strkey(),
+            "release_funds",
+            vec![sc_u64(1)],
+            &account_strkey(),
+            &operator_seed(),
+            42,
+            200,
+            Some(inner_user_sig),
+            true,
+        )
+        .unwrap();
+
+        let env = TransactionEnvelope::from_xdr_base64(&xdr, Limits::none()).unwrap();
+        match env {
+            TransactionEnvelope::TxFeeBump(fb) => match fb.tx.inner_tx {
+                FeeBumpTransactionInnerTx::Tx(v1) => {
+                    // Inner tx carries client + operator signatures (multi-sig).
+                    assert_eq!(v1.signatures.as_slice().len(), 2);
+                }
+            },
+            _ => panic!("expected FeeBump envelope"),
+        }
+    }
+
+    fn sample_tx_meta() -> TransactionMeta {
+        TransactionMeta::V3(TransactionMetaV3 {
+            ext: ExtensionPoint::V0,
+            tx_changes_before: LedgerEntryChanges(Vec::new().try_into().unwrap()),
+            operations: Vec::new().try_into().unwrap(),
+            tx_changes_after: LedgerEntryChanges(Vec::new().try_into().unwrap()),
+            soroban_meta: Some(SorobanTransactionMeta {
+                ext: SorobanTransactionMetaExt::V0,
+                events: Vec::new().try_into().unwrap(),
+                return_value: ScVal::Address(ScAddress::Contract(Hash([7u8; 32]))),
+                diagnostic_events: Vec::new().try_into().unwrap(),
+            }),
+        })
+    }
+
+    #[test]
+    fn extract_return_value_roundtrip() {
+        let meta = sample_tx_meta();
+        let meta_b64 = meta.to_xdr_base64(Limits::none()).unwrap();
+
+        let rv_b64 = extract_return_value(&meta_b64).unwrap();
+        assert!(!rv_b64.is_empty());
+
+        let rv = ScVal::from_xdr_base64(&rv_b64, Limits::none()).unwrap();
+        match rv {
+            ScVal::Address(ScAddress::Contract(Hash(h))) => assert_eq!(h, [7u8; 32]),
+            _ => panic!("expected contract address return value"),
         }
     }
 }
