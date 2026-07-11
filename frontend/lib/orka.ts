@@ -4,6 +4,7 @@ export const MILESTONE_STATUS = [
   "draft",
   "funded",
   "in_review",
+  "approved",
   "released",
   "refunded",
   "disputed",
