@@ -1,0 +1,49 @@
+name: Feature request
+description: Suggest an idea or enhancement for ORKA
+title: "[Feature]: "
+labels: ["enhancement", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for suggesting an improvement! Please check the [ROADMAP](../blob/master/ROADMAP.md) first — it may already be planned.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem / motivation
+      description: What problem does this solve? Who is it for (agency, client, freelancer, developer)?
+      placeholder: As a freelancer, I want ... so that ...
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: Describe what you'd like to happen.
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Affected area
+      options:
+        - frontend (Next.js)
+        - contracts (Soroban)
+        - services (Rust/Axum backend)
+        - packages/stellar-sdk
+        - docs / other
+    validations:
+      required: false
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Any alternative solutions or features you've considered.
+    validations:
+      required: false
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Add any other context, mockups, or references here.
+    validations:
+      required: false

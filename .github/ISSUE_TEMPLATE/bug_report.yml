@@ -1,0 +1,72 @@
+name: Bug report
+description: Report a problem in ORKA
+title: "[Bug]: "
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to file a bug report!
+
+        ⚠️ **Do not report security vulnerabilities here.** Please follow our
+        [Security Policy](../blob/master/SECURITY.md) instead.
+  - type: dropdown
+    id: area
+    attributes:
+      label: Affected area
+      description: Which part of the codebase is affected?
+      options:
+        - frontend (Next.js)
+        - contracts (Soroban)
+        - services (Rust/Axum backend)
+        - packages/stellar-sdk
+        - docs / other
+    validations:
+      required: true
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: A clear and concise description of the bug.
+      placeholder: When I click "Fund" in Mode A, the milestone status never updates.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      description: How can we reproduce the behavior?
+      placeholder: |
+        1. Go to '...'
+        2. Click on '...'
+        3. See error
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What did you expect to happen?
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: OS, Node/pnpm version, Rust version, browser, Stellar network (testnet/mainnet), custody mode (Orka/Freighter), etc.
+      placeholder: |
+        - OS: macOS 14
+        - Node: 20.x / pnpm 9.x
+        - Rust: 1.x
+        - Network: testnet
+        - Mode: A (orka)
+    validations:
+      required: false
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant logs / screenshots
+      description: Paste any relevant log output or transaction hashes. This will be automatically formatted, no backticks needed.
+      render: shell
+    validations:
+      required: false
