@@ -8,6 +8,7 @@ default: build
 all: test
 
 test:
+	cargo build -p orka-escrow --target wasm32v1-none --release
 	cargo test
 
 build:
