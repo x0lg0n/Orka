@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { ArrowLeft } from "lucide-react";
 import { createClient } from "../../../../lib/supabase/server";
 import { getActiveOrgId } from "../../../../lib/orka";
+import { AlertBanner, GlassPanel, PageHeader } from "../../_components/DashboardUI";
 import NewProposalForm from "../_components/NewProposalForm";
 
 export default async function NewProposalPage({
@@ -16,25 +18,25 @@ export default async function NewProposalPage({
   const { error } = await searchParams;
 
   return (
-    <div className="mx-auto w-full max-w-2xl">
-      <div className="mb-6 flex items-center justify-between">
-        <h1 className="display text-3xl uppercase">New proposal</h1>
-        <Link
-          href="/dashboard/proposals"
-          className="rounded-full border-2 border-ink bg-white px-5 py-2 text-sm font-black uppercase text-ink transition hover:bg-bone"
-        >
-          Back
-        </Link>
-      </div>
+    <div>
+      <Link
+        href="/dashboard/proposals"
+        className="mb-5 inline-flex items-center gap-2 text-sm font-black uppercase text-cyan-200 transition hover:text-lime"
+      >
+        <ArrowLeft className="size-4" aria-hidden />
+        Back
+      </Link>
 
-      <div className="rounded-[28px] bg-white p-6 text-ink shadow-hard md:p-8">
-        {error && (
-          <p className="mb-5 rounded-2xl bg-orange/20 px-4 py-2 text-sm font-bold text-ink">
-            {error}
-          </p>
-        )}
+      <PageHeader
+        eyebrow="Proposal builder"
+        title="New proposal"
+        description="Capture counterparties, testnet asset, and milestone terms before converting the proposal into an escrow project."
+      />
+
+      <GlassPanel className="p-5 sm:p-6">
+        {error && <AlertBanner>{error}</AlertBanner>}
         <NewProposalForm />
-      </div>
+      </GlassPanel>
     </div>
   );
 }

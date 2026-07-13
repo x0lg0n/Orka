@@ -52,12 +52,14 @@ export default function FreighterMilestoneButton({
         type="button"
         onClick={handle}
         disabled={pending}
-        className="rounded-full bg-orange px-5 py-2 text-sm font-black uppercase text-ink shadow-hard transition hover:-translate-y-0.5 disabled:opacity-40"
+        className="w-fit rounded-[16px] border border-cyan-200/30 bg-cyan-300 px-5 py-2 text-sm font-black uppercase text-[#04101f] transition hover:-translate-y-0.5 hover:bg-lime disabled:opacity-40"
       >
-        {pending ? "Awaiting wallet…" : label}
+        {pending ? "Awaiting wallet..." : label}
       </button>
       {error && (
-        <p className="text-xs font-bold uppercase text-ink/70">{error}</p>
+        <p className="rounded-[14px] border border-orange/25 bg-orange/10 px-3 py-2 text-xs font-bold uppercase text-orange">
+          {error}
+        </p>
       )}
     </div>
   );

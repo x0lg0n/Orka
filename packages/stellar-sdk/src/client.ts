@@ -30,15 +30,15 @@ export function createOrkaClient(opts: OrkaClientOptions) {
 
   function toFundResult(data: Record<string, unknown>): FundResult {
     if (opts.mode === 'freighter') {
-      return { txXdr: String(data.txXdr) };
+      return { txXdr: String(data.txXdr ?? data.tx_xdr) };
     }
-    return { txHash: String(data.txHash) };
+    return { txHash: String(data.txHash ?? data.tx_hash) };
   }
 
   async function fundEscrow(args: FundArgs): Promise<FundResult> {
     const res = await escrowPost('/escrow/fund', {
-      contractId: args.contractId,
-      milestoneIds: args.milestoneIds,
+      contract_id: args.contractId,
+      milestone_ids: args.milestoneIds,
     });
     if (!res.ok) throw new Error(`fundEscrow failed: ${res.status}`);
     const data = (await res.json()) as Record<string, unknown>;
@@ -47,8 +47,8 @@ export function createOrkaClient(opts: OrkaClientOptions) {
 
   async function releaseMilestone(args: ReleaseArgs): Promise<FundResult> {
     const res = await escrowPost('/escrow/release', {
-      contractId: args.contractId,
-      milestoneId: args.milestoneId,
+      contract_id: args.contractId,
+      milestone_id: args.milestoneId,
     });
     if (!res.ok) throw new Error(`releaseMilestone failed: ${res.status}`);
     const data = (await res.json()) as Record<string, unknown>;

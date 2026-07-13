@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { ArrowLeft, CheckCircle2, CircleDollarSign, Send, ShieldCheck } from "lucide-react";
 import { createClient } from "../../../../lib/supabase/server";
 import { getActiveOrgId } from "../../../../lib/orka";
 import {
@@ -9,19 +10,15 @@ import {
   releaseMilestone,
 } from "../../../../app/actions";
 import FreighterMilestoneButton from "../../_components/FreighterMilestoneButton";
-
-const STATUS_PILL: Record<string, string> = {
-  draft: "bg-one text-ink",
-  funded: "bg-violet text-white",
-  in_review: "bg-orange text-ink",
-  approved: "bg-lime text-ink",
-  released: "bg-teal text-white",
-  refunded: "bg-coral text-white",
-  disputed: "bg-orange text-ink",
-};
+import {
+  EmptyState,
+  GlassPanel,
+  PageHeader,
+  StatusPill,
+} from "../../_components/DashboardUI";
 
 const btn =
-  "rounded-full border-2 border-ink px-4 py-2 text-xs font-black uppercase transition hover:-translate-y-0.5 disabled:opacity-40";
+  "inline-flex items-center gap-2 rounded-[16px] border border-cyan-200/30 px-4 py-2 text-xs font-black uppercase transition hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-cyan-200/50 disabled:opacity-40";
 
 type MilestoneRow = {
   id: string;
@@ -77,41 +74,47 @@ export default async function ProjectPage({
   };
 
   return (
-    <div className="mx-auto w-full max-w-3xl">
+    <div>
       <Link
         href="/dashboard/projects"
-        className="text-sm font-bold text-lime underline"
+        className="mb-5 inline-flex items-center gap-2 text-sm font-black uppercase text-cyan-200 transition hover:text-lime"
       >
-        ← Back
+        <ArrowLeft className="size-4" aria-hidden />
+        Back
       </Link>
-      <h1 className="display mt-4 text-4xl uppercase">{project?.title ?? "Untitled"}</h1>
-      <p className="mt-1 text-sm font-bold text-white/70">{project?.description ?? ""}</p>
-      <p className="text-xs font-bold uppercase text-white/50">
-        Client: {project?.client_name ?? "—"} · Freelancer:{" "}
-        {project?.freelancer_name ?? "—"}
-      </p>
+      <PageHeader
+        eyebrow="Project escrow"
+        title={project?.title ?? "Untitled"}
+        description={project?.description ?? "Milestone funding, review, approval, and release controls for this project."}
+      />
 
-      <p className="mt-8 rounded-[10px] border border-orange/40 bg-orange/10 px-3 py-2 text-xs font-bold text-orange">
+      <GlassPanel className="p-5">
+        <div className="grid gap-3 md:grid-cols-3">
+          <Info label="Client" value={project?.client_name ?? "-"} />
+          <Info label="Freelancer" value={project?.freelancer_name ?? "-"} />
+          <Info
+            label="Contract"
+            value={project?.contract_id ? project.contract_id.slice(0, 18) + "..." : "Not deployed"}
+          />
+        </div>
+      </GlassPanel>
+
+      <p className="mt-4 rounded-[18px] border border-orange-300/25 bg-orange-300/10 px-4 py-3 text-xs font-bold uppercase tracking-[0.08em] text-orange-100">
         Demo mode: chain actions are simulated (no real Stellar). Any workspace member can act as client or freelancer.
       </p>
 
-      <div className="mt-6 flex flex-col gap-3">
+      <div className="mt-6 grid gap-4">
         {milestones?.map((m) => (
-          <div
-            key={m.id}
-            className="rounded-[18px] bg-white p-4 text-ink shadow-hard"
-          >
-            <div className="flex items-center justify-between">
-              <p className="font-black uppercase">{m.title}</p>
-              <span
-                className={`rounded-full px-3 py-1 text-xs font-black uppercase ${
-                  STATUS_PILL[m.status] ?? "bg-one text-ink"
-                }`}
-              >
-                {m.status}
-              </span>
+          <GlassPanel key={m.id} className="p-5">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+              <div className="min-w-0">
+                <p className="font-black uppercase text-white">{m.title}</p>
+                <p className="mt-1 text-sm font-bold text-slate-400">
+                  {m.amount != null ? `$${Number(m.amount).toLocaleString()} USDC` : "No amount"}
+                </p>
+              </div>
+              <StatusPill status={m.status} />
             </div>
-            <p className="text-sm font-bold text-ink/70">{m.amount} USDC</p>
 
             <div className="mt-3 flex flex-wrap gap-2">
               {m.status === "draft" &&
@@ -126,26 +129,35 @@ export default async function ProjectPage({
                       label="Fund"
                     />
                   ) : (
-                    <span className={`${btn} bg-lime opacity-40`}>
+                    <span className={`${btn} bg-cyan-300 text-[#04101f] opacity-40`}>
                       No contract
                     </span>
                   )
                 ) : (
                   <form action={fundMilestone}>
                     <input type="hidden" name="milestoneId" value={m.id} />
-                    <button className={`${btn} bg-lime`}>Fund</button>
+                    <button className={`${btn} bg-cyan-300 text-[#04101f]`}>
+                      <CircleDollarSign className="size-4" aria-hidden />
+                      Fund
+                    </button>
                   </form>
                 ))}
               {m.status === "funded" && (
                 <form action={submitMilestone}>
                   <input type="hidden" name="milestoneId" value={m.id} />
-                  <button className={`${btn} bg-violet text-white`}>Submit work</button>
+                  <button className={`${btn} bg-violet text-white`}>
+                    <Send className="size-4" aria-hidden />
+                    Submit work
+                  </button>
                 </form>
               )}
               {m.status === "in_review" && (
                 <form action={approveMilestone}>
                   <input type="hidden" name="milestoneId" value={m.id} />
-                  <button className={`${btn} bg-lime`}>Approve</button>
+                  <button className={`${btn} bg-lime text-[#04101f]`}>
+                    <CheckCircle2 className="size-4" aria-hidden />
+                    Approve
+                  </button>
                 </form>
               )}
               {m.status === "approved" &&
@@ -160,23 +172,40 @@ export default async function ProjectPage({
                       label="Release"
                     />
                   ) : (
-                    <span className={`${btn} bg-teal text-white opacity-40`}>
+                    <span className={`${btn} bg-cyan-300 text-[#04101f] opacity-40`}>
                       No contract
                     </span>
                   )
                 ) : (
                   <form action={releaseMilestone}>
                     <input type="hidden" name="milestoneId" value={m.id} />
-                    <button className={`${btn} bg-teal text-white`}>Release</button>
+                    <button className={`${btn} bg-cyan-300 text-[#04101f]`}>
+                      <ShieldCheck className="size-4" aria-hidden />
+                      Release
+                    </button>
                   </form>
                 ))}
             </div>
-          </div>
+          </GlassPanel>
         ))}
         {(!milestones || milestones.length === 0) && (
-          <p className="text-sm font-bold text-white/70">No milestones yet.</p>
+          <EmptyState
+            title="No milestones yet"
+            description="Milestones created from accepted proposal terms will appear here."
+          />
         )}
       </div>
+    </div>
+  );
+}
+
+function Info({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-[18px] border border-white/10 bg-black/20 p-4">
+      <p className="text-xs font-black uppercase tracking-[0.14em] text-slate-500">
+        {label}
+      </p>
+      <p className="mt-1 break-all text-sm font-bold text-white">{value}</p>
     </div>
   );
 }

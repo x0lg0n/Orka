@@ -2,8 +2,8 @@ import Image from "next/image";
 import { ArrowUpRight } from "lucide-react";
 
 const socials = [
-  { label: "X", href: "https://x.com", src: "/Icons/x (1).svg" },
-  { label: "Instagram", href: "https://instagram.com", src: "/Icons/instagram (1).svg" },
+  { label: "X", href: "https://x.com/get_orka", src: "/Icons/x.svg" },
+  { label: "Instagram", href: "https://instagram.com", src: "/Icons/instagram.svg" },
   { label: "Facebook", href: "https://facebook.com", src: "/Icons/facebook.svg" },
   { label: "LinkedIn", href: "https://linkedin.com", src: "/Icons/linkedin.svg" },
 ];

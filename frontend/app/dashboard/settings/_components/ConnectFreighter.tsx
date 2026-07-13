@@ -30,8 +30,8 @@ export default function ConnectFreighter({
   }
 
   return (
-    <div className="rounded-[28px] bg-white p-6 text-ink shadow-hard md:p-8">
-      <span className="text-sm font-black uppercase text-ink/70">
+    <div className="rounded-[24px] border border-white/10 bg-white/[0.065] p-5 text-white shadow-[0_24px_80px_rgba(0,0,0,0.22),inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-xl sm:p-6">
+      <span className="text-sm font-black uppercase tracking-[0.1em] text-slate-400">
         Freighter wallet
       </span>
       <div className="mt-3 flex flex-col gap-3">
@@ -39,19 +39,19 @@ export default function ConnectFreighter({
           type="button"
           onClick={handleConnect}
           disabled={pending}
-          className="w-fit rounded-full bg-orange px-6 py-2 text-sm font-black uppercase text-ink shadow-hard transition hover:-translate-y-0.5 disabled:opacity-40"
+          className="w-fit rounded-[16px] border border-cyan-200/30 bg-cyan-300 px-6 py-3 text-sm font-black uppercase text-[#04101f] transition hover:-translate-y-0.5 hover:bg-lime disabled:opacity-40"
         >
-          {pending ? "Connecting…" : "Connect Freighter"}
+          {pending ? "Connecting..." : "Connect Freighter"}
         </button>
 
         {address && (
-          <p className="text-xs font-bold uppercase text-ink/70">
-            Connected: <span className="text-ink">{address}</span>
+          <p className="break-all text-xs font-bold uppercase tracking-[0.08em] text-slate-400">
+            Connected: <span className="text-white">{address}</span>
           </p>
         )}
 
         {error && (
-          <p className="rounded-2xl bg-orange/20 px-4 py-2 text-sm font-bold text-ink">
+          <p className="rounded-[18px] border border-orange/25 bg-orange/10 px-4 py-3 text-sm font-bold text-orange">
             {error}
           </p>
         )}

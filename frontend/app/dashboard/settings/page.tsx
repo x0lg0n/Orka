@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "../../../lib/supabase/server";
 import { updateProfile } from "../../../app/actions";
+import { AlertBanner, GlassPanel, PageHeader } from "../_components/DashboardUI";
 import ConnectFreighter from "./_components/ConnectFreighter";
 
 type ProfileRow = {
@@ -32,37 +33,37 @@ export default async function SettingsPage({
   const custodyMode = row?.custody_mode ?? "orka";
 
   return (
-    <div className="mx-auto w-full max-w-2xl">
-      <h1 className="display mb-6 text-3xl uppercase">Settings</h1>
+    <div>
+      <PageHeader
+        eyebrow="Workspace controls"
+        title="Settings"
+        description="Manage your profile, custody mode, and wallet connection for the ORKA escrow workspace."
+      />
 
-      {error && (
-        <p className="mb-5 rounded-2xl bg-orange/20 px-4 py-2 text-sm font-bold text-ink">
-          {error}
-        </p>
-      )}
+      {error && <AlertBanner>{error}</AlertBanner>}
 
-      <div className="rounded-[28px] bg-white p-6 text-ink shadow-hard md:p-8">
+      <GlassPanel className="p-5 sm:p-6">
         <form action={updateProfile} className="flex flex-col gap-5">
           <label className="flex flex-col gap-2">
-            <span className="text-sm font-black uppercase text-ink/70">
+            <span className="text-sm font-black uppercase tracking-[0.1em] text-slate-400">
               Full name
             </span>
             <input
               type="text"
               name="full_name"
               defaultValue={row?.full_name ?? ""}
-              className="rounded-2xl border-2 border-ink/10 px-4 py-2 text-sm font-bold text-ink outline-none focus:border-ink"
+              className="rounded-[18px] border border-white/10 bg-black/25 px-4 py-3 text-sm font-bold text-white outline-none transition placeholder:text-slate-600 focus:border-cyan-200/50"
             />
           </label>
 
           <label className="flex flex-col gap-2">
-            <span className="text-sm font-black uppercase text-ink/70">
+            <span className="text-sm font-black uppercase tracking-[0.1em] text-slate-400">
               Custody mode
             </span>
             <select
               name="custody_mode"
               defaultValue={row?.custody_mode ?? "orka"}
-              className="rounded-2xl border-2 border-ink/10 px-4 py-2 text-sm font-bold text-ink outline-none focus:border-ink"
+              className="rounded-[18px] border border-white/10 bg-black/25 px-4 py-3 text-sm font-bold text-white outline-none transition focus:border-cyan-200/50"
             >
               <option value="orka">Orka (managed escrow)</option>
               <option value="freighter">Freighter (wallet)</option>
@@ -71,24 +72,24 @@ export default async function SettingsPage({
 
           <button
             type="submit"
-            className="mt-2 w-fit rounded-full bg-orange px-6 py-2 text-sm font-black uppercase text-ink shadow-hard transition hover:-translate-y-0.5"
+            className="mt-2 w-fit rounded-[16px] border border-cyan-200/30 bg-cyan-300 px-6 py-3 text-sm font-black uppercase text-[#04101f] transition hover:-translate-y-0.5 hover:bg-lime focus:outline-none focus:ring-2 focus:ring-cyan-200/50"
           >
             Save
           </button>
         </form>
-      </div>
+      </GlassPanel>
 
       {custodyMode === "freighter" ? (
         <div className="mt-6">
           <ConnectFreighter currentAddress={row?.stellar_address ?? null} />
         </div>
       ) : (
-        <div className="mt-6 rounded-[28px] bg-white p-6 text-ink shadow-hard md:p-8">
-          <p className="text-sm font-bold text-ink/70">
+        <GlassPanel className="mt-6 p-5 sm:p-6">
+          <p className="text-sm font-bold leading-6 text-slate-400">
             Orka-managed custody is active. Switch the custody mode above to
             Freighter to connect your own wallet.
           </p>
-        </div>
+        </GlassPanel>
       )}
     </div>
   );

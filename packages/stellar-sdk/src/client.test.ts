@@ -22,7 +22,7 @@ describe('createOrkaClient', () => {
   });
 
   it('Mode A fundEscrow returns txHash and posts mode=orka', async () => {
-    fetchMock.mockImplementation(async () => jsonResponse({ txHash: 'hash123' }));
+    fetchMock.mockImplementation(async () => jsonResponse({ tx_hash: 'hash123' }));
     const client = createOrkaClient({
       baseUrl: 'http://localhost:3000',
       mode: 'orka',
@@ -35,13 +35,13 @@ describe('createOrkaClient', () => {
     expect(init.method).toBe('POST');
     expect(JSON.parse(init.body as string)).toMatchObject({
       mode: 'orka',
-      contractId: 'C123',
-      milestoneIds: [0],
+      contract_id: 'C123',
+      milestone_ids: [0],
     });
   });
 
   it('Mode B fundEscrow returns txXdr and posts mode=freighter', async () => {
-    fetchMock.mockImplementation(async () => jsonResponse({ txXdr: 'xdr456' }));
+    fetchMock.mockImplementation(async () => jsonResponse({ tx_xdr: 'xdr456' }));
     const client = createOrkaClient({
       baseUrl: 'http://localhost:3000',
       mode: 'freighter',
@@ -53,7 +53,7 @@ describe('createOrkaClient', () => {
   });
 
   it('releaseMilestone posts to /escrow/release with mode', async () => {
-    fetchMock.mockImplementation(async () => jsonResponse({ txHash: 'r1' }));
+    fetchMock.mockImplementation(async () => jsonResponse({ tx_hash: 'r1' }));
     const client = createOrkaClient({
       baseUrl: 'http://localhost:3000',
       mode: 'orka',
@@ -68,8 +68,8 @@ describe('createOrkaClient', () => {
     expect(init.method).toBe('POST');
     expect(JSON.parse(init.body as string)).toMatchObject({
       mode: 'orka',
-      contractId: 'C123',
-      milestoneId: 2,
+      contract_id: 'C123',
+      milestone_id: 2,
     });
   });
 

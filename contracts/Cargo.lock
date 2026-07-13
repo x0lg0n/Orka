@@ -995,6 +995,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "orka-escrow-factory"
+version = "0.1.0"
+dependencies = [
+ "orka-escrow",
+ "soroban-sdk",
+]
+
+[[package]]
 name = "p256"
 version = "0.13.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"

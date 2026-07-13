@@ -142,9 +142,14 @@ export async function addMilestone(formData: FormData) {
   const amount = Number(formData.get("amount"));
 
   if (!projectId) redirect(`/dashboard/projects?error=Missing project.`);
-  if (!title) redirect(`/${projectId}?error=Milestone title is required.`);
+  if (!title)
+    redirect(
+      `/dashboard/projects/${projectId}?error=Milestone title is required.`,
+    );
   if (!Number.isFinite(amount) || amount <= 0)
-    redirect(`/${projectId}?error=Amount must be greater than 0.`);
+    redirect(
+      `/dashboard/projects/${projectId}?error=Amount must be greater than 0.`,
+    );
 
   const { error } = await supabase.from("milestones").insert({
     org_id: orgId,
@@ -153,7 +158,10 @@ export async function addMilestone(formData: FormData) {
     amount,
     status: "draft",
   });
-  if (error) redirect(`/${projectId}?error=${encodeURIComponent(error.message)}`);
+  if (error)
+    redirect(
+      `/dashboard/projects/${projectId}?error=${encodeURIComponent(error.message)}`,
+    );
 
   revalidatePath(`/dashboard/projects/${projectId}`);
 }

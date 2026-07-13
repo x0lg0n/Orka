@@ -4,6 +4,7 @@ out
 build
 dist
 .vercel
+*.tsbuildinfo
 
 .env
 .env*
