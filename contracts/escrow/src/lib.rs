@@ -5,11 +5,35 @@ mod errors;
 mod test;
 mod types;
 
+use soroban_sdk::contractclient;
 use soroban_sdk::token::TokenClient;
-use soroban_sdk::{contract, contractimpl, contracttype, Address, Bytes, Env, Map, Vec};
+use soroban_sdk::{contract, contractimpl, contracttype, Address, Bytes, Env, Map, Symbol, Vec};
+
+fn emit(env: &Env, event: &str, id: u64, amount: i128) {
+    env.events().publish(
+        (Symbol::new(env, "orka"), Symbol::new(env, event)),
+        (id, amount),
+    );
+}
 
 use errors::EscrowError;
-use types::{Config, DisputeRules, Milestone, MilestoneInit, MilestoneStatus, Milestones};
+use types::{Config, Milestone, MilestoneStatus, Milestones};
+
+pub use types::{DisputeRules, MilestoneInit};
+
+#[contractclient(name = "EscrowClient")]
+trait EscrowClientInterface {
+    fn initialize(
+        env: Env,
+        org: Bytes,
+        client: Address,
+        freelancer: Address,
+        asset: Address,
+        operator: Address,
+        milestones: Vec<MilestoneInit>,
+        dispute_rules: Option<DisputeRules>,
+    ) -> Result<Address, EscrowError>;
+}
 
 #[contracttype]
 pub enum DataKey {
@@ -53,6 +77,7 @@ impl EscrowContract {
         }
         let mut ms: Milestones = Map::new(&env);
         let mut id: u64 = 0;
+        let mut total: i128 = 0;
         for m in milestones.iter() {
             ms.set(
                 id,
@@ -61,6 +86,7 @@ impl EscrowContract {
                     status: MilestoneStatus::Draft,
                 },
             );
+            total += m.amount;
             id += 1;
         }
         let config = Config {
@@ -73,6 +99,7 @@ impl EscrowContract {
         };
         env.storage().instance().set(&DataKey::Config, &config);
         env.storage().instance().set(&DataKey::Milestones, &ms);
+        emit(&env, "initialize", 0, total);
         Ok(env.current_contract_address())
     }
 
@@ -97,6 +124,7 @@ impl EscrowContract {
             &total,
         );
         set_milestones(&env, &ms);
+        emit(&env, "fund", milestone_ids.get(0).unwrap_or(0), total);
         Ok(())
     }
 
@@ -109,8 +137,10 @@ impl EscrowContract {
             return Err(EscrowError::InvalidState);
         }
         m.status = MilestoneStatus::Submitted;
+        let amount = m.amount;
         ms.set(milestone_id, m);
         set_milestones(&env, &ms);
+        emit(&env, "submit", milestone_id, amount);
         Ok(())
     }
 
@@ -123,8 +153,10 @@ impl EscrowContract {
             return Err(EscrowError::InvalidState);
         }
         m.status = MilestoneStatus::Rejected;
+        let amount = m.amount;
         ms.set(milestone_id, m);
         set_milestones(&env, &ms);
+        emit(&env, "reject", milestone_id, amount);
         Ok(())
     }
 
@@ -137,8 +169,10 @@ impl EscrowContract {
             return Err(EscrowError::InvalidState);
         }
         m.status = MilestoneStatus::Approved;
+        let amount = m.amount;
         ms.set(milestone_id, m);
         set_milestones(&env, &ms);
+        emit(&env, "approve", milestone_id, amount);
         Ok(())
     }
 
@@ -161,8 +195,10 @@ impl EscrowContract {
             &m.amount,
         );
         m.status = MilestoneStatus::Refunded;
+        let amount = m.amount;
         ms.set(milestone_id, m);
         set_milestones(&env, &ms);
+        emit(&env, "refund", milestone_id, amount);
         Ok(())
     }
 
@@ -179,8 +215,10 @@ impl EscrowContract {
             _ => return Err(EscrowError::InvalidState),
         }
         m.status = MilestoneStatus::Disputed;
+        let amount = m.amount;
         ms.set(milestone_id, m);
         set_milestones(&env, &ms);
+        emit(&env, "dispute", milestone_id, amount);
         Ok(())
     }
 
@@ -200,8 +238,10 @@ impl EscrowContract {
             &m.amount,
         );
         m.status = MilestoneStatus::Released;
+        let amount = m.amount;
         ms.set(milestone_id, m);
         set_milestones(&env, &ms);
+        emit(&env, "release", milestone_id, amount);
         Ok(())
     }
 
@@ -236,8 +276,10 @@ impl EscrowContract {
             transfer(&env, &contract_addr, &config.client, &to_client);
         }
         m.status = MilestoneStatus::Released;
+        let amount = m.amount;
         ms.set(milestone_id, m);
         set_milestones(&env, &ms);
+        emit(&env, "resolve", milestone_id, amount);
         Ok(())
     }
 }

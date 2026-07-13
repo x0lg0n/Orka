@@ -295,7 +295,7 @@ fn encode_stellar_account(pk: &[u8; 32]) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use ed25519_dalek::{Verifier, VerifyingKey};
+    use ed25519_dalek::VerifyingKey;
 
     #[test]
     fn kms_round_trip() {

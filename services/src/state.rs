@@ -1,5 +1,6 @@
 use crate::config::Config;
 use reqwest::Client;
+use std::sync::Arc;
 
 /// Thin Supabase REST client handle (base URL + service-role key).
 ///
@@ -30,16 +31,20 @@ pub struct AppState {
     pub config: Config,
     pub http: Client,
     pub supabase: Supabase,
+    pub kms: Arc<dyn crate::custody::Kms + Send + Sync>,
 }
 
 impl AppState {
     pub fn new(config: Config) -> Self {
         let http = Client::new();
         let supabase = Supabase::from_config(&config);
+        let kms: Arc<dyn crate::custody::Kms + Send + Sync> =
+            Arc::new(crate::custody::InMemoryKms::new());
         Self {
             config,
             http,
             supabase,
+            kms,
         }
     }
 }

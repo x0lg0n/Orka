@@ -13,7 +13,7 @@ export default async function OnboardingPage() {
   if (!user) redirect("/signup");
 
   const orgId = await getActiveOrgId(supabase);
-  if (orgId) redirect("/projects");
+  if (orgId) redirect("/dashboard/projects");
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-ink px-4 text-white">

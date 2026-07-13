@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security vulnerability
+    url: https://github.com/x0lg0n/Orka/security/advisories/new
+    about: Please report security issues privately — do NOT open a public issue.
+  - name: Questions & discussion
+    url: https://github.com/x0lg0n/Orka/issues
+    about: For general questions, please open a discussion or a regular issue.

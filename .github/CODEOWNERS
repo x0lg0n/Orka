@@ -1,0 +1,19 @@
+# ORKA code owners
+# These owners are requested for review when someone opens a PR.
+# Order matters: the last matching pattern takes precedence.
+
+# Default owners for everything in the repo
+*                       @x0lg0n
+
+# Money boundary — extra scrutiny
+/contracts/             @x0lg0n
+/services/              @x0lg0n
+
+# App + SDK
+/frontend/              @x0lg0n
+/packages/stellar-sdk/  @x0lg0n
+
+# Project governance & docs
+/ROADMAP.md             @x0lg0n
+/ARCHITECTURE.md        @x0lg0n
+/SECURITY.md            @x0lg0n

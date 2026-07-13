@@ -225,7 +225,7 @@ $1M+ annualized testnet/mainnet volume, 100+ agencies, 5+ marketplace partners.
 
 - **Weekly demo** to Oreenza internal users; every friction point logged as a feature/bug.
 - **Dogfooding rule:** if an Oreenza user leaves ORKA to use Notion/Gmail/Wise, that is a tracked gap.
-- **Branch policy:** `main` is always demoable. Contracts merged only with green `cargo test`. App merged only with green lint + typecheck.
+- **Branch policy:** `master` is the protected production branch and is always demoable; work integrates via `dev`. Contracts merged only with green `cargo test`. App merged only with green lint + typecheck. See `CONTRIBUTING.md`.
 
 ## Definition of "Industry Standard Final Product"
 

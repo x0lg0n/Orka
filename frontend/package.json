@@ -12,6 +12,7 @@
     "@stellar/freighter-api": "^6.0.1",
     "@supabase/ssr": "^0.12.0",
     "@supabase/supabase-js": "^2.110.0",
+    "@orka/stellar-sdk": "file:../packages/stellar-sdk",
     "lucide-react": "^1.23.0",
     "next": "16.2.10",
     "react": "19.0.0",

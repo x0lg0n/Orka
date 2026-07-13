@@ -1,12 +1,56 @@
 #![cfg(test)]
 extern crate std;
 
-use soroban_sdk::testutils::{MockAuth, MockAuthInvoke};
+use soroban_sdk::testutils::{Events, MockAuth, MockAuthInvoke};
 use soroban_sdk::{
     testutils::Address as _,
     token::{StellarAssetClient, TokenClient},
-    Address, Bytes, Env, IntoVal, Map, Vec,
+    xdr, Address, Bytes, Env, IntoVal, Map, Symbol, TryIntoVal, Val, Vec,
 };
+
+/// Returns the `(milestone_index, amount)` data of the first `orka` event
+/// whose second topic symbol equals `event`, searching all published events.
+fn find_orka_event(
+    env: &Env,
+    event: &str,
+) -> Option<(u64, i128)> {
+    for e in env.events().all().events() {
+        let v0 = match &e.body {
+            xdr::ContractEventBody::V0(v0) => v0,
+            _ => continue,
+        };
+        let s0: Option<Symbol> = v0
+            .topics
+            .get(0)
+            .cloned()
+            .and_then(|t| t.try_into_val(env).ok());
+        let s1: Option<Symbol> = v0
+            .topics
+            .get(1)
+            .cloned()
+            .and_then(|t| t.try_into_val(env).ok());
+        if s0 == Some(Symbol::new(env, "orka")) && s1 == Some(Symbol::new(env, event)) {
+            let data_val: Val = match v0.data.clone().try_into_val(env) {
+                Ok(v) => v,
+                Err(_) => continue,
+            };
+            let data_vec: Vec<Val> = match data_val.try_into_val(env) {
+                Ok(v) => v,
+                Err(_) => continue,
+            };
+            let idx: u64 = match data_vec.get(0).and_then(|v| v.try_into_val(env).ok()) {
+                Some(v) => v,
+                None => continue,
+            };
+            let amount: i128 = match data_vec.get(1).and_then(|v| v.try_into_val(env).ok()) {
+                Some(v) => v,
+                None => continue,
+            };
+            return Some((idx, amount));
+        }
+    }
+    None
+}
 
 use crate::{
     errors::EscrowError,
@@ -452,4 +496,216 @@ fn released_milestone_rejects_further_actions() {
         contract.try_release_funds(&0),
         Err(Ok(EscrowError::InvalidState))
     );
+}
+
+#[test]
+fn initialize_emits_orka_event() {
+    let (env, _usdc, contract, client, freelancer, operator, _admin) = setup();
+    env.mock_all_auths();
+    let ms = Vec::from_array(&env, [MilestoneInit { amount: 1000 }]);
+    contract.initialize(
+        &Bytes::new(&env),
+        &client,
+        &freelancer,
+        &_usdc,
+        &operator,
+        &ms,
+        &None,
+    );
+    let data = find_orka_event(&env, "initialize");
+    assert_eq!(data, Some((0, 1000)));
+}
+
+#[test]
+fn fund_emits_orka_event() {
+    let (env, usdc, contract, client, freelancer, operator, _admin) = setup();
+    env.mock_all_auths();
+    let ms = Vec::from_array(&env, [MilestoneInit { amount: 1000 }]);
+    contract.initialize(
+        &Bytes::new(&env),
+        &client,
+        &freelancer,
+        &usdc,
+        &operator,
+        &ms,
+        &None,
+    );
+    StellarAssetClient::new(&env, &usdc).mint(&client, &1000);
+    contract.fund(&Vec::from_array(&env, [0u64]));
+    let data = find_orka_event(&env, "fund");
+    assert_eq!(data, Some((0, 1000)));
+}
+
+#[test]
+fn submit_emits_orka_event() {
+    let (env, usdc, contract, client, freelancer, operator, _admin) = setup();
+    env.mock_all_auths();
+    let ms = Vec::from_array(&env, [MilestoneInit { amount: 1000 }]);
+    contract.initialize(
+        &Bytes::new(&env),
+        &client,
+        &freelancer,
+        &usdc,
+        &operator,
+        &ms,
+        &None,
+    );
+    StellarAssetClient::new(&env, &usdc).mint(&client, &1000);
+    contract.fund(&Vec::from_array(&env, [0u64]));
+    contract.submit(&0);
+    let data = find_orka_event(&env, "submit");
+    assert_eq!(data, Some((0, 1000)));
+}
+
+#[test]
+fn reject_emits_orka_event() {
+    let (env, usdc, contract, client, freelancer, operator, _admin) = setup();
+    env.mock_all_auths();
+    let ms = Vec::from_array(&env, [MilestoneInit { amount: 1000 }]);
+    contract.initialize(
+        &Bytes::new(&env),
+        &client,
+        &freelancer,
+        &usdc,
+        &operator,
+        &ms,
+        &None,
+    );
+    StellarAssetClient::new(&env, &usdc).mint(&client, &1000);
+    contract.fund(&Vec::from_array(&env, [0u64]));
+    contract.submit(&0);
+    contract.reject(&0);
+    let data = find_orka_event(&env, "reject");
+    assert_eq!(data, Some((0, 1000)));
+}
+
+#[test]
+fn approve_emits_orka_event() {
+    let (env, usdc, contract, client, freelancer, operator, _admin) = setup();
+    env.mock_all_auths();
+    let ms = Vec::from_array(&env, [MilestoneInit { amount: 1000 }]);
+    contract.initialize(
+        &Bytes::new(&env),
+        &client,
+        &freelancer,
+        &usdc,
+        &operator,
+        &ms,
+        &None,
+    );
+    StellarAssetClient::new(&env, &usdc).mint(&client, &1000);
+    contract.fund(&Vec::from_array(&env, [0u64]));
+    contract.submit(&0);
+    contract.approve(&0);
+    let data = find_orka_event(&env, "approve");
+    assert_eq!(data, Some((0, 1000)));
+}
+
+#[test]
+fn refund_emits_orka_event() {
+    let (env, usdc, contract, client, freelancer, operator, _admin) = setup();
+    env.mock_all_auths();
+    let ms = Vec::from_array(&env, [MilestoneInit { amount: 1000 }]);
+    contract.initialize(
+        &Bytes::new(&env),
+        &client,
+        &freelancer,
+        &usdc,
+        &operator,
+        &ms,
+        &None,
+    );
+    StellarAssetClient::new(&env, &usdc).mint(&client, &1000);
+    contract.fund(&Vec::from_array(&env, [0u64]));
+    contract.refund(&0);
+    let data = find_orka_event(&env, "refund");
+    assert_eq!(data, Some((0, 1000)));
+}
+
+#[test]
+fn open_dispute_emits_orka_event() {
+    let (env, usdc, contract, client, freelancer, operator, _admin) = setup();
+    env.mock_all_auths();
+    let ms = Vec::from_array(&env, [MilestoneInit { amount: 1000 }]);
+    contract.initialize(
+        &Bytes::new(&env),
+        &client,
+        &freelancer,
+        &usdc,
+        &operator,
+        &ms,
+        &None,
+    );
+    StellarAssetClient::new(&env, &usdc).mint(&client, &1000);
+    contract.fund(&Vec::from_array(&env, [0u64]));
+    contract.submit(&0);
+    contract.open_dispute(&client, &0);
+    let data = find_orka_event(&env, "dispute");
+    assert_eq!(data, Some((0, 1000)));
+}
+
+#[test]
+fn release_funds_emits_orka_event() {
+    let (env, usdc, contract, client, freelancer, operator, _admin) = setup();
+    env.mock_all_auths();
+    let ms = Vec::from_array(&env, [MilestoneInit { amount: 1000 }]);
+    contract.initialize(
+        &Bytes::new(&env),
+        &client,
+        &freelancer,
+        &usdc,
+        &operator,
+        &ms,
+        &None,
+    );
+    StellarAssetClient::new(&env, &usdc).mint(&client, &1000);
+    contract.fund(&Vec::from_array(&env, [0u64]));
+    contract.submit(&0);
+    contract.approve(&0);
+    env.mock_auths(&[
+        MockAuth {
+            address: &client,
+            invoke: &MockAuthInvoke {
+                contract: &contract.address,
+                fn_name: "release_funds",
+                args: Vec::from_array(&env, [0u64.into_val(&env)]),
+                sub_invokes: &[],
+            },
+        },
+        MockAuth {
+            address: &operator,
+            invoke: &MockAuthInvoke {
+                contract: &contract.address,
+                fn_name: "release_funds",
+                args: Vec::from_array(&env, [0u64.into_val(&env)]),
+                sub_invokes: &[],
+            },
+        },
+    ]);
+    contract.release_funds(&0);
+    let data = find_orka_event(&env, "release");
+    assert_eq!(data, Some((0, 1000)));
+}
+
+#[test]
+fn resolve_dispute_emits_orka_event() {
+    let (env, usdc, contract, client, freelancer, operator, _admin) = setup();
+    env.mock_all_auths();
+    let ms = Vec::from_array(&env, [MilestoneInit { amount: 1000 }]);
+    contract.initialize(
+        &Bytes::new(&env),
+        &client,
+        &freelancer,
+        &usdc,
+        &operator,
+        &ms,
+        &None,
+    );
+    StellarAssetClient::new(&env, &usdc).mint(&client, &1000);
+    contract.fund(&Vec::from_array(&env, [0u64]));
+    contract.submit(&0);
+    contract.open_dispute(&client, &0);
+    contract.resolve_dispute(&0, &Some(7000));
+    let data = find_orka_event(&env, "resolve");
+    assert_eq!(data, Some((0, 1000)));
 }

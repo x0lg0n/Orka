@@ -26,6 +26,8 @@ pub struct Config {
     pub supabase_service_role_key: String,
     pub port: u16,
     pub sequence: i64,
+    pub escrow_factory_address: String,
+    pub escrow_wasm_hash: String,
 }
 
 impl Config {
@@ -55,6 +57,8 @@ impl Config {
                 .and_then(|v| v.parse().ok())
                 .unwrap_or(3000),
             sequence: 0,
+            escrow_factory_address: env_or("ORKA_ESCROW_FACTORY_ADDRESS", ""),
+            escrow_wasm_hash: env_or("ORKA_ESCROW_WASM_HASH", ""),
         })
     }
 }
