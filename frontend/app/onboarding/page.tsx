@@ -101,7 +101,7 @@ export default async function OnboardingPage({
     .toUpperCase();
 
   return (
-    <main className="h-dvh overflow-hidden bg-[#020713] font-product text-white">
+    <main className="dark h-dvh overflow-hidden bg-[#020713] font-product text-white">
       <div className="grid h-dvh lg:grid-cols-[264px_minmax(0,1fr)]">
         <aside className="hidden h-dvh flex-col border-r border-white/[0.08] bg-[#040914] lg:flex">
           <div className="px-[18px] pt-7">

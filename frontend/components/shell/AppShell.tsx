@@ -14,7 +14,7 @@ export function AppShell({
   children: ReactNode;
 }) {
   return (
-    <div className="product-ui min-h-screen bg-shell font-product text-white">
+    <div className="product-ui dark min-h-screen bg-shell font-product text-white">
       <MobileNav orgs={orgs} role={role} user={user} />
       <div className="relative flex min-h-screen flex-col lg:flex-row">
         <div className="hidden lg:block">

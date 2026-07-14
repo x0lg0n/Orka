@@ -1,14 +1,18 @@
 import type { Metadata } from "next";
-import { Anton, DM_Sans, Inter } from "next/font/google";
+import { Anton, DM_Sans, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
-
-const inter = Inter({subsets:['latin'],variable:'--font-sans'});
 
 const dmSans = DM_Sans({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700", "900"],
   variable: "--font-dm-sans",
+  display: "swap",
+});
+
+const jetbrains = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-jetbrains-mono",
   display: "swap",
 });
 
@@ -35,7 +39,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={cn(dmSans.variable, anton.variable, "font-sans", inter.variable)}>
+    <html lang="en" className={cn(anton.variable, dmSans.variable, jetbrains.variable, "font-sans")}>
       <body>{children}</body>
     </html>
   );

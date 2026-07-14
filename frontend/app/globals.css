@@ -39,7 +39,34 @@
   --color-orka-textSubtle: #8b95aa;
   --color-orka-line: #e5e8f0;
 
+  /* ORKA brand colors — simple names so existing product-UI classes
+     (bg-shell, text-lime, from-orange, to-violet, bg-coral, …) keep working.
+     These are reconciled onto shadcn semantic tokens in the shell/dashboard
+     migration (Task 7/8). */
+  --color-shell: #030914;
+  --color-night: #082033;
+  --color-panel: #0a1c2e;
+  --color-lime: #eaff35;
+  --color-orange: #ff8a22;
+  --color-coral: #ff4f42;
+  --color-teal: #22bd93;
+  --color-violet: #9474ff;
+  --color-success: #22bd93;
+  --color-warning: #ff8a22;
+  --color-danger: #ff4f42;
+  --color-info: #3b82f6;
+  --color-hover: rgba(255, 255, 255, 0.06);
+  --color-disabled: rgba(255, 255, 255, 0.3);
+  --color-focus: rgba(148, 116, 255, 0.55);
+  --color-line: #e5e8f0;
+  --color-surface: #ffffff;
+  --color-surfaceMuted: #f7f8fc;
+  --color-text: #11182d;
+  --color-textMuted: #5f6b86;
+  --color-textSubtle: #8b95aa;
+
   --font-product: var(--font-dm-sans), "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
   --radius-control: 8px;
   --radius-card: 12px;
   --radius-panel: 16px;
@@ -47,8 +74,8 @@
   --shadow-hard: 8px 8px 0 #061a2b;
   --shadow-glow: 0 24px 70px rgba(234, 255, 53, 0.18);
   --shadow-product-card: 0 1px 2px rgba(16, 24, 40, 0.03), 0 8px 24px rgba(16, 24, 40, 0.04);
-  --font-heading: var(--font-sans);
-  --font-sans: var(--font-sans);
+  --font-heading: var(--font-dm-sans);
+  --font-sans: var(--font-dm-sans);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -98,8 +125,8 @@
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
+  --primary: #9474ff;
+  --primary-foreground: #ffffff;
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.205 0 0);
   --muted: oklch(0.97 0 0);
@@ -158,6 +185,13 @@ input {
 
 .sticker {
   transform: rotate(-4deg);
+}
+
+/* Financial figures only — JetBrains Mono with tabular numerals */
+.tabular {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
 }
 
 .section-label {
@@ -607,8 +641,8 @@ input {
   --card-foreground: oklch(0.985 0 0);
   --popover: oklch(0.205 0 0);
   --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
+  --primary: #9474ff;
+  --primary-foreground: #ffffff;
   --secondary: oklch(0.269 0 0);
   --secondary-foreground: oklch(0.985 0 0);
   --muted: oklch(0.269 0 0);
@@ -618,7 +652,7 @@ input {
   --destructive: oklch(0.704 0.191 22.216);
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
+  --ring: #9474ff;
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
