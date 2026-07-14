@@ -54,7 +54,7 @@ export function GlassPanel({
   return (
     <section
       className={cn(
-        "rounded-[24px] border border-white/10 bg-white/[0.065] text-white shadow-[0_24px_80px_rgba(0,0,0,0.22),inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-xl",
+        "rounded-card border border-border bg-panel text-white shadow-product-card",
         className,
       )}
     >
@@ -77,10 +77,10 @@ export function PageHeader({
   return (
     <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
       <div className="min-w-0">
-        <p className="text-xs font-black uppercase tracking-[0.22em] text-cyan-200/70">
+        <p className="text-xs font-black uppercase tracking-[0.16em] text-cyan-200/70">
           {eyebrow}
         </p>
-        <h1 className="mt-2 text-3xl font-black tracking-tight text-white sm:text-4xl">
+        <h1 className="mt-2 text-[34px] font-black tracking-[-0.03em] text-white text-balance">
           {title}
         </h1>
         <p className="mt-2 max-w-3xl text-sm font-bold leading-6 text-slate-400">

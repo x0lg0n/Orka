@@ -1,18 +1,25 @@
+"use client";
 import Image from "next/image";
 import Link from "next/link";
-import { Building2, ChevronDown, CreditCard, Settings, Sparkles, type LucideIcon } from "lucide-react";
+import { ChevronDown, CreditCard, FileText, FolderKanban, Home, ReceiptText, Settings, Sparkles, type LucideIcon } from "lucide-react";
+import { usePathname } from "next/navigation";
 import { Avatar } from "../ui/Avatar";
+import { WorkspaceSwitcher } from "./WorkspaceSwitcher";
 
 type NavItem = { href: string; label: string; icon: LucideIcon };
 const NAV: NavItem[] = [
-  { href: "/dashboard/projects", label: "Organizations", icon: Building2 },
+  { href: "/dashboard/home", label: "Dashboard", icon: Home },
+  { href: "/dashboard/projects", label: "Projects", icon: FolderKanban },
+  { href: "/dashboard/proposals", label: "Proposals", icon: FileText },
+  { href: "/invoices", label: "Invoices", icon: ReceiptText },
+  { href: "/dashboard/payments", label: "Payments", icon: CreditCard },
   { href: "/dashboard/settings", label: "Settings", icon: Settings },
-  { href: "/dashboard/billing", label: "Billing", icon: CreditCard },
 ];
 
 export type ShellUser = { name: string; email: string };
 
 export function Sidebar({ orgs, role, user }: { orgs: { id: string; name: string }[]; role: string; user: ShellUser }) {
+  const pathname = usePathname();
   return (
     <aside className="z-40 flex h-screen w-72 shrink-0 flex-col border-r border-border bg-sidebar p-6 lg:sticky lg:top-0">
       <div className="flex items-center gap-4">
@@ -20,10 +27,14 @@ export function Sidebar({ orgs, role, user }: { orgs: { id: string; name: string
         <span className="text-[31px] font-extrabold tracking-[-0.02em] text-white">ORKA</span>
       </div>
 
+      <div className="mt-7">
+        <WorkspaceSwitcher orgs={orgs} />
+      </div>
+
       <nav className="mt-12 flex flex-col gap-4">
-        {NAV.map((item, i) => {
+        {NAV.map((item) => {
           const Icon = item.icon;
-          const active = i === 0;
+          const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
           return (
             <Link
               key={item.href}

@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
-import { createClient } from "../../lib/supabase/server";
-import { getActiveOrgId } from "../../lib/orka";
+import { createClient } from "../../../lib/supabase/server";
+import { getActiveOrgId } from "../../../lib/orka";
 
 export const metadata = { title: "Invoices · ORKA" };
 

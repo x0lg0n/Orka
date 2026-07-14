@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import type { ReactNode } from "react";
 import { createClient } from "../../lib/supabase/server";
+import { getActiveOrgId } from "../../lib/orka";
 import { AppShell } from "../../components/shell/AppShell";
 
 export default async function DashboardLayout({ children }: Readonly<{ children: ReactNode }>) {
@@ -8,7 +9,13 @@ export default async function DashboardLayout({ children }: Readonly<{ children:
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/signup");
 
-  const { data: member } = await supabase.from("organization_members").select("role").limit(1).maybeSingle();
+  const activeOrgId = await getActiveOrgId(supabase);
+  const { data: member } = await supabase
+    .from("organization_members")
+    .select("role")
+    .eq("org_id", activeOrgId ?? "")
+    .eq("user_id", user.id)
+    .maybeSingle();
   const { data: profile } = await supabase.from("profiles").select("full_name").eq("id", user.id).maybeSingle();
 
   const role = (member?.role as string) ?? "member";

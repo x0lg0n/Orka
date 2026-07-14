@@ -1,11 +1,13 @@
 "use client";
 import { useMemo, useState } from "react";
-import Link from "next/link";
-import { ArrowRight, Building2, CircleDollarSign, Users } from "lucide-react";
+import { ArrowRight, BriefcaseBusiness, Building2, CircleDollarSign, Ellipsis, Plus, Users } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { SearchField } from "../../../components/shell/SearchField";
 import { Card } from "../../../components/ui/Card";
 import { StatusPill } from "../../../components/ui/StatusPill";
 import { EmptyState } from "../../../components/ui/EmptyState";
+import { selectOrg } from "../../actions";
+import CreateOrgModal from "./CreateOrgModal";
 import type { Org } from "../page";
 
 export function OrgGrid({ orgs }: { orgs: Org[] }) {
@@ -29,9 +31,10 @@ export function OrgGrid({ orgs }: { orgs: Org[] }) {
           {filtered.map((org) => (
             <Card key={org.id} className="flex min-h-[354px] flex-col transition hover:border-primary/40">
               <div className="flex items-start justify-between">
-                <div className="grid size-14 place-items-center rounded-[8px] bg-gradient-to-br from-primary/30 to-orange/30 text-2xl font-extrabold text-white">
+                <div className="grid size-14 place-items-center rounded-[8px] bg-primary text-2xl font-extrabold text-white shadow-[0_8px_20px_rgba(148,116,255,0.25)]">
                   {org.name.charAt(0).toUpperCase()}
                 </div>
+                <Ellipsis className="size-5 text-white/40" aria-hidden />
               </div>
               <div className="mt-6 flex items-center gap-3">
                 <h2 className="text-[22px] font-extrabold tracking-[-0.02em] text-white">{org.name}</h2>
@@ -41,16 +44,31 @@ export function OrgGrid({ orgs }: { orgs: Org[] }) {
                 Manage projects, clients, and freelancers in one place.
               </p>
               <div className="mt-5 grid grid-cols-3 gap-4 border-t border-border pt-5">
+                <OrgStat icon={BriefcaseBusiness} label="Projects" value={String(org.projects)} />
+                <OrgStat icon={Users} label={org.members === 1 ? "Member" : "Members"} value={String(org.members)} />
                 <OrgStat icon={CircleDollarSign} label="Currency" value={org.currency} />
-                <OrgStat icon={Users} label="Members" value={String(org.members)} />
-                <OrgStat icon={Building2} label="Role" value={ROLE_LABEL[org.role] ?? org.role} />
               </div>
-              <Link href="/dashboard/projects" className="btn btn-secondary mt-6 w-full">
-                Enter workspace
-                <ArrowRight size={16} aria-hidden />
-              </Link>
+              <form action={selectOrg} className="mt-6">
+                <input type="hidden" name="orgId" value={org.id} />
+                <button type="submit" className="btn btn-secondary w-full">
+                  Enter workspace
+                  <ArrowRight size={16} aria-hidden />
+                </button>
+              </form>
             </Card>
           ))}
+          <CreateOrgModal
+            trigger={
+              <span className="group flex min-h-[354px] flex-col items-center justify-center rounded-card border border-dashed border-white/20 bg-white/[0.02] p-7 text-center transition hover:border-primary hover:bg-primary/[0.04]">
+                <span className="grid size-14 place-items-center rounded-full border border-primary text-primary transition group-hover:bg-primary group-hover:text-white">
+                  <Plus className="size-7" aria-hidden />
+                </span>
+                <span className="mt-6 text-[21px] font-extrabold tracking-[-0.02em] text-white">New organization</span>
+                <span className="mt-4 max-w-[18rem] text-base font-bold leading-7 text-white/50">Create a new workspace to manage your projects and clients.</span>
+                <span className="btn btn-primary mt-6 h-12 px-6">Create new <ArrowRight size={16} aria-hidden /></span>
+              </span>
+            }
+          />
         </div>
       )}
     </div>
@@ -59,7 +77,7 @@ export function OrgGrid({ orgs }: { orgs: Org[] }) {
 
 const ROLE_LABEL: Record<string, string> = { owner: "Owner", admin: "Admin", member: "Member" };
 
-function OrgStat({ icon: Icon, value, label }: { icon: typeof Building2; value: string; label: string }) {
+function OrgStat({ icon: Icon, value, label }: { icon: LucideIcon; value: string; label: string }) {
   return (
     <div>
       <div className="flex items-center gap-2 text-[15px] font-extrabold text-white">

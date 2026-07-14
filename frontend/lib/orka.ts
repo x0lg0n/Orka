@@ -1,4 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { cookies } from "next/headers";
 
 export const MILESTONE_STATUS = [
   "draft",
@@ -24,6 +25,16 @@ export function fakeTx(): string {
 export async function getActiveOrgId(
   supabase: SupabaseClient,
 ): Promise<string | null> {
+  const selectedOrgId = (await cookies()).get("orka_active_org")?.value;
+  if (selectedOrgId) {
+    const { data: selected } = await supabase
+      .from("organization_members")
+      .select("org_id")
+      .eq("org_id", selectedOrgId)
+      .maybeSingle();
+    if (selected?.org_id) return selected.org_id;
+  }
+
   const { data } = await supabase
     .from("organization_members")
     .select("org_id")

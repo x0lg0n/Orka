@@ -1,24 +1,19 @@
-import { Building2 } from "lucide-react";
+import Link from "next/link";
+import { ChevronDown } from "lucide-react";
 
 export function WorkspaceSwitcher({ orgs, currentOrgId }: { orgs: { id: string; name: string }[]; currentOrgId?: string }) {
+  const current = orgs.find((org) => org.id === currentOrgId) ?? orgs[0];
+  if (!current) return null;
   return (
-    <div className="rounded-[9px] bg-white/[0.045] p-2">
-      <p className="px-2 pb-1 pt-1 text-xs font-bold uppercase tracking-wide text-white/40">Workspaces</p>
-      <ul className="flex flex-col">
-        {orgs.map((org) => (
-          <li key={org.id}>
-            <button
-              type="button"
-              className={`flex w-full items-center gap-3 rounded-[7px] px-2 py-2 text-left text-sm font-bold transition hover:bg-hover ${
-                org.id === currentOrgId ? "text-primary" : "text-white/80"
-              }`}
-            >
-              <Building2 className="size-4" aria-hidden />
-              <span className="truncate">{org.name}</span>
-            </button>
-          </li>
-        ))}
-      </ul>
-    </div>
+    <Link href="/onboarding" className="flex items-center gap-3 rounded-[10px] border border-border bg-white/[0.045] p-3 transition hover:bg-hover">
+      <span className="grid size-10 shrink-0 place-items-center rounded-[8px] bg-primary text-sm font-extrabold text-white">
+        {current.name.charAt(0).toUpperCase()}
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="block truncate text-sm font-extrabold text-white">{current.name}</span>
+        <span className="mt-0.5 block text-xs font-bold text-white/45">{orgs.length} workspace{orgs.length === 1 ? "" : "s"}</span>
+      </span>
+      <ChevronDown className="size-4 text-white/45" aria-hidden />
+    </Link>
   );
 }

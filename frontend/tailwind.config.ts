@@ -32,6 +32,15 @@ const config: Config = {
         disabled: "rgba(255,255,255,0.30)",
         focus: "rgba(148,116,255,0.55)",
         hover: "rgba(255,255,255,0.06)",
+        surface: "#ffffff",
+        surfaceMuted: "#f7f8fc",
+        text: "#11182d",
+        textMuted: "#5f6b86",
+        textSubtle: "#8b95aa",
+        line: "#e5e8f0",
+      },
+      fontFamily: {
+        product: ["var(--font-dm-sans)", "DM Sans", "ui-sans-serif", "system-ui", "sans-serif"],
       },
       borderRadius: {
         control: "8px",
@@ -41,6 +50,7 @@ const config: Config = {
       boxShadow: {
         hard: "8px 8px 0 #061a2b",
         glow: "0 24px 70px rgba(234, 255, 53, 0.18)",
+        "product-card": "0 1px 2px rgba(16, 24, 40, 0.03), 0 8px 24px rgba(16, 24, 40, 0.04)",
       },
     },
   },

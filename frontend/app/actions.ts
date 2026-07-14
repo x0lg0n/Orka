@@ -2,7 +2,9 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
 import { createClient } from "../lib/supabase/server";
+import { getSupabase } from "../lib/supabase";
 import { fakeTx, getActiveOrgId } from "../lib/orka";
 import { callServices } from "../lib/backend";
 
@@ -16,6 +18,33 @@ const EVENT_PATH: Record<string, string | undefined> = {
   approve: "/escrow/approve",
   release: "/escrow/release",
 };
+
+export async function selectOrg(formData: FormData) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect("/signup");
+
+  const orgId = String(formData.get("orgId") || "").trim();
+  if (!orgId) redirect("/onboarding?error=Workspace selection is invalid.");
+
+  const { data: membership } = await supabase
+    .from("organization_members")
+    .select("org_id")
+    .eq("user_id", user.id)
+    .eq("org_id", orgId)
+    .maybeSingle();
+  if (!membership) redirect("/onboarding?error=You do not have access to that workspace.");
+
+  (await cookies()).set("orka_active_org", orgId, {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+  });
+  redirect("/dashboard/home");
+}
 
 async function onChainTx(
   supabase: Awaited<ReturnType<typeof createClient>>,
@@ -81,18 +110,38 @@ export async function createOrg(formData: FormData) {
     redirect("/onboarding?error=Workspace name is required.");
   }
 
-  const { data: org, error } = await supabase
+  const slug =
+    name
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "")
+      .slice(0, 60) || undefined;
+
+  // Create the org (and the caller's owner membership) with the privileged
+  // server client. The anon-key session client's insert is blocked by RLS
+  // because the PostgREST call does not reliably carry auth.uid(); the
+  // service-role client bypasses RLS for this trusted bootstrap after the
+  // user has already been verified above via getUser().
+  const admin = getSupabase();
+  const { data: org, error } = await admin
     .from("organizations")
-    .insert({ name })
+    .insert({ name, slug })
     .select("id")
     .single();
   if (error) {
     redirect(`/onboarding?error=${encodeURIComponent(error.message)}`);
   }
 
-  await supabase
+  await admin
     .from("organization_members")
     .insert({ org_id: org.id, user_id: user.id, role: "owner" });
+
+  (await cookies()).set("orka_active_org", org.id, {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+  });
 
   revalidatePath("/dashboard/projects");
   redirect("/dashboard/projects");
