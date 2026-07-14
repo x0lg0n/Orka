@@ -46,16 +46,16 @@ export default function CreateOrgModal({ trigger }: { trigger: React.ReactNode }
             role="dialog"
             aria-modal="true"
             aria-labelledby="create-org-title"
-            className="panel w-full max-w-md p-6"
+            className="w-full max-w-md rounded-[16px] border border-white/10 bg-card p-6"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-start justify-between">
               <h2 id="create-org-title" className="text-2xl font-extrabold tracking-[-0.02em] text-white">
                 New organization
               </h2>
-              <button type="button" onClick={() => setOpen(false)} aria-label="Close" className="btn-icon">
+              <Button type="button" variant="ghost" size="icon" className="size-9" onClick={() => setOpen(false)} aria-label="Close">
                 <X size={18} aria-hidden />
-              </button>
+              </Button>
             </div>
             <p className="mt-2 text-sm font-bold text-white/60">
               Give your workspace a name. You can invite teammates later.
