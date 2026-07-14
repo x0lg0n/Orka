@@ -18,8 +18,6 @@ export type Org = {
   currency: string;
 };
 
-const ROLE_LABEL: Record<string, string> = { owner: "Owner", admin: "Admin", member: "Member" };
-
 export default async function OnboardingPage({
   searchParams,
 }: {
