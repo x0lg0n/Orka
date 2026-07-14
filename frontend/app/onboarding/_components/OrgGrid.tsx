@@ -1,11 +1,18 @@
 "use client";
 import { useMemo, useState } from "react";
-import { ArrowRight, BriefcaseBusiness, Building2, CircleDollarSign, Ellipsis, Plus, Users } from "lucide-react";
+import {
+  ArrowRight,
+  Building2,
+  CircleDollarSign,
+  Ellipsis,
+  Plus,
+  Users,
+  BriefcaseBusiness,
+} from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { SearchField } from "../../../components/shell/SearchField";
-import { Card } from "../../../components/ui/Card";
-import { StatusPill } from "../../../components/ui/StatusPill";
-import { EmptyState } from "../../../components/ui/EmptyState";
+import { Card } from "../../../components/ui/card";
+import { Badge } from "../../../components/ui/badge";
 import { selectOrg } from "../../actions";
 import CreateOrgModal from "./CreateOrgModal";
 import type { Org } from "../page";
@@ -21,11 +28,13 @@ export function OrgGrid({ orgs }: { orgs: Org[] }) {
     <div className="flex flex-col gap-6">
       <SearchField value={q} onChange={setQ} placeholder="Search organizations..." />
       {filtered.length === 0 ? (
-        <EmptyState
-          icon={Building2}
-          title="No workspaces match"
-          description="Try a different search term, or create a new organization."
-        />
+        <div className="flex flex-col items-center gap-3 rounded-card border border-white/10 bg-white/[0.02] p-10 text-center">
+          <Building2 className="size-8 text-white/40" aria-hidden />
+          <p className="text-lg font-extrabold text-white">No workspaces match</p>
+          <p className="max-w-sm text-sm font-bold text-white/50">
+            Try a different search term, or create a new organization.
+          </p>
+        </div>
       ) : (
         <div className="grid gap-7 lg:grid-cols-3">
           {filtered.map((org) => (
@@ -38,7 +47,7 @@ export function OrgGrid({ orgs }: { orgs: Org[] }) {
               </div>
               <div className="mt-6 flex items-center gap-3">
                 <h2 className="text-[22px] font-extrabold tracking-[-0.02em] text-white">{org.name}</h2>
-                <StatusPill status="neutral" label={ROLE_LABEL[org.role] ?? org.role} />
+                <Badge variant="secondary">{ROLE_LABEL[org.role] ?? org.role}</Badge>
               </div>
               <p className="mt-4 text-base font-bold leading-7 text-white/50">
                 Manage projects, clients, and freelancers in one place.

@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
-import { Anton, DM_Sans } from "next/font/google";
+import { Anton, DM_Sans, Inter } from "next/font/google";
 import "./globals.css";
+import { cn } from "@/lib/utils";
+
+const inter = Inter({subsets:['latin'],variable:'--font-sans'});
 
 const dmSans = DM_Sans({
   subsets: ["latin"],
@@ -32,7 +35,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${dmSans.variable} ${anton.variable}`}>
+    <html lang="en" className={cn(dmSans.variable, anton.variable, "font-sans", inter.variable)}>
       <body>{children}</body>
     </html>
   );

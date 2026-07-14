@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ChevronDown, CreditCard, FileText, FolderKanban, Home, ReceiptText, Settings, Sparkles, type LucideIcon } from "lucide-react";
 import { usePathname } from "next/navigation";
-import { Avatar } from "../ui/Avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { WorkspaceSwitcher } from "./WorkspaceSwitcher";
 
 type NavItem = { href: string; label: string; icon: LucideIcon };
@@ -20,6 +20,7 @@ export type ShellUser = { name: string; email: string };
 
 export function Sidebar({ orgs, role, user }: { orgs: { id: string; name: string }[]; role: string; user: ShellUser }) {
   const pathname = usePathname();
+  const initials = user.name.split(" ").map((w) => w[0]).slice(0, 2).join("").toUpperCase();
   return (
     <aside className="z-40 flex h-screen w-72 shrink-0 flex-col border-r border-border bg-sidebar p-6 lg:sticky lg:top-0">
       <div className="flex items-center gap-4">
@@ -63,7 +64,14 @@ export function Sidebar({ orgs, role, user }: { orgs: { id: string; name: string
         </div>
 
         <div className="flex items-center gap-3 rounded-[9px] bg-white/[0.045] p-4">
-          <Avatar name={user.name} />
+          <Avatar className="size-11">
+            <AvatarFallback
+              style={{ backgroundImage: "linear-gradient(to bottom right, #fb923c, #9474ff)" }}
+              className="text-sm font-extrabold text-white"
+            >
+              {initials}
+            </AvatarFallback>
+          </Avatar>
           <div className="min-w-0 flex-1">
             <p className="truncate text-[15px] font-extrabold text-white">{user.name}</p>
             <p className="mt-1 truncate text-sm font-bold text-white/40">{user.email}</p>

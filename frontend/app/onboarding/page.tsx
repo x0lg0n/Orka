@@ -5,7 +5,6 @@ import {
   Bell,
   Building2,
   ChevronDown,
-  CircleDollarSign,
   CreditCard,
   HelpCircle,
   LockKeyhole,
@@ -14,7 +13,7 @@ import {
   Sun,
 } from "lucide-react";
 import { createClient } from "../../lib/supabase/server";
-import { Avatar } from "../../components/ui/Avatar";
+import { Avatar, AvatarFallback } from "../../components/ui/avatar";
 import CreateOrgModal from "./_components/CreateOrgModal";
 import { OrgGrid } from "./_components/OrgGrid";
 
@@ -94,6 +93,12 @@ export default async function OnboardingPage({
   const name =
     (user.user_metadata?.full_name as string | null) ??
     (user.email ? user.email.split("@")[0] : "Workspace Owner");
+  const initials = name
+    .split(" ")
+    .map((w) => w[0])
+    .slice(0, 2)
+    .join("")
+    .toUpperCase();
 
   return (
     <main className="h-dvh overflow-hidden bg-[#020713] font-product text-white">
@@ -141,7 +146,14 @@ export default async function OnboardingPage({
             </div>
 
             <Link href="/dashboard/settings" className="mt-5 flex items-center gap-3 rounded-[9px] bg-white/[0.045] p-3">
-              <Avatar name={name} />
+              <Avatar className="size-11">
+                <AvatarFallback
+                  style={{ backgroundImage: "linear-gradient(to bottom right, #fb923c, #9474ff)" }}
+                  className="text-sm font-extrabold text-white"
+                >
+                  {initials}
+                </AvatarFallback>
+              </Avatar>
               <span className="min-w-0 flex-1">
                 <span className="block truncate text-[14px] font-extrabold">{name}</span>
                 <span className="mt-1 block truncate text-xs font-bold text-white/40">{user.email}</span>

@@ -3,13 +3,14 @@ import { useEffect, useRef, useState } from "react";
 import { useFormStatus } from "react-dom";
 import { createOrg } from "../../actions";
 import { X } from "lucide-react";
-import { Input } from "../../../components/ui/Input";
-import { Button } from "../../../components/ui/Button";
+import { Input } from "../../../components/ui/input";
+import { Button } from "../../../components/ui/button";
+import { Label } from "../../../components/ui/label";
 
 function SubmitButton() {
   const { pending } = useFormStatus();
   return (
-    <Button type="submit" disabled={pending} variant="primary">
+    <Button type="submit" disabled={pending}>
       {pending ? "Creating…" : "Create workspace"}
     </Button>
   );
@@ -72,15 +73,15 @@ export default function CreateOrgModal({ trigger }: { trigger: React.ReactNode }
               }}
             >
               <div>
-                <label htmlFor="org-name" className="mb-1.5 block text-sm font-bold text-white/80">
+                <Label htmlFor="org-name" className="mb-1.5 block text-sm font-bold text-white/80">
                   Workspace name
-                </label>
+                </Label>
                 <Input
                   ref={inputRef}
                   id="org-name"
                   name="name"
                   required
-                  invalid={invalid}
+                  aria-invalid={invalid}
                   placeholder="Acme Studio"
                   onChange={() => invalid && setInvalid(false)}
                 />
