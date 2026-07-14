@@ -71,7 +71,7 @@ create policy "org_members_update" on public.organizations
 
 drop policy if exists "authenticated_create_org" on public.organizations;
 create policy "authenticated_create_org" on public.organizations
-  for insert with check (auth.role() = 'authenticated');
+  for insert with check (auth.uid() is not null);
 
 -- ---------- 1.1.2 organization_members ----------
 do $$ begin
