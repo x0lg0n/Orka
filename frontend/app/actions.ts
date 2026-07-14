@@ -165,7 +165,7 @@ export async function createOrg(formData: FormData) {
 export async function createProject(formData: FormData) {
   const supabase = await createClient();
   const orgId = await getActiveOrgId(supabase);
-  if (!orgId) redirect("/onboarding");
+  if (!orgId) redirect("/workspaces");
 
   const title = String(formData.get("title") || "").trim();
   const description = String(formData.get("description") || "").trim();
@@ -199,7 +199,7 @@ export async function createProject(formData: FormData) {
 export async function addMilestone(formData: FormData) {
   const supabase = await createClient();
   const orgId = await getActiveOrgId(supabase);
-  if (!orgId) redirect("/onboarding");
+  if (!orgId) redirect("/workspaces");
 
   const projectId = String(formData.get("projectId") || "");
   const title = String(formData.get("title") || "").trim();
@@ -254,7 +254,7 @@ async function recordLedger(
 export async function fundMilestone(formData: FormData) {
   const supabase = await createClient();
   const orgId = await getActiveOrgId(supabase);
-  if (!orgId) redirect("/onboarding");
+  if (!orgId) redirect("/workspaces");
   const id = String(formData.get("milestoneId") || "");
   const { data: m, error } = await supabase
     .from("milestones")
@@ -272,7 +272,7 @@ export async function fundMilestone(formData: FormData) {
 export async function submitMilestone(formData: FormData) {
   const supabase = await createClient();
   const orgId = await getActiveOrgId(supabase);
-  if (!orgId) redirect("/onboarding");
+  if (!orgId) redirect("/workspaces");
   const id = String(formData.get("milestoneId") || "");
   const { data: m, error } = await supabase
     .from("milestones")
@@ -288,7 +288,7 @@ export async function submitMilestone(formData: FormData) {
 export async function releaseMilestone(formData: FormData) {
   const supabase = await createClient();
   const orgId = await getActiveOrgId(supabase);
-  if (!orgId) redirect("/onboarding");
+  if (!orgId) redirect("/workspaces");
   const id = String(formData.get("milestoneId") || "");
   const { data: m, error } = await supabase
     .from("milestones")
@@ -323,7 +323,7 @@ await supabase.from("invoices").insert({
 export async function approveMilestone(formData: FormData) {
   const supabase = await createClient();
   const orgId = await getActiveOrgId(supabase);
-  if (!orgId) redirect("/onboarding");
+  if (!orgId) redirect("/workspaces");
   const id = String(formData.get("milestoneId") || "");
   const { data: m, error } = await supabase
     .from("milestones")
@@ -343,7 +343,7 @@ export async function approveMilestone(formData: FormData) {
 export async function refundMilestone(formData: FormData) {
   const supabase = await createClient();
   const orgId = await getActiveOrgId(supabase);
-  if (!orgId) redirect("/onboarding");
+  if (!orgId) redirect("/workspaces");
   const id = String(formData.get("milestoneId") || "");
   const { data: m, error } = await supabase
     .from("milestones")
@@ -361,7 +361,7 @@ export async function refundMilestone(formData: FormData) {
 export async function openDispute(formData: FormData) {
   const supabase = await createClient();
   const orgId = await getActiveOrgId(supabase);
-  if (!orgId) redirect("/onboarding");
+  if (!orgId) redirect("/workspaces");
   const id = String(formData.get("milestoneId") || "");
   const { data: m, error } = await supabase
     .from("milestones")
@@ -377,7 +377,7 @@ export async function openDispute(formData: FormData) {
 export async function resolveDispute(formData: FormData) {
   const supabase = await createClient();
   const orgId = await getActiveOrgId(supabase);
-  if (!orgId) redirect("/onboarding");
+  if (!orgId) redirect("/workspaces");
   const id = String(formData.get("milestoneId") || "");
   const splitBp = Number(formData.get("splitBp"));
   if (!Number.isFinite(splitBp) || splitBp < 0 || splitBp > 10000)
@@ -410,7 +410,7 @@ type ProposalMilestone = { amount: number; description: string };
 export async function createProposal(formData: FormData) {
   const supabase = await createClient();
   const orgId = await getActiveOrgId(supabase);
-  if (!orgId) redirect("/onboarding");
+  if (!orgId) redirect("/workspaces");
 
   const client_address = String(formData.get("client_address") || "").trim();
   const freelancer_address = String(formData.get("freelancer_address") || "").trim();
@@ -450,7 +450,7 @@ export async function createProposal(formData: FormData) {
 export async function acceptProposal(proposalId: string) {
   const supabase = await createClient();
   const orgId = await getActiveOrgId(supabase);
-  if (!orgId) redirect("/onboarding");
+  if (!orgId) redirect("/workspaces");
 
   const {
     data: { user },
@@ -602,7 +602,7 @@ export async function saveStellarAddress(formData: FormData) {
 export async function freighterApplyTx(formData: FormData) {
   const supabase = await createClient();
   const orgId = await getActiveOrgId(supabase);
-  if (!orgId) redirect("/onboarding");
+  if (!orgId) redirect("/workspaces");
 
   const milestoneId = String(formData.get("milestoneId") || "");
   const eventType = String(formData.get("eventType") || "");
@@ -654,7 +654,7 @@ export async function freighterApplyTx(formData: FormData) {
 export async function inviteMember(formData: FormData) {
   const supabase = await createClient();
   const orgId = await getActiveOrgId(supabase);
-  if (!orgId) redirect("/onboarding");
+  if (!orgId) redirect("/workspaces");
   const email = String(formData.get("email") || "").trim();
   const role = String(formData.get("role") || "member");
   if (!EMAIL_RE.test(email)) redirect(`/dashboard/projects?error=${encodeURIComponent("A valid email is required.")}`);

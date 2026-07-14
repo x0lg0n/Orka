@@ -69,7 +69,7 @@ export default function Hero() {
         </p>
 
         <div className="mt-8 flex justify-center ">
-          <div className="rounded-[18px] bg-white p-5 text-ink md:p-6">
+          <div className="rounded-[18px] bg-white p-5 text-night md:p-6">
             <WaitlistForm compact />
           </div>
         </div>
@@ -90,7 +90,7 @@ export default function Hero() {
               className={`sticker rounded-full px-4 py-1.5 text-xs font-black uppercase shadow-hard ${
                 i === 0 ? "bg-orange text-white rotate-[-3deg]"
                 : i === 1 ? "bg-coral text-white rotate-[2deg]"
-                : i === 2 ? "bg-lime text-ink rotate-[-1deg]"
+                : i === 2 ? "bg-lime text-night rotate-[-1deg]"
                 : i === 3 ? "bg-violet text-white rotate-[3deg]"
                 : "bg-teal text-white rotate-[-2deg]"
               }`}>
@@ -107,7 +107,7 @@ export default function Hero() {
 
         {/* Stat cards */}
         <div className="flex max-w-md flex-wrap justify-center gap-4 lg:justify-start">
-          <div className="cut-corner group rounded-[14px] bg-teal p-5 text-ink shadow-hard transition-transform duration-300 hover:-translate-y-1 min-w-[160px]">
+          <div className="cut-corner group rounded-[14px] bg-teal p-5 text-night shadow-hard transition-transform duration-300 hover:-translate-y-1 min-w-[160px]">
             <div className="flex items-end justify-between">
               <p className="display text-[40px]">50+</p>
               <ArrowUpRight size={40} className="shrink-0 transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1" />
@@ -118,7 +118,7 @@ export default function Hero() {
               adopters on the waitlist
             </p>
           </div>
-          <div className="cut-corner group rounded-[14px] bg-lime p-5 text-ink shadow-hard transition-transform duration-300 hover:-translate-y-1 min-w-[160px]">
+          <div className="cut-corner group rounded-[14px] bg-lime p-5 text-night shadow-hard transition-transform duration-300 hover:-translate-y-1 min-w-[160px]">
             <div className="flex items-end justify-between">
               <p className="display text-[40px]">99%</p>
               <ArrowUpRight size={40} className="shrink-0 transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1" />
