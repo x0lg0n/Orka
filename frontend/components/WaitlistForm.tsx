@@ -72,7 +72,7 @@ export default function WaitlistForm({
 
   if (submitted) {
     return (
-      <div className="rounded-[14px] border-2 border-ink bg-lime p-5 text-ink shadow-hard">
+      <div className="rounded-[14px] border-2 border-night bg-lime p-5 text-night shadow-hard">
         <p className="display text-2xl uppercase">You&apos;re on the waiting list!</p>
         <p className="mt-2 text-sm font-bold">
           We&apos;ll reach out when design partner slots open.
@@ -94,7 +94,7 @@ export default function WaitlistForm({
           <input
             name="name"
             placeholder="Your name"
-            className="min-h-12 w-full rounded-[10px] border-2 border-ink bg-white px-4 text-sm font-bold outline-none transition focus:border-violet focus:ring-4 focus:ring-violet/20"
+            className="min-h-12 w-full rounded-[10px] border-2 border-night bg-white px-4 text-sm font-bold outline-none transition focus:border-violet focus:ring-4 focus:ring-violet/20"
           />
         </div>
         <div className="flex-[1.5]">
@@ -104,14 +104,14 @@ export default function WaitlistForm({
             placeholder="Email address"
             aria-invalid={Boolean(error)}
             aria-describedby={error ? errorId : undefined}
-            className="min-h-12 w-full rounded-[10px] border-2 border-ink bg-white px-4 text-sm font-bold outline-none transition focus:border-violet focus:ring-4 focus:ring-violet/20"
+            className="min-h-12 w-full rounded-[10px] border-2 border-night bg-white px-4 text-sm font-bold outline-none transition focus:border-violet focus:ring-4 focus:ring-violet/20"
             required
           />
         </div>
         <button
           type="submit"
           disabled={loading}
-          className="flex min-h-12 items-center justify-center gap-2 rounded-full border-2 border-ink bg-lime px-7 text-m font-black uppercase text-ink transition hover:-translate-y-0.5 hover:bg-orange hover:text-white disabled:cursor-wait disabled:opacity-70">
+          className="flex min-h-12 items-center justify-center gap-2 rounded-full border-2 border-night bg-lime px-7 text-m font-black uppercase text-night transition hover:-translate-y-0.5 hover:bg-orange hover:text-white disabled:cursor-wait disabled:opacity-70">
           {loading ?
             "Joining..."
           : <>

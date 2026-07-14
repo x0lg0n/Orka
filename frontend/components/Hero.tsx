@@ -5,7 +5,7 @@ import { ArrowUpRight } from "lucide-react";
 
 export default function Hero() {
   return (
-    <section className="relative overflow-hidden rounded-b-[42px] bg-ink px-4 pb-16 pt-5 text-white md:rounded-b-[72px] md:px-8 lg:px-12">
+    <section className="relative overflow-hidden bg-night rounded-b-[42px] px-4 pb-16 pt-5 text-white md:rounded-b-[72px] md:px-8 lg:px-12">
       {/* Floating decorations */}
       <Image
         src="/Elements/Star-Violet.svg"

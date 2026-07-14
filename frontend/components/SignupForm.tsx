@@ -74,7 +74,7 @@ export default function SignupForm() {
       const { error: googleError } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: `${window.location.origin}/auth/callback?next=/dashboard`,
+          redirectTo: `${window.location.origin}/auth/callback?next=/workspaces`,
         },
       });
       if (googleError) setError(getFriendlyError(googleError.message));
@@ -124,7 +124,7 @@ export default function SignupForm() {
         password,
         options: {
           data: meta,
-          emailRedirectTo: `${window.location.origin}/auth/callback?next=/dashboard`,
+          emailRedirectTo: `${window.location.origin}/auth/callback?next=/workspaces`,
         },
       });
 
@@ -133,7 +133,7 @@ export default function SignupForm() {
         return;
       }
       if (data.session) {
-        router.push("/dashboard");
+        router.push("/workspaces");
         return;
       }
       setSuccess(true);
@@ -159,7 +159,7 @@ export default function SignupForm() {
   return (
     <div className="w-full">
       {/* Mode toggle */}
-      <div className="mb-6 grid grid-cols-2 gap-2 rounded-full border-2 border-ink bg-white p-1">
+      <div className="mb-6 grid grid-cols-2 gap-2 rounded-full border-2 border-ink bg-ink p-1">
         <button
           type="button"
           onClick={() => setMode("orka")}

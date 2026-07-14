@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ChevronDown, CreditCard, FileText, FolderKanban, Home, ReceiptText, Settings, Sparkles, type LucideIcon } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import { WorkspaceSwitcher } from "./WorkspaceSwitcher";
 
 type NavItem = { href: string; label: string; icon: LucideIcon };
@@ -37,16 +38,21 @@ export function Sidebar({ orgs, role, user }: { orgs: { id: string; name: string
           const Icon = item.icon;
           const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
           return (
-            <Link
+            <Button
               key={item.href}
-              href={item.href}
-              className={`flex h-12 items-center gap-5 rounded-[10px] px-4 text-[15px] font-extrabold transition ${
-                active ? "bg-primary/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]" : "text-white/90 hover:bg-hover"
+              asChild
+              variant="ghost"
+              className={`h-12 w-full justify-start gap-5 rounded-[10px] px-4 text-[15px] font-extrabold ${
+                active
+                  ? "bg-primary/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] hover:bg-primary/20 dark:hover:bg-primary/20"
+                  : "text-white/90 hover:bg-hover dark:hover:bg-hover"
               }`}
             >
-              <Icon className={`size-6 ${active ? "text-primary" : ""}`} aria-hidden />
-              {item.label}
-            </Link>
+              <Link href={item.href}>
+                <Icon className={`size-6 ${active ? "text-primary" : ""}`} aria-hidden />
+                {item.label}
+              </Link>
+            </Button>
           );
         })}
       </nav>
@@ -58,12 +64,10 @@ export function Sidebar({ orgs, role, user }: { orgs: { id: string; name: string
           <p className="mt-2 max-w-[13rem] text-[15px] font-bold leading-6 text-white/70">
             Unlock unlimited projects, advanced analytics and priority support.
           </p>
-          <button type="button" className="btn btn-primary mt-5 h-12 w-full">
-            Upgrade Now
-          </button>
+          <Button className="mt-5 h-12 w-full text-sm font-extrabold">Upgrade Now</Button>
         </div>
 
-        <div className="flex items-center gap-3 rounded-[9px] bg-white/[0.045] p-4">
+        <div className="flex items-center gap-3 rounded-[9px] bg-hover p-4">
           <Avatar className="size-11">
             <AvatarFallback
               style={{ backgroundImage: "linear-gradient(to bottom right, #fb923c, #9474ff)" }}
