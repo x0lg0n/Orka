@@ -1,41 +1,112 @@
 import { redirect } from "next/navigation";
+import { Building2 } from "lucide-react";
 import { createClient } from "../../lib/supabase/server";
-import { getActiveOrgId } from "../../lib/orka";
-import { createOrg } from "../../app/actions";
+import { AppShell } from "../../components/shell/AppShell";
+import { PageHeader } from "../../components/shell/PageHeader";
+import { EmptyState } from "../../components/ui/EmptyState";
+import CreateOrgModal from "./_components/CreateOrgModal";
+import { OrgGrid } from "./_components/OrgGrid";
 
-export const metadata = { title: "Create workspace · ORKA" };
+export const metadata = { title: "Your organizations · ORKA" };
 
-export default async function OnboardingPage() {
+export type Org = {
+  id: string;
+  name: string;
+  role: string;
+  projects: number;
+  members: number;
+  currency: string;
+};
+
+const ROLE_LABEL: Record<string, string> = { owner: "Owner", admin: "Admin", member: "Member" };
+
+export default async function OnboardingPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ error?: string }>;
+}) {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/signup");
 
-  const orgId = await getActiveOrgId(supabase);
-  if (orgId) redirect("/dashboard/projects");
+  const { data: members, error } = await supabase
+    .from("organization_members")
+    .select("role, organizations(id, name, slug, currency)")
+    .eq("user_id", user.id);
+
+  const { error: searchError } = await searchParams;
+
+  const orgs: Org[] = (members ?? [])
+    .map((m) => {
+      const org = Array.isArray(m.organizations) ? m.organizations[0] : m.organizations;
+      if (!org) return null;
+      return {
+        id: org.id,
+        name: org.name,
+        role: m.role,
+        projects: 0,
+        members: 0,
+        currency: (org.currency as string) ?? "USDC",
+      };
+    })
+    .filter((o): o is Org => o !== null);
+
+  const name =
+    (user.user_metadata?.full_name as string | null) ??
+    (user.email ? user.email.split("@")[0] : "Workspace Owner");
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-ink px-4 text-white">
-      <div className="w-full max-w-md rounded-[28px] bg-white p-6 text-ink shadow-hard md:p-8">
-        <h1 className="display mb-1 text-3xl uppercase">Create your workspace</h1>
-        <p className="mb-6 text-sm font-bold text-ink/70">
-          Workspaces hold your projects, clients, and freelancers.
-        </p>
-        <form action={createOrg} className="flex flex-col gap-3">
-          <input
-            name="name"
-            placeholder="Acme Studio"
-            required
-            className="min-h-12 w-full rounded-[10px] border-2 border-ink bg-white px-4 text-sm font-bold outline-none transition focus:border-violet focus:ring-4 focus:ring-violet/20"
+    <AppShell
+      orgs={orgs.map((o) => ({ id: o.id, name: o.name }))}
+      role={orgs[0]?.role ?? "member"}
+      user={{ name, email: user.email ?? "" }}
+    >
+      <PageHeader
+        title="Your Organizations"
+        description="All the organizations / workspaces you belong to."
+        actions={
+          <CreateOrgModal
+            trigger={
+              <span className="btn btn-primary">
+                <Building2 size={20} aria-hidden />
+                New organization
+              </span>
+            }
           />
-          <button
-            type="submit"
-            className="mt-2 flex min-h-12 items-center justify-center rounded-full border-2 border-ink bg-lime px-7 text-sm font-black uppercase text-ink transition hover:-translate-y-0.5 hover:bg-orange hover:text-white">
-            Create workspace
-          </button>
-        </form>
-      </div>
-    </main>
+        }
+      />
+
+      {searchError ? (
+        <div className="max-w-[410px] rounded-[9px] border border-danger/35 bg-danger/10 px-4 py-3 text-sm font-bold text-red-100">
+          {searchError}
+        </div>
+      ) : null}
+
+      {error ? (
+        <EmptyState
+          icon={Building2}
+          title="Couldn’t load your workspaces"
+          description="Something went wrong reaching the server. Please try again in a moment."
+        />
+      ) : orgs.length === 0 ? (
+        <EmptyState
+          icon={Building2}
+          title="Create your first workspace"
+          description="Organizations are where your projects, clients, and freelancers live. Spin one up to get started."
+          action={
+            <CreateOrgModal
+              trigger={
+                <span className="btn btn-primary">
+                  <Building2 size={20} aria-hidden />
+                  New organization
+                </span>
+              }
+            />
+          }
+        />
+      ) : (
+        <OrgGrid orgs={orgs} />
+      )}
+    </AppShell>
   );
 }
