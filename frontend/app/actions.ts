@@ -27,7 +27,7 @@ export async function selectOrg(formData: FormData) {
   if (!user) redirect("/signup");
 
   const orgId = String(formData.get("orgId") || "").trim();
-  if (!orgId) redirect("/onboarding?error=Workspace selection is invalid.");
+  if (!orgId) redirect("/workspaces?error=Workspace selection is invalid.");
 
   const { data: membership } = await supabase
     .from("organization_members")
@@ -35,7 +35,7 @@ export async function selectOrg(formData: FormData) {
     .eq("user_id", user.id)
     .eq("org_id", orgId)
     .maybeSingle();
-  if (!membership) redirect("/onboarding?error=You do not have access to that workspace.");
+  if (!membership) redirect("/workspaces?error=You do not have access to that workspace.");
 
   (await cookies()).set("orka_active_org", orgId, {
     httpOnly: true,
@@ -43,7 +43,7 @@ export async function selectOrg(formData: FormData) {
     secure: process.env.NODE_ENV === "production",
     path: "/",
   });
-  redirect("/dashboard/home");
+  redirect(`/workspaces/${orgId}`);
 }
 
 async function onChainTx(
@@ -107,29 +107,44 @@ export async function createOrg(formData: FormData) {
 
   const name = String(formData.get("name") || "").trim();
   if (!name) {
-    redirect("/onboarding?error=Workspace name is required.");
+    redirect("/workspaces/new?error=Workspace name is required.");
   }
 
+  const rawType = String(formData.get("type") || "").trim();
+  const type = ["freelancer", "agency", "studio", "consultancy", "startup"].includes(rawType)
+    ? rawType
+    : null;
+
+  const rawSlug = String(formData.get("slug") || "").trim();
   const slug =
-    name
+    (rawSlug || name)
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/^-+|-+$/g, "")
       .slice(0, 60) || undefined;
 
-  // Create the org (and the caller's owner membership) with the privileged
-  // server client. The anon-key session client's insert is blocked by RLS
-  // because the PostgREST call does not reliably carry auth.uid(); the
-  // service-role client bypasses RLS for this trusted bootstrap after the
-  // user has already been verified above via getUser().
   const admin = getSupabase();
   const { data: org, error } = await admin
     .from("organizations")
-    .insert({ name, slug })
+    .insert({ name, slug, type })
     .select("id")
     .single();
   if (error) {
-    redirect(`/onboarding?error=${encodeURIComponent(error.message)}`);
+    redirect(`/workspaces/new?error=${encodeURIComponent(error.message)}`);
+  }
+
+  // Optional logo upload to the public workspace-logos bucket.
+  const logoFile = formData.get("logo");
+  if (logoFile instanceof File && logoFile.size > 0) {
+    const ext = (logoFile.name.split(".").pop() || "png").toLowerCase().replace(/[^a-z0-9]/g, "");
+    const path = `${org.id}/${crypto.randomUUID()}.${ext}`;
+    const { error: upErr } = await admin.storage
+      .from("workspace-logos")
+      .upload(path, logoFile, { upsert: true, contentType: logoFile.type || "image/png" });
+    if (!upErr) {
+      const { data: urlData } = admin.storage.from("workspace-logos").getPublicUrl(path);
+      await admin.from("organizations").update({ logo_url: urlData.publicUrl }).eq("id", org.id);
+    }
   }
 
   await admin
@@ -143,8 +158,8 @@ export async function createOrg(formData: FormData) {
     path: "/",
   });
 
-  revalidatePath("/dashboard/projects");
-  redirect("/dashboard/projects");
+  revalidatePath("/workspaces");
+  redirect(`/workspaces/${org.id}`);
 }
 
 export async function createProject(formData: FormData) {
@@ -648,4 +663,94 @@ export async function inviteMember(formData: FormData) {
     .insert({ org_id: orgId, email, role });
   if (error) redirect(`/dashboard/projects?error=${encodeURIComponent(error.message)}`);
   revalidatePath(`/dashboard/projects`);
+}
+
+export async function updateOrg(formData: FormData) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect("/signup");
+
+  const id = String(formData.get("orgId") || "").trim();
+  if (!id) redirect("/workspaces?error=Missing workspace.");
+
+  const { data: member } = await supabase
+    .from("organization_members")
+    .select("role")
+    .eq("org_id", id)
+    .eq("user_id", user.id)
+    .maybeSingle();
+  if (member?.role !== "owner") {
+    redirect(`/workspaces/${id}/settings?error=Only the owner can edit this workspace.`);
+  }
+
+  const name = String(formData.get("name") || "").trim();
+  if (!name) redirect(`/workspaces/${id}/settings?error=Workspace name is required.`);
+
+  const rawType = String(formData.get("type") || "").trim();
+  const type = ["freelancer", "agency", "studio", "consultancy", "startup"].includes(rawType)
+    ? rawType
+    : null;
+
+  const rawSlug = String(formData.get("slug") || "").trim();
+  const slug =
+    (rawSlug || name)
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "")
+      .slice(0, 60) || undefined;
+
+  const admin = getSupabase();
+  const update: Record<string, unknown> = { name, slug, type };
+  await admin.from("organizations").update(update).eq("id", id);
+
+  const logoFile = formData.get("logo");
+  if (logoFile instanceof File && logoFile.size > 0) {
+    const ext = (logoFile.name.split(".").pop() || "png").toLowerCase().replace(/[^a-z0-9]/g, "");
+    const path = `${id}/${crypto.randomUUID()}.${ext}`;
+    const { error: upErr } = await admin.storage
+      .from("workspace-logos")
+      .upload(path, logoFile, { upsert: true, contentType: logoFile.type || "image/png" });
+    if (!upErr) {
+      const { data: urlData } = admin.storage.from("workspace-logos").getPublicUrl(path);
+      await admin.from("organizations").update({ logo_url: urlData.publicUrl }).eq("id", id);
+    }
+  }
+
+  revalidatePath("/workspaces");
+  revalidatePath(`/workspaces/${id}`);
+  revalidatePath(`/workspaces/${id}/settings`);
+  redirect(`/workspaces/${id}/settings?updated=1`);
+}
+
+export async function deleteOrg(formData: FormData) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect("/signup");
+
+  const id = String(formData.get("orgId") || "").trim();
+  if (!id) redirect("/workspaces");
+
+  const { data: member } = await supabase
+    .from("organization_members")
+    .select("role")
+    .eq("org_id", id)
+    .eq("user_id", user.id)
+    .maybeSingle();
+  if (member?.role !== "owner") redirect("/workspaces");
+
+  const admin = getSupabase();
+  const { error } = await admin.from("organizations").delete().eq("id", id);
+  if (error) redirect(`/workspaces/${id}/settings?error=${encodeURIComponent(error.message)}`);
+
+  const cookieStore = await cookies();
+  if (cookieStore.get("orka_active_org")?.value === id) {
+    cookieStore.delete("orka_active_org");
+  }
+
+  revalidatePath("/workspaces");
+  redirect("/workspaces");
 }
