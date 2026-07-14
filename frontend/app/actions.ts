@@ -703,7 +703,10 @@ export async function updateOrg(formData: FormData) {
 
   const admin = getSupabase();
   const update: Record<string, unknown> = { name, slug, type };
-  await admin.from("organizations").update(update).eq("id", id);
+  const { error: updErr } = await admin.from("organizations").update(update).eq("id", id);
+  if (updErr) {
+    redirect(`/workspaces/${id}/settings?error=${encodeURIComponent(updErr.message)}`);
+  }
 
   const logoFile = formData.get("logo");
   if (logoFile instanceof File && logoFile.size > 0) {
