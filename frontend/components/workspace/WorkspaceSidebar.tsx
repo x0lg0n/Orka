@@ -33,7 +33,6 @@ export function WorkspaceSidebar({
   currentOrgId: string;
 }) {
   const pathname = usePathname();
-  const base = `/workspaces/${currentOrgId}`;
 
   const NavLinks = (
     <nav className="flex flex-col gap-1">

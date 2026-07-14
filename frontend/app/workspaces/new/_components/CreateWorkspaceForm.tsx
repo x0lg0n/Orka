@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useFormStatus } from "react-dom";
 import { ArrowRight, Check, ImagePlus } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "../../../../components/ui/avatar";
@@ -36,17 +36,18 @@ export function CreateWorkspaceForm() {
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
+  function onNameChange(value: string) {
+    setName(value);
     if (!slugTouched) {
       setSlug(
-        name
+        value
           .toLowerCase()
           .replace(/[^a-z0-9]+/g, "-")
           .replace(/^-+|-+$/g, "")
           .slice(0, 60),
       );
     }
-  }, [name, slugTouched]);
+  }
 
   function onFile(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -98,7 +99,7 @@ export function CreateWorkspaceForm() {
             required
             placeholder="Acme Studio"
             value={name}
-            onChange={(e) => setName(e.target.value)}
+            onChange={(e) => onNameChange(e.target.value)}
           />
         </div>
 
