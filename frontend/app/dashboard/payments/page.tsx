@@ -25,6 +25,15 @@ type MilestoneRow = {
   contract_id: string | null;
 };
 
+type RawMilestone = {
+  id: string;
+  title: string | null;
+  amount: number | null;
+  status: string | null;
+  chain_index: number | null;
+  projects: { title: string | null; contract_id: string | null }[] | null;
+};
+
 export default async function PaymentsPage() {
   const supabase = await createClient();
   const orgId = await getActiveOrgId(supabase);
@@ -48,14 +57,14 @@ export default async function PaymentsPage() {
     .in("status", ["draft", "approved"])
     .order("created_at", { ascending: false });
 
-  const rows: MilestoneRow[] = (milestones ?? []).map((m: any) => ({
+  const rows: MilestoneRow[] = ((milestones ?? []) as RawMilestone[]).map((m) => ({
     id: m.id,
     title: m.title,
     amount: m.amount,
     status: m.status,
-    project_title: m.projects?.title ?? null,
+    project_title: m.projects?.[0]?.title ?? null,
     chain_index: m.chain_index ?? null,
-    contract_id: m.projects?.contract_id ?? null,
+    contract_id: m.projects?.[0]?.contract_id ?? null,
   }));
 
   return (
