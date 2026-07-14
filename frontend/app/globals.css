@@ -1,6 +1,52 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@source "../app";
+@source "../components";
+
+/* ORKA brand tokens — namespaced to avoid colliding with shadcn semantic tokens */
+@theme inline {
+  --color-orka-bg: #00081F;
+  --color-orka-ink: #061A2B;
+  --color-orka-night: #082033;
+  --color-orka-paper: #fffaf2;
+  --color-orka-bone: #f5efe4;
+  --color-orka-orange: #ff8a22;
+  --color-orka-coral: #ff4f42;
+  --color-orka-violet: #9474ff;
+  --color-orka-lime: #eaff35;
+  --color-orka-teal: #22bd93;
+
+  --color-orka-shell: #030914;
+  --color-orka-sidebar: #06101f;
+  --color-orka-panel: #0a1c2e;
+  --color-orka-success: #22bd93;
+  --color-orka-warning: #ff8a22;
+  --color-orka-danger: #ff4f42;
+  --color-orka-info: #3b82f6;
+  --color-orka-border: rgba(255, 255, 255, 0.08);
+  --color-orka-muted: rgba(255, 255, 255, 0.55);
+  --color-orka-disabled: rgba(255, 255, 255, 0.30);
+  --color-orka-focus: rgba(148, 116, 255, 0.55);
+  --color-orka-hover: rgba(255, 255, 255, 0.06);
+  --color-orka-surface: #ffffff;
+  --color-orka-surfaceMuted: #f7f8fc;
+  --color-orka-text: #11182d;
+  --color-orka-textMuted: #5f6b86;
+  --color-orka-textSubtle: #8b95aa;
+  --color-orka-line: #e5e8f0;
+
+  --font-product: var(--font-dm-sans), "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  --radius-control: 8px;
+  --radius-card: 12px;
+  --radius-panel: 16px;
+
+  --shadow-hard: 8px 8px 0 #061a2b;
+  --shadow-glow: 0 24px 70px rgba(234, 255, 53, 0.18);
+  --shadow-product-card: 0 1px 2px rgba(16, 24, 40, 0.03), 0 8px 24px rgba(16, 24, 40, 0.04);
+}
 
 :root {
   color-scheme: light;
