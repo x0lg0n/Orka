@@ -163,11 +163,12 @@ They are intentionally inert (no data fetching) in this pass.
 
 **Modified**
 - `app/actions.ts` — add `updateOrg`, `deleteOrg`.
-- `app/workspaces/[workspaceId]/page.tsx` — replace loading screen with real dashboard
-  (or remove the old loading page and use the index as the dashboard).
+- `app/workspaces/[workspaceId]/page.tsx` — becomes the real Workspace Dashboard
+  (index route); the old loading-screen behavior is dropped.
 
 **Removed**
-- `app/workspaces/[workspaceId]/_components/WorkspaceLoading.tsx` (superseded).
+- `app/workspaces/[workspaceId]/_components/WorkspaceLoading.tsx` (superseded by the
+  real Workspace Dashboard index page).
 
 **Untouched**
 - `app/dashboard/*` (main dashboard), global shell (`components/shell/*`),
