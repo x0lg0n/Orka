@@ -124,7 +124,9 @@ export function Sidebar({
           </Avatar>
           <div className="min-w-0 flex-1">
             <p className="truncate text-[15px] font-extrabold text-white">{user.name}</p>
-            <p className="mt-1 truncate text-sm font-bold text-white/40">{user.email}</p>
+            <p className="mt-1 truncate text-sm font-bold capitalize text-white/40">
+              {role || user.email}
+            </p>
           </div>
           <ChevronDown className="size-4 text-white/40" aria-hidden />
         </div>
