@@ -16,7 +16,7 @@ export default function Engines() {
           {engines.map((engine) => (
             <article
               key={engine.title}
-              className={`cut-corner group relative min-h-[220px] rounded-[14px] border-2 border-ink p-6 text-center text-white shadow-hard transition-transform duration-300 hover:-translate-y-1.5 md:text-left ${engine.color}`}
+              className={`cut-corner group relative min-h-[220px] rounded-[14px] border-2 border-night p-6 text-center text-white shadow-hard transition-transform duration-300 hover:-translate-y-1.5 md:text-left ${engine.color}`}
             >
               <h3 className="display text-6xl uppercase sm:text-7xl lg:text-[80px]">{engine.title}</h3>
               <p className="mx-auto mt-4 max-w-[80%] text-sm font-bold leading-6 md:mx-0">{engine.copy}</p>

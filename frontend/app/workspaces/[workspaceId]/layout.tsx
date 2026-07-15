@@ -1,4 +1,3 @@
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { WorkspaceSidebar } from "@/components/workspace/WorkspaceSidebar";
@@ -24,13 +23,6 @@ export default async function WorkspaceAppLayout({
     .eq("user_id", user.id)
     .maybeSingle();
   if (!member) redirect("/workspaces");
-
-  (await cookies()).set("orka_active_org", workspaceId, {
-    httpOnly: true,
-    sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
-    path: "/",
-  });
 
   const { data: members } = await supabase
     .from("organization_members")
