@@ -61,7 +61,7 @@ const custody: {
     mode: "Mode B — Self-custody",
     tag: "Expert",
     color: "bg-teal",
-    text: "text-ink",
+    text: "text-night",
     rows: [
       ["Sign-in", "Freighter wallet connect"],
       ["Chain key", "The user's own Freighter key"],
@@ -85,7 +85,7 @@ const phases: {
     title: "Foundation Cleanup",
     goal: "A repo and dev environment a real engineer can clone and ship in.",
     gate: "A new contributor clones, runs one command, and sees the landing page + waitlist working locally.",
-    color: "bg-white text-ink",
+    color: "bg-white text-night",
   },
   {
     tag: "Phase 1",
@@ -106,7 +106,7 @@ const phases: {
     title: "Compliance & Trust",
     goal: "The product is safe and legal to put real users' money through.",
     gate: "Clean audit of contract + custody service, KYC live, zero critical vulns, incident runbook documented.",
-    color: "bg-lime text-ink",
+    color: "bg-lime text-night",
   },
   {
     tag: "Phase 4",
@@ -120,7 +120,7 @@ const phases: {
     title: "Developer Platform & Scale",
     goal: "Become the \u201cStripe for Web3 marketplaces\u201d — public API, SDKs, and an embeddable escrow widget.",
     gate: "$1M+ annualized volume, 100+ agencies, 5+ marketplace partners.",
-    color: "bg-teal text-ink",
+    color: "bg-teal text-night",
   },
 ];
 
@@ -138,7 +138,7 @@ export default function AboutPage() {
   return (
     <main className="overflow-hidden bg-paper">
       {/* ── Header / hero ── */}
-      <section className="relative overflow-hidden rounded-b-[42px] bg-ink px-4 pb-16 pt-5 text-white md:rounded-b-[72px] md:px-8 lg:px-12">
+      <section className="relative overflow-hidden rounded-b-[42px] bg-night px-4 pb-16 pt-5 text-white md:rounded-b-[72px] md:px-8 lg:px-12">
         <Navbar />
         <div className="relative z-10 mx-auto max-w-5xl pt-16 pb-4 text-center">
           <span className="text-[15px] font-medium text-white sm:text-[18px]">
@@ -164,7 +164,7 @@ export default function AboutPage() {
               The financial OS for the global service economy.
             </h2>
           </div>
-          <p className="mx-auto max-w-xl text-base font-normal leading-8 text-ink/80 sm:text-[18px] lg:mx-0">
+          <p className="mx-auto max-w-xl text-base font-normal leading-8 text-night/80 sm:text-[18px] lg:mx-0">
             Stellar runs silently. Normal users never touch a seed phrase or gas —
             ORKA pays for sponsored transactions. Crypto-native users may bring
             their own Freighter wallet for self-custody. Both modes drive the same
@@ -185,10 +185,10 @@ export default function AboutPage() {
             {custody.map(({ mode, tag, color, text, rows }) => (
               <article
                 key={mode}
-                className={`cut-corner rounded-[14px] border-2 border-ink p-6 text-left shadow-hard ${color} ${text}`}>
+                className={`cut-corner rounded-[14px] border-2 border-night p-6 text-left shadow-hard ${color} ${text}`}>
                 <div className="flex items-center justify-between gap-3">
                   <h3 className="display text-3xl uppercase sm:text-4xl">{mode}</h3>
-                  <span className="sticker rounded-full bg-ink px-3 py-1 text-xs font-black uppercase text-white shadow-hard">
+                  <span className="sticker rounded-full bg-night px-3 py-1 text-xs font-black uppercase text-white shadow-hard">
                     {tag}
                   </span>
                 </div>
@@ -209,7 +209,7 @@ export default function AboutPage() {
               </article>
             ))}
           </div>
-          <p className="mx-auto mt-6 max-w-3xl text-sm font-bold leading-6 text-ink/60 md:mx-0">
+          <p className="mx-auto mt-6 max-w-3xl text-sm font-bold leading-6 text-night/60 md:mx-0">
             One address, one mode — set once at signup and never both. The
             backend refuses to sign for Freighter users; Freighter refuses to
             sign for managed users. Release requires client + operator multi-sig,
@@ -229,12 +229,12 @@ export default function AboutPage() {
             {principles.map(([title, copy], i) => (
               <article
                 key={title}
-                className="cut-corner rounded-[14px] border-2 border-ink bg-white p-6 text-center md:text-left">
+                className="cut-corner rounded-[14px] border-2 border-night bg-white p-6 text-center md:text-left">
                 <span className="display text-4xl text-orange">
                   {String(i + 1).padStart(2, "0")}
                 </span>
                 <h3 className="display mt-3 text-2xl uppercase">{title}</h3>
-                <p className="mt-3 text-sm font-bold leading-6 text-ink/68">
+                <p className="mt-3 text-sm font-bold leading-6 text-night/68">
                   {copy}
                 </p>
               </article>
@@ -254,7 +254,7 @@ export default function AboutPage() {
             {phases.map(({ tag, title, goal, gate, color }) => (
               <article
                 key={tag}
-                className={`cut-corner relative flex min-h-[240px] flex-col rounded-[14px] border-2 border-ink p-6 text-left shadow-hard ${color}`}>
+                className={`cut-corner relative flex min-h-[240px] flex-col rounded-[14px] border-2 border-night p-6 text-left shadow-hard ${color}`}>
                 <span className="text-xs font-black uppercase opacity-70">
                   {tag}
                 </span>
@@ -271,7 +271,7 @@ export default function AboutPage() {
 
       {/* ── Definition of the final product ── */}
       <section className="px-4 py-16 md:px-8 lg:px-12">
-        <div className="mx-auto max-w-7xl rounded-[24px] bg-ink p-6 text-white md:p-10">
+        <div className="mx-auto max-w-7xl rounded-[24px] bg-night p-6 text-white md:p-10">
           <div className="text-center md:text-left">
             <p className="section-label text-lime">The Standard</p>
             <h2 className="display mt-2 text-4xl uppercase sm:text-5xl md:text-6xl">

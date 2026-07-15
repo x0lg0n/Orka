@@ -84,7 +84,7 @@ export default function Navbar() {
 
             {/* Dropdown panel */}
             {productOpen && (
-              <div className="dropdown-panel absolute left-0 top-full mt-2 min-w-[180px] rounded-2xl border border-white/10 bg-ink p-2 shadow-hard">
+              <div className="dropdown-panel absolute left-0 top-full mt-2 min-w-[180px] rounded-2xl border border-white/10 bg-night p-2 shadow-hard">
                 {productLinks.map((link) => (
                   <a
                     key={link.label}
@@ -206,7 +206,7 @@ export default function Navbar() {
               target="_blank"
               rel="noopener noreferrer"
               onClick={closeMobileMenu}
-              className="mt-2 flex items-center justify-center gap-2 rounded-full border-2 border-white bg-white px-5 py-3 text-sm font-black uppercase text-ink transition-all hover:border-white hover:bg-transparent hover:text-white">
+              className="mt-2 flex items-center justify-center gap-2 rounded-full border-2 border-white bg-white px-5 py-3 text-sm font-black uppercase text-night transition-all hover:border-white hover:bg-transparent hover:text-white">
               <Star size={16} className="star-wiggle shrink-0" fill="currentColor" />
               Star on GitHub
             </a>

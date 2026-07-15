@@ -24,12 +24,12 @@ export default async function InvoicesPage() {
       <h1 className="display text-4xl uppercase">Invoices</h1>
       <div className="mt-6 flex flex-col gap-3">
         {invoices?.map((inv) => (
-          <div key={inv.id} className="rounded-[18px] bg-white p-4 text-ink shadow-hard">
+          <div key={inv.id} className="rounded-[18px] bg-white p-4 text-night shadow-hard">
             <div className="flex items-center justify-between">
               <p className="font-black uppercase">{inv.invoice_number}</p>
-              <span className="rounded-full bg-ink px-3 py-1 text-xs font-black uppercase text-white">{inv.status}</span>
+              <span className="rounded-full bg-night px-3 py-1 text-xs font-black uppercase text-white">{inv.status}</span>
             </div>
-            <p className="text-sm font-bold text-ink/70">{inv.amount} {inv.currency}</p>
+            <p className="text-sm font-bold text-night/70">{inv.amount} {inv.currency}</p>
           </div>
         ))}
         {(!invoices || invoices.length === 0) && (

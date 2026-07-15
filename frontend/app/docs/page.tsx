@@ -142,7 +142,7 @@ export default function DocsPage() {
   return (
     <main className="overflow-hidden bg-paper">
       {/* ── Header ── */}
-      <section className="relative overflow-hidden rounded-b-[42px] bg-ink px-4 pb-16 pt-5 text-white md:rounded-b-[72px] md:px-8 lg:px-12">
+      <section className="relative overflow-hidden rounded-b-[42px] bg-night px-4 pb-16 pt-5 text-white md:rounded-b-[72px] md:px-8 lg:px-12">
         <Navbar />
         <div className="relative z-10 mx-auto max-w-5xl pt-16 pb-4 text-center">
           <span className="text-[15px] font-medium text-white sm:text-[18px]">
@@ -170,7 +170,7 @@ export default function DocsPage() {
                 <a
                   key={id}
                   href={`#${id}`}
-                  className="rounded-full border-2 border-ink/10 px-4 py-1.5 text-sm font-bold text-ink/70 transition hover:border-ink hover:bg-ink hover:text-white lg:border-transparent lg:px-2 lg:py-1">
+                  className="rounded-full border-2 border-night/10 px-4 py-1.5 text-sm font-bold text-night/70 transition hover:border-night hover:bg-night hover:text-white lg:border-transparent lg:px-2 lg:py-1">
                   {label}
                 </a>
               ))}
@@ -184,14 +184,14 @@ export default function DocsPage() {
               <h2 className="display text-4xl uppercase sm:text-5xl">
                 What is ORKA?
               </h2>
-              <p className="mt-4 text-base leading-8 text-ink/80 sm:text-[18px]">
+              <p className="mt-4 text-base leading-8 text-night/80 sm:text-[18px]">
                 ORKA is the financial operating system for service work. It
                 handles the annoying parts of running a project across borders —
                 proposals, escrow, verifying delivery, payouts, invoices, and
                 records — so agencies and freelancers can focus on the actual
                 work.
               </p>
-              <p className="mt-4 text-base leading-8 text-ink/80 sm:text-[18px]">
+              <p className="mt-4 text-base leading-8 text-night/80 sm:text-[18px]">
                 Under the hood it uses the Stellar blockchain to guarantee that
                 money moves only by the agreed rules. But you never see any of
                 that: you log in with email, pay with a card, and click to
@@ -206,9 +206,9 @@ export default function DocsPage() {
                 {terms.map(([term, def]) => (
                   <div
                     key={term}
-                    className="cut-corner rounded-[14px] border-2 border-ink bg-white p-5">
+                    className="cut-corner rounded-[14px] border-2 border-night bg-white p-5">
                     <dt className="display text-xl uppercase">{term}</dt>
-                    <dd className="mt-2 text-sm font-bold leading-6 text-ink/68">
+                    <dd className="mt-2 text-sm font-bold leading-6 text-night/68">
                       {def}
                     </dd>
                   </div>
@@ -225,9 +225,9 @@ export default function DocsPage() {
                 {roles.map(([role, copy]) => (
                   <div
                     key={role}
-                    className="rounded-[14px] border-2 border-ink/12 bg-white p-5">
+                    className="rounded-[14px] border-2 border-night/12 bg-white p-5">
                     <h3 className="display text-2xl uppercase">{role}</h3>
-                    <p className="mt-2 text-sm font-bold leading-6 text-ink/68">
+                    <p className="mt-2 text-sm font-bold leading-6 text-night/68">
                       {copy}
                     </p>
                   </div>
@@ -244,7 +244,7 @@ export default function DocsPage() {
                 {startSteps.map(([title, copy], i) => (
                   <div
                     key={title}
-                    className="flex items-start gap-4 rounded-[14px] border-2 border-ink bg-lime p-5 text-ink">
+                    className="flex items-start gap-4 rounded-[14px] border-2 border-night bg-lime p-5 text-night">
                     <span className="display text-3xl">{i + 1}.</span>
                     <div>
                       <h3 className="display text-xl uppercase">{title}</h3>
@@ -260,7 +260,7 @@ export default function DocsPage() {
               <h2 className="display text-4xl uppercase sm:text-5xl">
                 How a project works
               </h2>
-              <p className="mt-4 text-base leading-8 text-ink/80 sm:text-[18px]">
+              <p className="mt-4 text-base leading-8 text-night/80 sm:text-[18px]">
                 Here&apos;s the full journey, from kickoff to payout — the
                 &quot;happy path&quot; where everything goes smoothly.
               </p>
@@ -268,13 +268,13 @@ export default function DocsPage() {
                 {flow.map(([title, copy], i) => (
                   <li
                     key={title}
-                    className="flex items-start gap-4 border-b-2 border-ink/10 py-5">
+                    className="flex items-start gap-4 border-b-2 border-night/10 py-5">
                     <span className="display shrink-0 text-4xl text-orange sm:text-5xl">
                       {String(i + 1).padStart(2, "0")}
                     </span>
                     <div>
                       <h3 className="display text-2xl uppercase">{title}</h3>
-                      <p className="mt-1 text-sm font-bold leading-6 text-ink/70 sm:text-base">
+                      <p className="mt-1 text-sm font-bold leading-6 text-night/70 sm:text-base">
                         {copy}
                       </p>
                     </div>
@@ -288,7 +288,7 @@ export default function DocsPage() {
               <h2 className="display text-4xl uppercase sm:text-5xl">
                 When things go wrong
               </h2>
-              <p className="mt-4 text-base leading-8 text-ink/80 sm:text-[18px]">
+              <p className="mt-4 text-base leading-8 text-night/80 sm:text-[18px]">
                 Not every project is smooth. ORKA is built so that no one can be
                 cheated, whatever happens.
               </p>
@@ -296,9 +296,9 @@ export default function DocsPage() {
                 {trouble.map(([title, copy]) => (
                   <div
                     key={title}
-                    className="cut-corner rounded-[14px] border-2 border-ink bg-white p-5">
+                    className="cut-corner rounded-[14px] border-2 border-night bg-white p-5">
                     <h3 className="display text-xl uppercase">{title}</h3>
-                    <p className="mt-2 text-sm font-bold leading-6 text-ink/68">
+                    <p className="mt-2 text-sm font-bold leading-6 text-night/68">
                       {copy}
                     </p>
                   </div>
@@ -308,14 +308,14 @@ export default function DocsPage() {
 
             {/* Your money is safe */}
             <div id="your-money-is-safe" className="mt-14 scroll-mt-24">
-              <div className="rounded-[20px] bg-ink p-6 text-white md:p-8">
+              <div className="rounded-[20px] bg-night p-6 text-white md:p-8">
                 <h2 className="display text-4xl uppercase text-lime sm:text-5xl">
                   Why your money is safe
                 </h2>
                 <ul className="mt-6 flex flex-col gap-3">
                   {guarantees.map((g) => (
                     <li key={g} className="flex items-start gap-3">
-                      <span className="mt-0.5 grid size-6 shrink-0 place-items-center rounded-full bg-lime text-xs font-black text-ink">
+                      <span className="mt-0.5 grid size-6 shrink-0 place-items-center rounded-full bg-lime text-xs font-black text-night">
                         ✓
                       </span>
                       <p className="text-sm font-bold leading-6 text-white/85 sm:text-base">
@@ -335,7 +335,7 @@ export default function DocsPage() {
               <div className="mt-6 overflow-x-auto">
                 <table className="w-full min-w-[560px] border-collapse text-left">
                   <thead>
-                    <tr className="border-b-2 border-ink">
+                    <tr className="border-b-2 border-night">
                       <th className="display py-3 pr-4 text-sm uppercase">
                         What
                       </th>
@@ -349,12 +349,12 @@ export default function DocsPage() {
                   </thead>
                   <tbody>
                     {artifacts.map(([what, where, how]) => (
-                      <tr key={what} className="border-b border-ink/10">
+                      <tr key={what} className="border-b border-night/10">
                         <td className="py-3 pr-4 text-sm font-bold">{what}</td>
-                        <td className="py-3 pr-4 text-sm font-bold text-ink/70">
+                        <td className="py-3 pr-4 text-sm font-bold text-night/70">
                           {where}
                         </td>
-                        <td className="py-3 text-sm font-bold text-ink/70">
+                        <td className="py-3 text-sm font-bold text-night/70">
                           {how}
                         </td>
                       </tr>
@@ -369,16 +369,16 @@ export default function DocsPage() {
               <h2 className="display text-4xl uppercase sm:text-5xl">FAQ</h2>
               <div className="mt-4 flex flex-col">
                 {faqs.map(([q, a]) => (
-                  <details key={q} className="group border-b-2 border-ink/10 py-5">
+                  <details key={q} className="group border-b-2 border-night/10 py-5">
                     <summary className="flex cursor-pointer items-start gap-3">
-                      <span className="mt-0.5 grid size-7 shrink-0 place-items-center rounded-full bg-ink text-white transition-all duration-300 group-open:rotate-45 group-open:bg-violet">
+                      <span className="mt-0.5 grid size-7 shrink-0 place-items-center rounded-full bg-night text-white transition-all duration-300 group-open:rotate-45 group-open:bg-violet">
                         +
                       </span>
-                      <span className="display text-xl uppercase leading-7 text-ink transition-colors group-open:text-violet sm:text-2xl">
+                      <span className="display text-xl uppercase leading-7 text-night transition-colors group-open:text-violet sm:text-2xl">
                         {q}
                       </span>
                     </summary>
-                    <p className="ml-10 mt-3 text-sm font-bold leading-7 text-ink/70 sm:text-base">
+                    <p className="ml-10 mt-3 text-sm font-bold leading-7 text-night/70 sm:text-base">
                       {a}
                     </p>
                   </details>

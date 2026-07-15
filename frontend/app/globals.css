@@ -10,7 +10,6 @@
 /* ORKA brand tokens — namespaced to avoid colliding with shadcn semantic tokens */
 @theme inline {
   --color-orka-bg: #00081F;
-  --color-orka-ink: #061A2B;
   --color-orka-night: #082033;
   --color-orka-paper: #fffaf2;
   --color-orka-bone: #f5efe4;
@@ -46,6 +45,8 @@
   --color-shell: #030914;
   --color-night: #082033;
   --color-panel: #0a1c2e;
+  --color-paper: #fffaf2;
+  --color-bone: #f5efe4;
   --color-lime: #eaff35;
   --color-orange: #ff8a22;
   --color-coral: #ff4f42;

@@ -5,7 +5,7 @@ export default function WhyChooseUs() {
         <div>
           <p className="section-label text-coral">Why Choose Us!</p>
           <h2 className="display mt-2 text-4xl uppercase sm:text-5xl md:text-6xl lg:text-7xl">Why ORKA is the trusted choice.</h2>
-          <p className="mt-5 text-base font-normal leading-7 text-ink/80 sm:text-[18px]">
+          <p className="mt-5 text-base font-normal leading-7 text-night/80 sm:text-[18px]">
             Clients get familiar links, email access, and simple approvals. Under the hood, ORKA manages
             smart-contract escrow, sponsored transactions, path payments, verification trails, and ledgers.
           </p>
@@ -19,7 +19,7 @@ export default function WhyChooseUs() {
           ].map(([title, copy]) => (
             <div key={title} className="cut-corner rounded-[14px] border-2 border-night bg-white p-6 text-center lg:text-left">
               <h3 className="display text-3xl uppercase">{title}</h3>
-              <p className="mt-3 text-sm font-bold leading-6 text-ink/68">{copy}</p>
+              <p className="mt-3 text-sm font-bold leading-6 text-night/68">{copy}</p>
             </div>
           ))}
         </div>

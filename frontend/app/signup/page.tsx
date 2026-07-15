@@ -18,7 +18,7 @@ export default async function SignupPage() {
   if (user) redirect("/workspaces");
 
   return (
-    <main className="flex min-h-screen flex-col bg-ink px-4 py-10 text-white">
+    <main className="flex min-h-screen flex-col bg-night px-4 py-10 text-white">
       <div className="mx-auto flex w-full max-w-md flex-col gap-8">
         <div className="flex items-center gap-3">
           <Image
@@ -31,9 +31,9 @@ export default async function SignupPage() {
           <span className="display text-3xl">ORKA</span>
         </div>
 
-        <div className="rounded-[28px] bg-white p-6 text-ink shadow-hard md:p-8">
+        <div className="rounded-[28px] bg-white p-6 text-night shadow-hard md:p-8">
           <h1 className="display mb-1 text-3xl uppercase">Create your account</h1>
-          <p className="mb-6 text-sm font-bold text-ink/70">
+          <p className="mb-6 text-sm font-bold text-night/70">
             Start running projects on ORKA.
           </p>
           <SignupForm />
