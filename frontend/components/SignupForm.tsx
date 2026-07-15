@@ -165,7 +165,7 @@ export default function SignupForm() {
           onClick={() => setMode("orka")}
           aria-pressed={mode === "orka"}
           className={`rounded-full px-4 py-2 text-sm font-black uppercase transition ${
-            mode === "orka" ? "bg-night text-white" : "text-night hover:bg-bone"
+            mode === "orka" ? "bg-lime text-white" : "text-night hover:bg-bone"
           }`}>
           Orka-managed
         </button>

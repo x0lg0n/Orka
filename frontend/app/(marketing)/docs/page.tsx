@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
-import Navbar from "../../components/Navbar";
-import WaitlistCta from "../../components/WaitlistCta";
-import Footer from "../../components/Footer";
+import WaitlistCta from "@/components/WaitlistCta";
 
 export const metadata: Metadata = {
   title: "Docs — ORKA",
@@ -28,7 +26,7 @@ const terms: [string, string][] = [
   ],
   [
     "Milestone",
-    "A chunk of a project with its own price — e.g. \u201cDesign $2,000\u201d. Each milestone is funded, delivered, and paid out independently.",
+    "A chunk of a project with its own price — e.g. “Design $2,000”. Each milestone is funded, delivered, and paid out independently.",
   ],
   [
     "Managed mode (Mode A)",
@@ -40,7 +38,7 @@ const terms: [string, string][] = [
   ],
   [
     "Sponsored transaction",
-    "ORKA pays the network fees for you. You never buy or hold \u201cgas\u201d — payments feel like any normal web app.",
+    "ORKA pays the network fees for you. You never buy or hold “gas” — payments feel like any normal web app.",
   ],
   [
     "Multi-sig release",
@@ -57,7 +55,7 @@ const terms: [string, string][] = [
 ];
 
 const roles: [string, string][] = [
-  ["The Agency", "Owns the ORKA workspace and runs client projects (in our examples, \u201cOreenza\u201d)."],
+  ["The Agency", "Owns the ORKA workspace and runs client projects (in our examples, “Oreenza”)."],
   ["The Client", "The company paying for the work. They fund escrow and approve milestones."],
   ["The Freelancer", "The person delivering the work and getting paid per milestone."],
   ["ORKA", "The invisible operator — signs transactions, pays the gas, and co-signs every release."],
@@ -88,7 +86,7 @@ const flow: [string, string][] = [
   ],
   [
     "The work is verified",
-    "ORKA's AI reviews the delivery and shows the client a \u201cverified — approve?\u201d summary with source links. The client always makes the final call.",
+    "ORKA's AI reviews the delivery and shows the client a “verified — approve?” summary with source links. The client always makes the final call.",
   ],
   [
     "The client approves & the freelancer is paid",
@@ -140,10 +138,9 @@ const faqs: [string, string][] = [
 
 export default function DocsPage() {
   return (
-    <main className="overflow-hidden bg-paper">
+    <div className="overflow-hidden">
       {/* ── Header ── */}
       <section className="relative overflow-hidden rounded-b-[42px] bg-night px-4 pb-16 pt-5 text-white md:rounded-b-[72px] md:px-8 lg:px-12">
-        <Navbar />
         <div className="relative z-10 mx-auto max-w-5xl pt-16 pb-4 text-center">
           <span className="text-[15px] font-medium text-white sm:text-[18px]">
             📘 Documentation
@@ -390,7 +387,6 @@ export default function DocsPage() {
       </section>
 
       <WaitlistCta />
-      <Footer />
-    </main>
+    </div>
   );
 }
