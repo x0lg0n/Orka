@@ -1,15 +1,19 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export default function AuthLayout({ children }: { children: ReactNode }) {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center bg-night px-4 py-10 text-white">
-      <div className="w-full max-w-md rounded-[28px] bg-white p-6 text-night shadow-hard md:p-8">
+    <main className="relative flex min-h-screen flex-col items-center justify-center bg-background px-4 py-10 text-foreground">
+      <div className="absolute right-4 top-4">
+        <ThemeToggle />
+      </div>
+      <div className="w-full max-w-md rounded-[28px] border bg-card p-6 text-card-foreground shadow-sm md:p-8">
         {children}
       </div>
       <Link
         href="/"
-        className="mt-6 text-xs font-bold text-white/50 underline-offset-4 hover:underline"
+        className="mt-6 text-xs font-bold text-muted-foreground underline-offset-4 hover:underline"
       >
         Back to ORKA
       </Link>

@@ -32,7 +32,7 @@ export default async function SignupPage() {
 
       <div>
         <h1 className="display mb-1 text-3xl uppercase">Create your account</h1>
-        <p className="mb-6 text-sm font-bold text-night/70">
+        <p className="mb-6 text-sm font-bold text-foreground/70">
           Start running projects on ORKA.
         </p>
         <SignupForm />

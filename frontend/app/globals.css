@@ -9,34 +9,7 @@
 
 /* ORKA brand tokens — namespaced to avoid colliding with shadcn semantic tokens */
 @theme inline {
-  --color-orka-bg: #00081F;
-  --color-orka-night: #082033;
-  --color-orka-paper: #fffaf2;
-  --color-orka-bone: #f5efe4;
-  --color-orka-orange: #ff8a22;
-  --color-orka-coral: #ff4f42;
-  --color-orka-violet: #9474ff;
-  --color-orka-lime: #eaff35;
-  --color-orka-teal: #22bd93;
 
-  --color-orka-shell: #030914;
-  --color-orka-sidebar: #06101f;
-  --color-orka-panel: #0a1c2e;
-  --color-orka-success: #22bd93;
-  --color-orka-warning: #ff8a22;
-  --color-orka-danger: #ff4f42;
-  --color-orka-info: #3b82f6;
-  --color-orka-border: rgba(255, 255, 255, 0.08);
-  --color-orka-muted: rgba(255, 255, 255, 0.55);
-  --color-orka-disabled: rgba(255, 255, 255, 0.30);
-  --color-orka-focus: rgba(148, 116, 255, 0.55);
-  --color-orka-hover: rgba(255, 255, 255, 0.06);
-  --color-orka-surface: #ffffff;
-  --color-orka-surfaceMuted: #f7f8fc;
-  --color-orka-text: #11182d;
-  --color-orka-textMuted: #5f6b86;
-  --color-orka-textSubtle: #8b95aa;
-  --color-orka-line: #e5e8f0;
 
   /* ORKA brand colors — simple names so existing product-UI classes
      (bg-shell, text-lime, from-orange, to-violet, bg-coral, …) keep working.
@@ -118,40 +91,40 @@
 }
 
 :root {
-  color-scheme: dark;
+  color-scheme: light;
   background: #fffaf2;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
+  --background: #fffaf2;
+  --foreground: #082033;
+  --card: #ffffff;
+  --card-foreground: #082033;
+  --popover: #ffffff;
+  --popover-foreground: #082033;
   --primary: #9474ff;
   --primary-foreground: #ffffff;
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
+  --secondary: #f4f7fb;
+  --secondary-foreground: #082033;
+  --muted: #f4f7fb;
+  --muted-foreground: #5b6b80;
+  --accent: #f4f7fb;
+  --accent-foreground: #082033;
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --border: rgba(8, 32, 51, 0.10);
+  --input: rgba(8, 32, 51, 0.15);
+  --ring: #9474ff;
+  --chart-1: #ff8a22;
+  --chart-2: #eaff35;
+  --chart-3: #22bd93;
+  --chart-4: #ff4f42;
+  --chart-5: #9474ff;
+  --radius: 0.75rem;
+  --sidebar: #f4f7fb;
+  --sidebar-foreground: #082033;
+  --sidebar-primary: #9474ff;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #f4f7fb;
+  --sidebar-accent-foreground: #082033;
+  --sidebar-border: rgba(8, 32, 51, 0.10);
+  --sidebar-ring: #9474ff;
 }
 
 * {
@@ -491,39 +464,38 @@ input {
   outline-offset: 2px;
 }
 
-
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
+  --background: #030914;
+  --foreground: #f4f7fb;
+  --card: #0a1c2e;
+  --card-foreground: #f4f7fb;
+  --popover: #0a1c2e;
+  --popover-foreground: #f4f7fb;
   --primary: #9474ff;
   --primary-foreground: #ffffff;
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
+  --secondary: #0c1626;
+  --secondary-foreground: #f4f7fb;
+  --muted: #0c1626;
+  --muted-foreground: #9fb0c3;
+  --accent: #0c1626;
+  --accent-foreground: #f4f7fb;
   --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
+  --border: rgba(255, 255, 255, 0.10);
+  --input: rgba(255, 255, 255, 0.15);
   --ring: #9474ff;
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --chart-1: #ff8a22;
+  --chart-2: #eaff35;
+  --chart-3: #22bd93;
+  --chart-4: #ff4f42;
+  --chart-5: #9474ff;
+  --sidebar: #06101f;
+  --sidebar-foreground: #f4f7fb;
+  --sidebar-primary: #9474ff;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #0c1626;
+  --sidebar-accent-foreground: #f4f7fb;
+  --sidebar-border: rgba(255, 255, 255, 0.10);
+  --sidebar-ring: #9474ff;
 }
 
 /* ── Dashboard light theme override ── */
@@ -534,13 +506,13 @@ input {
   --card-foreground: #11182d;
   --border: #e5e8f0;
   --input: #e5e8f0;
-  --primary: #7c3aed;
+  --primary: #9474ff;
   --primary-foreground: #ffffff;
   --muted: #f7f8fc;
   --muted-foreground: #5f6b86;
   --accent: #f7f8fc;
   --accent-foreground: #11182d;
-  --ring: #7c3aed;
+  --ring: #9474ff;
   color-scheme: light;
 }
 
