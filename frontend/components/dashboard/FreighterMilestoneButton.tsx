@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { orkaClient, submitFreighterXdr } from "../../../lib/stellar";
-import { freighterApplyTx } from "../../../app/actions";
+import { orkaClient, submitFreighterXdr } from "@/lib/stellar";
+import { freighterApplyTx } from "@/app/actions";
 
 export default function FreighterMilestoneButton({
   contractId,

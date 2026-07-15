@@ -1,30 +1,33 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Check, ExternalLink, Plus } from "lucide-react";
-import { createClient } from "../../../lib/supabase/server";
-import { getActiveOrgId } from "../../../lib/orka";
-import { acceptProposal } from "../../actions";
+import { createClient } from "@/lib/supabase/server";
+import { getActiveOrgBySlug } from "@/lib/orka";
+import { acceptProposal } from "@/app/actions";
 import {
   AlertBanner,
   EmptyState,
   GlassPanel,
   PageHeader,
   StatusPill,
-} from "../_components/DashboardUI";
+} from "@/components/dashboard/DashboardUI";
 
 export default async function ProposalsPage({
+  params,
   searchParams,
 }: {
+  params: Promise<{ slug: string }>;
   searchParams: Promise<{ error?: string }>;
 }) {
+  const { slug } = await params;
   const supabase = await createClient();
-  const orgId = await getActiveOrgId(supabase);
-  if (!orgId) redirect("/onboarding");
+  const org = await getActiveOrgBySlug(supabase, slug);
+  if (!org) redirect("/workspaces");
 
   const { data: proposals } = await supabase
     .from("proposals")
     .select("id, client_address, freelancer_address, asset, status, contract_id, project_id, created_at")
-    .eq("org_id", orgId)
+    .eq("org_id", org.id)
     .order("created_at", { ascending: false });
 
   const { error } = await searchParams;
@@ -37,7 +40,7 @@ export default async function ProposalsPage({
         description="Draft, accept, and convert escrow proposals into active project contracts."
         action={
           <Link
-            href="/dashboard/proposals/new"
+            href={`/w/${slug}/proposals/new`}
             className="inline-flex items-center gap-2 rounded-[16px] border border-cyan-200/30 bg-cyan-300 px-4 py-2 text-sm font-black uppercase text-[#04101f] transition hover:-translate-y-0.5 hover:bg-lime focus:outline-none focus:ring-2 focus:ring-cyan-200/50"
           >
             <Plus className="size-4" aria-hidden />
@@ -102,7 +105,7 @@ export default async function ProposalsPage({
                   </form>
                 ) : (
                   <Link
-                    href={`/dashboard/projects/${p.project_id ?? ""}`}
+                    href={`/w/${slug}/projects/${p.project_id ?? ""}`}
                     className="inline-flex items-center gap-2 rounded-[16px] border border-white/10 bg-white/[0.06] px-4 py-2 text-sm font-black uppercase text-white transition hover:-translate-y-0.5 hover:bg-white/[0.1] focus:outline-none focus:ring-2 focus:ring-cyan-200/50"
                   >
                     <ExternalLink className="size-4" aria-hidden />

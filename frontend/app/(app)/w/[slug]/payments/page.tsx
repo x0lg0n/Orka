@@ -1,19 +1,16 @@
 import { redirect } from "next/navigation";
 import { CircleDollarSign, ShieldCheck } from "lucide-react";
-import { createClient } from "../../../lib/supabase/server";
-import { getActiveOrgId } from "../../../lib/orka";
-import {
-  fundMilestone,
-  releaseMilestone,
-} from "../../../app/actions";
-import type { MilestoneStatus } from "../../../lib/orka";
-import FreighterMilestoneButton from "../_components/FreighterMilestoneButton";
+import { createClient } from "@/lib/supabase/server";
+import { getActiveOrgBySlug } from "@/lib/orka";
+import { fundMilestone, releaseMilestone } from "@/app/actions";
+import type { MilestoneStatus } from "@/lib/orka";
+import FreighterMilestoneButton from "@/components/dashboard/FreighterMilestoneButton";
 import {
   EmptyState,
   GlassPanel,
   PageHeader,
   StatusPill,
-} from "../_components/DashboardUI";
+} from "@/components/dashboard/DashboardUI";
 
 type MilestoneRow = {
   id: string;
@@ -34,10 +31,15 @@ type RawMilestone = {
   projects: { title: string | null; contract_id: string | null }[] | null;
 };
 
-export default async function PaymentsPage() {
+export default async function PaymentsPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
   const supabase = await createClient();
-  const orgId = await getActiveOrgId(supabase);
-  if (!orgId) redirect("/onboarding");
+  const org = await getActiveOrgBySlug(supabase, slug);
+  if (!org) redirect("/workspaces");
 
   const {
     data: { user },
@@ -53,7 +55,7 @@ export default async function PaymentsPage() {
   const { data: milestones } = await supabase
     .from("milestones")
     .select("id, title, amount, status, chain_index, projects(title, contract_id)")
-    .eq("org_id", orgId)
+    .eq("org_id", org.id)
     .in("status", ["draft", "approved"])
     .order("created_at", { ascending: false });
 

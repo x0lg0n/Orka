@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { connectFreighter } from "../../../../lib/stellar";
-import { saveStellarAddress } from "../../../../app/actions";
+import { connectFreighter } from "@/lib/stellar";
+import { saveStellarAddress } from "@/app/actions";
 
 export default function ConnectFreighter({
   currentAddress,

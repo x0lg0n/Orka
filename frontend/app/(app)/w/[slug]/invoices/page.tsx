@@ -1,22 +1,27 @@
 import { redirect } from "next/navigation";
-import { createClient } from "../../../lib/supabase/server";
-import { getActiveOrgId } from "../../../lib/orka";
+import { createClient } from "@/lib/supabase/server";
+import { getActiveOrgBySlug } from "@/lib/orka";
 
 export const metadata = { title: "Invoices · ORKA" };
 
-export default async function InvoicesPage() {
+export default async function InvoicesPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) redirect("/signup");
-  const orgId = await getActiveOrgId(supabase);
-  if (!orgId) redirect("/onboarding");
+  const org = await getActiveOrgBySlug(supabase, slug);
+  if (!org) redirect("/workspaces");
 
   const { data: invoices } = await supabase
     .from("invoices")
     .select("id, invoice_number, amount, currency, status, project_id, created_at")
-    .eq("org_id", orgId)
+    .eq("org_id", org.id)
     .order("created_at", { ascending: false });
 
   return (

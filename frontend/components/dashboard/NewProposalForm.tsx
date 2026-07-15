@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { createProposal } from "../../../actions";
+import { createProposal } from "@/app/actions";
 
 const TESTNET_USDC =
   "CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC";

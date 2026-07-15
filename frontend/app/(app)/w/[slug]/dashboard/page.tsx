@@ -11,7 +11,7 @@ import {
   PageHeader,
   StatusPill,
   metricIcons,
-} from "@/app/dashboard/_components/DashboardUI";
+} from "@/components/dashboard/DashboardUI";
 
 export const metadata = {
   title: "Dashboard · ORKA",

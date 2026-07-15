@@ -1,14 +1,14 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { ArrowRight, FolderKanban } from "lucide-react";
-import { createClient } from "../../../lib/supabase/server";
-import { getActiveOrgId } from "../../../lib/orka";
+import { createClient } from "@/lib/supabase/server";
+import { getActiveOrgBySlug } from "@/lib/orka";
 import {
   AlertBanner,
   EmptyState,
   PageHeader,
   StatusPill,
-} from "../_components/DashboardUI";
+} from "@/components/dashboard/DashboardUI";
 
 type ProjectRow = {
   id: string;
@@ -19,18 +19,21 @@ type ProjectRow = {
 };
 
 export default async function ProjectsPage({
+  params,
   searchParams,
 }: {
+  params: Promise<{ slug: string }>;
   searchParams: Promise<{ tab?: string; error?: string }>;
 }) {
+  const { slug } = await params;
   const supabase = await createClient();
-  const orgId = await getActiveOrgId(supabase);
-  if (!orgId) redirect("/onboarding");
+  const org = await getActiveOrgBySlug(supabase, slug);
+  if (!org) redirect("/workspaces");
 
   const { data: projects } = await supabase
     .from("projects")
     .select("id, title, status, contract_id, created_at")
-    .eq("org_id", orgId)
+    .eq("org_id", org.id)
     .order("created_at", { ascending: false });
 
   const { tab, error } = await searchParams;
@@ -45,7 +48,7 @@ export default async function ProjectsPage({
     return (
       <Link
         key={key}
-        href={`/dashboard/projects?tab=${key}`}
+        href={`/w/${slug}/projects?tab=${key}`}
         className={`rounded-[16px] border px-4 py-2 text-sm font-black uppercase transition focus:outline-none focus:ring-2 focus:ring-cyan-200/50 ${
           isActive
             ? "border-cyan-200/30 bg-cyan-300 text-[#04101f]"
@@ -82,7 +85,7 @@ export default async function ProjectsPage({
           {rows.map((p) => (
             <li key={p.id}>
               <Link
-                href={`/dashboard/projects/${p.id}`}
+                href={`/w/${slug}/projects/${p.id}`}
                 className="flex flex-col gap-4 rounded-[24px] border border-white/10 bg-white/[0.065] p-5 text-white shadow-[0_24px_80px_rgba(0,0,0,0.22),inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-xl transition hover:-translate-y-0.5 hover:bg-white/[0.09] sm:flex-row sm:items-center sm:justify-between"
               >
                 <div className="flex min-w-0 items-center gap-4">
