@@ -17,7 +17,7 @@ export default function WhyChooseUs() {
             ["Borderless payouts", "Stellar routing supports fast, low-cost settlement across currencies."],
             ["Data flywheel", "Every verified delivery teaches ORKA what good work looks like."]
           ].map(([title, copy]) => (
-            <div key={title} className="cut-corner rounded-[14px] border-2 border-ink bg-white p-6 text-center lg:text-left">
+            <div key={title} className="cut-corner rounded-[14px] border-2 border-night bg-white p-6 text-center lg:text-left">
               <h3 className="display text-3xl uppercase">{title}</h3>
               <p className="mt-3 text-sm font-bold leading-6 text-ink/68">{copy}</p>
             </div>

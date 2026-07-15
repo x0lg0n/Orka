@@ -15,7 +15,7 @@ export default async function SignupPage() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (user) redirect("/dashboard");
+  if (user) redirect("/workspaces");
 
   return (
     <main className="flex min-h-screen flex-col bg-ink px-4 py-10 text-white">

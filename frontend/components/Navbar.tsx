@@ -129,7 +129,7 @@ export default function Navbar() {
           href={GITHUB_URL}
           target="_blank"
           rel="noopener noreferrer"
-          className="hidden items-center gap-4 rounded-full border-4 border-white bg-white px-6 py-3 text-[18px] font-black uppercase text-ink transition-all duration-200 hover:-translate-y-0.5 hover:bg-transparent hover:text-white hover:border-white md:flex">
+          className="hidden items-center gap-4 rounded-full border-4 border-white bg-white px-6 py-3 text-[18px] font-black uppercase text-night transition-all duration-200 hover:-translate-y-0.5 hover:bg-transparent hover:text-white hover:border-white md:flex">
           <Star size={18} fill="current" className="star-wiggle shrink-0" />
           Star on GitHub
         </a>

@@ -47,7 +47,7 @@ export const engines: Engine[] = [
   {
     title: "Analytics & Reporting",
     copy: "Real-time dashboards for project health, cash flow, and team performance across borders.",
-    color: "bg-ink",
+    color: "bg-night",
   },
 ];
 
