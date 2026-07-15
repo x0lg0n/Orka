@@ -5,12 +5,20 @@ Compact guidance for OpenCode sessions in the ORKA repo.
 ## Repo shape
 
 - **pnpm monorepo** (no `pnpm-workspace.yaml` — each package is managed independently). Packages:
-  - `frontend/` — Next.js 16 (App Router) app: landing page + dashboard UI, Supabase + Resend waitlist, Stellar/Soroban integration via `@orka/stellar-sdk`. Uses `frontend/pnpm-lock.yaml`.
+  - `frontend/` — Next.js 16 (App Router) app: landing page + dashboard UI, Supabase + Resend waitlist, Stellar/Soroban integration via `@orka/stellar-sdk`. Uses `frontend/pnpm-lock.yaml`. Route architecture: `(app)/w/[slug]/...` is the authenticated workspace area (slug = `organizations.slug`, the URL source of truth), `p/[token]` is the public client portal, `(auth)`/`(marketing)` are public route groups, and `/workspaces` is the pre-auth chooser. Legacy `app/dashboard/**` was removed.
   - `contracts/` — Soroban smart contracts (Rust). Tested via `cargo test` (snapshots under `test_snapshots/`).
   - `services/` — Rust / Axum backend (`services/src`).
   - `packages/stellar-sdk/` — TypeScript SDK (`vitest` tests under `src/`). Has its own `pnpm-lock.yaml`.
 - **Root `README.md` is the project landing page** (rich, with badges + links). It is NOT empty. `ROADMAP.md` is the future build plan; when it conflicts with current code, trust the code.
 - `ARCHITECTURE.md`, `docs/`, `packages/`, `contracts/`, and `services/` all contain real, current code — assume they're present.
+
+## Frontend routing architecture
+
+- **`app/(app)/w/[slug]/...`** — authenticated workspace area. The `slug` param is the workspace identity (resolved via `getActiveOrgBySlug` in `lib/orka.ts`); never trust the internal UUID in URLs. `proxy.ts` keeps an `orka_active_org_slug` cookie in sync and redirects legacy `/dashboard/*` hits here.
+- **`app/(app)/w/[slug]/**` detail/settings pages use `?tab=` query-param tabs** via the shared `components/shell/Tabs.tsx` (server component rendering a `Link` tab bar; the page renders panel content itself).
+- **`app/p/[projectToken]/...`** — public, no-auth client portal. Data is resolved by a `shared_token` through the `get_portal_project` **SECURITY DEFINER** RPC (granted to `anon`); the schema lives in `frontend/supabase/portal.sql` and must be applied to the DB. `lib/portal.ts` wraps the call. Do **not** add a service-role read path for this.
+- **Shared chrome** lives in `components/shell/` (`AppShell`, `Sidebar`, `WorkspaceSwitcher`, `PageHeader`, `MobileNav`, `Tabs`). `PageHeader` is re-exported from `components/dashboard/DashboardUI.tsx` for backward compatibility.
+- **No `lib/routes.ts`** — route strings are inline template literals (`` `/w/${slug}/...` ``). Keep slug literals consistent if you add links.
 
 ## Commands
 
