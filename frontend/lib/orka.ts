@@ -42,3 +42,51 @@ export async function getActiveOrgId(
     .maybeSingle();
   return data?.org_id ?? null;
 }
+
+export type OrgSummary = { id: string; name: string; slug: string; role: string };
+
+export type OrgBySlug = {
+  id: string;
+  name: string;
+  slug: string;
+  type: string | null;
+  logo_url: string | null;
+};
+
+// Resolves an organization by its URL slug (used as the workspace identity in /w/[slug]).
+export async function getActiveOrgBySlug(
+  supabase: SupabaseClient,
+  slug: string,
+): Promise<OrgBySlug | null> {
+  const { data, error } = await supabase
+    .from("organizations")
+    .select("id, name, slug, type, logo_url")
+    .eq("slug", slug)
+    .maybeSingle();
+  if (error || !data) return null;
+  return data as OrgBySlug;
+}
+
+// Lists the organizations a user belongs to, with slug for URL routing.
+export async function listOrgsForUser(
+  supabase: SupabaseClient,
+  userId: string,
+): Promise<OrgSummary[]> {
+  const { data, error } = await supabase
+    .from("organization_members")
+    .select("role, organizations(id, name, slug)")
+    .eq("user_id", userId);
+  if (error || !data) return [];
+  return (data ?? [])
+    .map((row: { role?: unknown; organizations?: unknown }) => {
+      const org = Array.isArray(row.organizations)
+        ? row.organizations[0]
+        : row.organizations;
+      if (!org || !(org as { slug?: unknown }).slug) return null;
+      return {
+        ...(org as { id: string; name: string; slug: string }),
+        role: String(row.role ?? "member"),
+      } as OrgSummary;
+    })
+    .filter((o): o is OrgSummary => Boolean(o && o.slug));
+}

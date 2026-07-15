@@ -2,8 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { CheckCircle2, Clock3 } from "lucide-react";
 import type { ReactNode } from "react";
-import { createClient } from "../../../lib/supabase/server";
-import { getActiveOrgId } from "../../../lib/orka";
+import { createClient } from "@/lib/supabase/server";
 import {
   ActivityFeed,
   CashFlowChart,
@@ -12,7 +11,7 @@ import {
   PageHeader,
   StatusPill,
   metricIcons,
-} from "../_components/DashboardUI";
+} from "@/app/dashboard/_components/DashboardUI";
 
 export const metadata = {
   title: "Dashboard · ORKA",
@@ -31,7 +30,12 @@ type LedgerRow = {
   status: string | null;
 };
 
-export default async function DashboardHomePage() {
+export default async function WorkspaceDashboardPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
   const supabase = await createClient();
   const {
     data: { user },
@@ -39,7 +43,12 @@ export default async function DashboardHomePage() {
 
   if (!user) redirect("/signup");
 
-  const orgId = await getActiveOrgId(supabase);
+  const { data: org } = await supabase
+    .from("organizations")
+    .select("id")
+    .eq("slug", slug)
+    .maybeSingle();
+  const orgId = org?.id ?? null;
 
   const [
     profileResult,
@@ -66,10 +75,7 @@ export default async function DashboardHomePage() {
           .eq("org_id", orgId)
       : Promise.resolve({ data: null, count: 0 }),
     orgId
-      ? supabase
-          .from("milestones")
-          .select("amount, status")
-          .eq("org_id", orgId)
+      ? supabase.from("milestones").select("amount, status").eq("org_id", orgId)
       : Promise.resolve({ data: null }),
     orgId
       ? supabase
@@ -106,7 +112,7 @@ export default async function DashboardHomePage() {
         description="Monitor proposal intake, escrow milestones, and payment movement from one operating surface."
         action={
           <Link
-            href="/dashboard/proposals/new"
+            href={`/w/${slug}/proposals/new`}
             className="inline-flex items-center gap-2 rounded-[16px] border border-cyan-200/30 bg-cyan-300 px-4 py-2 text-sm font-black uppercase text-[#04101f] transition hover:-translate-y-0.5 hover:bg-lime focus:outline-none focus:ring-2 focus:ring-cyan-200/50"
           >
             New proposal
@@ -198,7 +204,7 @@ export default async function DashboardHomePage() {
               status={`$${payable.toLocaleString()}`}
             />
             <Link
-              href="/dashboard/payments"
+              href={`/w/${slug}/payments`}
               className="mt-2 rounded-[16px] border border-white/10 bg-white/[0.06] px-4 py-3 text-center text-sm font-black uppercase text-white transition hover:-translate-y-0.5 hover:bg-white/[0.1]"
             >
               Open payments

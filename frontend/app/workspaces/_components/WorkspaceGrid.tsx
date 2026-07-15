@@ -16,7 +16,6 @@ import { Badge } from "../../../components/ui/badge";
 import { Button } from "../../../components/ui/button";
 import { Card } from "../../../components/ui/card";
 import { Input } from "../../../components/ui/input";
-import { selectOrg } from "../../../app/actions";
 import Link from "next/link";
 
 export type Workspace = {
@@ -166,13 +165,12 @@ function WorkspaceCard({ workspace: w }: { workspace: Workspace }) {
         <Stat icon={CircleDollarSign} label="Members" value={String(w.members)} />
       </div>
 
-      <form action={selectOrg} className="mt-auto pt-6">
-        <input type="hidden" name="orgId" value={w.id} />
-        <Button type="submit" className="w-full">
+      <Button asChild className="mt-auto w-full">
+        <Link href={w.slug ? `/w/${w.slug}/dashboard` : "/workspaces"}>
           Open workspace
           <ArrowRight size={16} aria-hidden />
-        </Button>
-      </form>
+        </Link>
+      </Button>
     </Card>
   );
 }

@@ -102,7 +102,7 @@ export default async function WorkspacesPage({
         </div>
       </header>
 
-      <div className="mx-auto w-full max-w-[1200px] px-5 py-10 sm:px-8">
+      <div className="mx-auto w-full max-w-300 px-5 py-10 sm:px-8">
         <div className="flex flex-col gap-2">
           <h1 className="text-[32px] font-extrabold tracking-[-0.035em] sm:text-[38px]">Choose a Workspace</h1>
           <p className="text-[15px] font-bold text-white/50 sm:text-[16px]">
@@ -111,7 +111,7 @@ export default async function WorkspacesPage({
         </div>
 
         {error ? (
-          <p className="mt-6 max-w-[480px] rounded-[10px] border border-danger/35 bg-danger/10 px-4 py-3 text-sm font-bold text-red-100">
+          <p className="mt-6 max-w-120 rounded-[10px] border border-danger/35 bg-danger/10 px-4 py-3 text-sm font-bold text-red-100">
             {error}
           </p>
         ) : null}

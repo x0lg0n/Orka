@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import { Check, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,13 +15,18 @@ import {
 
 export function WorkspaceSwitcher({
   orgs,
-  currentOrgId,
+  currentSlug,
 }: {
-  orgs: { id: string; name: string }[];
-  currentOrgId?: string;
+  orgs: { slug: string; name: string }[];
+  currentSlug: string;
 }) {
-  const current = orgs.find((org) => org.id === currentOrgId) ?? orgs[0];
+  const pathname = usePathname();
+  const router = useRouter();
+  const current = orgs.find((o) => o.slug === currentSlug) ?? orgs[0];
   if (!current) return null;
+
+  const urlForSlug = (slug: string) => pathname.replace(/\/w\/[^/]+/, `/w/${slug}`);
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -44,13 +49,12 @@ export function WorkspaceSwitcher({
       <DropdownMenuContent className="w-(--radix-dropdown-menu-trigger-width) border-border bg-sidebar text-white">
         <DropdownMenuLabel className="text-white/45">Workspaces</DropdownMenuLabel>
         {orgs.map((org) => {
-          const active = org.id === current.id;
+          const active = org.slug === current.slug;
           return (
             <DropdownMenuItem
-              key={org.id}
-              className={`gap-2 text-white hover:bg-hover focus:bg-hover data-[highlighted]:bg-hover dark:hover:bg-hover dark:focus:bg-hover dark:data-[highlighted]:bg-hover ${
-                active ? "bg-hover" : ""
-              }`}
+              key={org.slug}
+              onSelect={() => router.push(urlForSlug(org.slug))}
+              className={`gap-2 text-white hover:bg-hover focus:bg-hover data-[highlighted]:bg-hover dark:hover:bg-hover dark:focus:bg-hover dark:data-[highlighted]:bg-hover ${active ? "bg-hover" : ""}`}
             >
               <span className="grid size-6 shrink-0 place-items-center rounded-[6px] bg-primary/20 text-xs font-extrabold text-primary">
                 {org.name.charAt(0).toUpperCase()}
