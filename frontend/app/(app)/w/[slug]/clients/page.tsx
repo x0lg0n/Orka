@@ -3,22 +3,6 @@ import { createClient } from "@/lib/supabase/server";
 import { getActiveOrgBySlug } from "@/lib/orka";
 import { PageHeader, EmptyState } from "@/components/dashboard/DashboardUI";
 
-export interface Client {
-  id: string;
-  name: string;
-  website: string;
-  email: string;
-  contactName: string;
-  contactEmail: string;
-  activeProjects: number;
-  totalBilled: number;
-  escrowInHold: number;
-  status: "Active" | "Inactive" | "Lead" | "Archived";
-  lastActivity: string;
-  logoColor: string;
-  logoInitial: string;
-}
-
 type ClientRow = {
   id: string;
   name: string | null;
