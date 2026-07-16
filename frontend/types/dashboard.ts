@@ -7,21 +7,15 @@ export interface DashboardUser {
   avatar?: string;
 }
 
-export interface MetricData {
-  title: string;
-  value: string;
-  subtitle: string;
-  icon: LucideIcon;
-  trend?: string;
-  trendUp?: boolean;
-  iconBg: string;
 export type MetricKey = "projects" | "escrow" | "approvals" | "payments";
 
 export interface MetricData {
   title: string;
-  metricKey: MetricKey;
   value: string;
   subtitle: string;
+  icon?: LucideIcon;
+  iconBg?: string;
+  metricKey: MetricKey;
   href: string;
   trend?: string;
   trendUp?: boolean;
@@ -32,29 +26,9 @@ export interface Milestone {
   project: string;
   name: string;
   date: string;
-  icon: LucideIcon;
-}
-
-export interface Approval {
-  id: string;
-  project: string;
-  description: string;
-  type: "review" | "sign" | "release";
-}
-
-export interface Activity {
-  id: string;
-  text: string;
-  boldPart: string;
-  timestamp: string;
-  icon: LucideIcon;
-  iconBg: string;
-}
-
-  projectId: string;
-  name: string;
-  date: string;
-  href: string;
+  icon?: LucideIcon;
+  projectId?: string;
+  href?: string;
 }
 
 export type ApprovalType = "review" | "sign" | "release";
@@ -62,10 +36,10 @@ export type ApprovalType = "review" | "sign" | "release";
 export interface Approval {
   id: string;
   project: string;
-  projectId: string;
   description: string;
   type: ApprovalType;
-  href: string;
+  projectId?: string;
+  href?: string;
 }
 
 export type ActivityEventType =
@@ -81,12 +55,19 @@ export interface Activity {
   eventType: ActivityEventType;
   text: string;
   boldPart: string;
-  projectId: string;
   timestamp: string;
+  projectId?: string;
   href?: string;
+  icon?: LucideIcon;
+  iconBg?: string;
 }
 
-export type ProjectStatus = "Pending" | "In Progress" | "Completed" | "Archived";
+export type ProjectStatus =
+  | "Pending"
+  | "Pending Approval"
+  | "In Progress"
+  | "Completed"
+  | "Archived";
 
 export interface Project {
   id: string;
@@ -94,9 +75,6 @@ export interface Project {
   client: string;
   progress: number;
   escrow: string;
-  status: "In Progress" | "Pending Approval" | "Completed";
-  nextMilestone: string;
-  nextDate: string;
   status: ProjectStatus;
   nextMilestone: string;
   nextDate: string;

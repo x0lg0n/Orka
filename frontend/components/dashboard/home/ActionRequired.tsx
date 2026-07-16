@@ -1,14 +1,11 @@
 import { ChevronRight, FileText, Pen, ArrowUpCircle } from "lucide-react";
-import type { Approval } from "@/types/dashboard";
 import Link from "next/link";
-import { ChevronRight, FileText, Pen, ArrowUpCircle } from "lucide-react";
 import type { Approval, ApprovalType } from "@/types/dashboard";
 
 interface ActionRequiredProps {
   approvals: Approval[];
 }
 
-const actionConfig = {
 const actionConfig: Record<
   ApprovalType,
   {
@@ -33,7 +30,6 @@ const actionConfig: Record<
     buttonLabel: "Release",
   },
 } as const;
-};
 
 export function ActionRequired({ approvals }: ActionRequiredProps) {
   return (
@@ -87,7 +83,7 @@ export function ActionRequired({ approvals }: ActionRequiredProps) {
             return (
               <Link
                 key={approval.id}
-                href={approval.href}
+                href={approval.href ?? "#"}
                 className="flex items-center gap-3 rounded-lg border border-[#e5e8f0] p-3 transition-colors duration-150 hover:border-[#7c3aed] hover:bg-[#f7f8fc]"
               >
                 <div

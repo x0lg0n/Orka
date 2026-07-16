@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { DashboardContent } from "@/components/dashboard/home/DashboardContent";
 import { createClient } from "@supabase/supabase-js";
-import { DashboardContent } from "@/components/dashboard/home/DashboardContent";
 import { getDashboardData } from "@/lib/workspace/queries";
 import { getActiveOrgBySlug } from "@/lib/orka";
 
@@ -17,7 +16,6 @@ export default async function WorkspaceDashboardPage({
 }) {
   const { slug } = await params;
 
-  return <DashboardContent slug={slug} />;
   const url = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key =
     process.env.SUPABASE_SERVICE_ROLE_KEY ||

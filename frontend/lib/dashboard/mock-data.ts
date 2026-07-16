@@ -35,6 +35,8 @@ export const metrics: MetricData[] = [
     trend: "+2",
     trendUp: true,
     iconBg: "bg-purple-100",
+    metricKey: "projects",
+    href: "/w/demo/projects",
   },
   {
     title: "Funds in Escrow",
@@ -42,6 +44,8 @@ export const metrics: MetricData[] = [
     subtitle: "≈ $256.30 USD",
     icon: Lock,
     iconBg: "bg-purple-100",
+    metricKey: "escrow",
+    href: "/w/demo/projects",
   },
   {
     title: "Pending Approvals",
@@ -51,6 +55,8 @@ export const metrics: MetricData[] = [
     trend: "Requires your action",
     trendUp: false,
     iconBg: "bg-yellow-100",
+    metricKey: "approvals",
+    href: "/w/demo/projects",
   },
   {
     title: "Payments Received",
@@ -58,6 +64,8 @@ export const metrics: MetricData[] = [
     subtitle: "≈ $712.50 USD",
     icon: CircleDollarSign,
     iconBg: "bg-green-100",
+    metricKey: "payments",
+    href: "/w/demo/projects",
   },
 ];
 
@@ -67,51 +75,69 @@ export const approvals: Approval[] = [
     project: "Acme Website Redesign",
     description: "Milestone 2 is waiting for client approval",
     type: "review",
+    projectId: "prj_1",
+    href: "/w/demo/projects/prj_1",
   },
   {
     id: "apr_2",
     project: "Brand Identity Design",
     description: "Contract is pending your signature",
     type: "sign",
+    projectId: "prj_2",
+    href: "/w/demo/projects/prj_2",
   },
   {
     id: "apr_3",
     project: "Mobile App Development",
     description: "Payment is ready to be released",
     type: "release",
+    projectId: "prj_3",
+    href: "/w/demo/projects/prj_3",
   },
 ];
 
 export const activities: Activity[] = [
   {
     id: "act_1",
+    eventType: "release",
     text: "Payment released for",
     boldPart: "Acme Website Redesign – Milestone 1",
     timestamp: "2 hours ago",
+    projectId: "prj_1",
+    href: "/w/demo/projects/prj_1",
     icon: CircleDollarSign,
     iconBg: "bg-green-100 text-green-600",
   },
   {
     id: "act_2",
+    eventType: "sign",
     text: "New contract signed for",
     boldPart: "Brand Identity Design",
     timestamp: "5 hours ago",
+    projectId: "prj_2",
+    href: "/w/demo/projects/prj_2",
     icon: FileSignature,
     iconBg: "bg-purple-100 text-purple-600",
   },
   {
     id: "act_3",
+    eventType: "edit",
     text: "Client requested changes in",
     boldPart: "Landing Page Design",
     timestamp: "1 day ago",
+    projectId: "prj_2",
+    href: "/w/demo/projects/prj_2",
     icon: FileEdit,
     iconBg: "bg-yellow-100 text-yellow-600",
   },
   {
     id: "act_4",
+    eventType: "fund",
     text: "Escrow funded for",
     boldPart: "Mobile App Development",
     timestamp: "2 days ago",
+    projectId: "prj_3",
+    href: "/w/demo/projects/prj_3",
     icon: Wallet,
     iconBg: "bg-blue-100 text-blue-600",
   },
@@ -124,6 +150,8 @@ export const milestones: Milestone[] = [
     name: "Milestone 3 – Development",
     date: "May 28, 2025",
     icon: Calendar,
+    projectId: "prj_1",
+    href: "/w/demo/projects/prj_1",
   },
   {
     id: "ms_2",
@@ -131,6 +159,8 @@ export const milestones: Milestone[] = [
     name: "Milestone 2 – UI/UX",
     date: "May 30, 2025",
     icon: Calendar,
+    projectId: "prj_3",
+    href: "/w/demo/projects/prj_3",
   },
   {
     id: "ms_3",
@@ -138,6 +168,8 @@ export const milestones: Milestone[] = [
     name: "Milestone 1 – Planning",
     date: "Jun 02, 2025",
     icon: Calendar,
+    projectId: "prj_2",
+    href: "/w/demo/projects/prj_2",
   },
 ];
 
@@ -151,6 +183,7 @@ export const projects: Project[] = [
     status: "In Progress",
     nextMilestone: "Development",
     nextDate: "May 28, 2025",
+    href: "/w/demo/projects/prj_1",
   },
   {
     id: "prj_2",
@@ -161,6 +194,7 @@ export const projects: Project[] = [
     status: "Pending Approval",
     nextMilestone: "Logo Concepts",
     nextDate: "May 25, 2025",
+    href: "/w/demo/projects/prj_2",
   },
   {
     id: "prj_3",
@@ -171,6 +205,7 @@ export const projects: Project[] = [
     status: "In Progress",
     nextMilestone: "UI/UX Design",
     nextDate: "May 30, 2025",
+    href: "/w/demo/projects/prj_3",
   },
 ];
 

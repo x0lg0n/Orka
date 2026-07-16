@@ -19,7 +19,7 @@ export function DashboardHeader({ user }: DashboardHeaderProps) {
   return (
     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight text-[#11182d]">
+        <h1 className="text-2xl font-bold tracking-tight text-text">
           {getGreeting()}, {user.firstName} 👋
         </h1>
         <p className="mt-1 text-sm text-[#5f6b86]">

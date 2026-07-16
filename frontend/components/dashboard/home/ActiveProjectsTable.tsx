@@ -19,7 +19,6 @@ const progressColors: Record<string, string> = {
   Completed: "bg-blue-500",
 };
 
-export function ActiveProjectsTable({ projects }: ActiveProjectsTableProps) {
 export function ActiveProjectsTable({ projects, slug }: ActiveProjectsTableProps) {
   return (
     <div className="rounded-xl border border-[#e5e8f0] bg-white p-5">
@@ -27,9 +26,6 @@ export function ActiveProjectsTable({ projects, slug }: ActiveProjectsTableProps
         <h2 className="text-base font-bold text-[#11182d]">
           Active Projects
         </h2>
-        <button className="text-xs font-semibold text-[#7c3aed] transition-colors duration-150 hover:text-[#6d28d9]">
-          View all
-        </button>
         <Link
           href={`/w/${slug}/projects`}
           className="text-xs font-semibold text-[#7c3aed] transition-colors duration-150 hover:text-[#6d28d9]"
@@ -70,14 +66,6 @@ export function ActiveProjectsTable({ projects, slug }: ActiveProjectsTableProps
                 className="border-b border-[#e5e8f0] last:border-b-0 transition-colors duration-150 hover:bg-[#f7f8fc]"
               >
                 <td className="py-3">
-                  <div className="flex items-center gap-2">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-purple-100 text-purple-600">
-                      <FolderKanban className="h-4 w-4" />
-                    </div>
-                    <span className="text-sm font-semibold text-[#11182d]">
-                      {project.name}
-                    </span>
-                  </div>
                   <Link
                     href={project.href}
                     className="group flex items-center gap-2"
@@ -127,12 +115,6 @@ export function ActiveProjectsTable({ projects, slug }: ActiveProjectsTableProps
                   </div>
                 </td>
                 <td className="py-3">
-                  <button
-                    className="flex h-8 w-8 items-center justify-center rounded-lg text-[#8b95aa] transition-colors duration-150 hover:bg-[#f0f0f5] hover:text-[#5f6b86]"
-                    aria-label={`More options for ${project.name}`}
-                  >
-                    <MoreHorizontal className="h-4 w-4" />
-                  </button>
                   <Link
                     href={project.href}
                     className="flex h-8 w-8 items-center justify-center rounded-lg text-[#8b95aa] transition-colors duration-150 hover:bg-[#f0f0f5] hover:text-[#5f6b86]"
@@ -147,10 +129,6 @@ export function ActiveProjectsTable({ projects, slug }: ActiveProjectsTableProps
         </table>
       </div>
 
-      <button className="mt-4 flex items-center gap-1.5 text-sm font-semibold text-[#7c3aed] transition-colors duration-150 hover:text-[#6d28d9]">
-        View all projects
-        <ArrowRight className="h-4 w-4" />
-      </button>
       <Link
         href={`/w/${slug}/projects`}
         className="mt-4 flex items-center gap-1.5 text-sm font-semibold text-[#7c3aed] transition-colors duration-150 hover:text-[#6d28d9]"
