@@ -1,3 +1,7 @@
+import { DashboardContent } from "@/components/dashboard/home/DashboardContent";
+
+export default async function DashboardHomePage() {
+  return <DashboardContent slug="dashboard" />;
 import { createClient } from "@supabase/supabase-js";
 import { DashboardContent } from "@/components/dashboard/home/DashboardContent";
 import { getDashboardData } from "@/lib/workspace/queries";

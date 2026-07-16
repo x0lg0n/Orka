@@ -1,3 +1,6 @@
+"use client";
+
+import type { LucideIcon } from "lucide-react";
 import Link from "next/link";
 import {
   ArrowUpRight,
@@ -37,6 +40,8 @@ interface MetricCardProps {
   title: string;
   value: string;
   subtitle: string;
+  icon: LucideIcon;
+  iconBg: string;
   metricKey?: MetricKey;
   href?: string;
   trend?: string;
@@ -47,6 +52,18 @@ export function MetricCard({
   title,
   value,
   subtitle,
+  icon: Icon,
+  iconBg,
+}: MetricCardProps) {
+  return (
+    <div className="rounded-xl border border-[#e5e8f0] bg-white p-5 transition-shadow duration-200 hover:shadow-md">
+      <div className="flex items-center gap-3">
+        <div
+          className={`flex h-10 w-10 items-center justify-center rounded-lg ${iconBg}`}
+        >
+          <Icon className="h-5 w-5" />
+        </div>
+        <span className="text-sm font-medium text-[#5f6b86]">{title}</span>
   metricKey = "projects",
   href,
   trend,
@@ -85,6 +102,7 @@ export function MetricCard({
         {value}
       </p>
       <p className="mt-1 text-xs font-medium text-[#5f6b86]">{subtitle}</p>
+    </div>
     </>
   );
 

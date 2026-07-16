@@ -1,5 +1,11 @@
 "use client";
 
+import { DashboardSidebar } from "@/components/dashboard/sidebar/DashboardSidebar";
+
+const mockWorkspace = {
+  name: "Acme Studio",
+  role: "Owner",
+};
 import { WorkspaceSidebar } from "@/components/dashboard/sidebar/WorkspaceSidebar";
 
 const mockOrgs = [{ slug: "acme-studio", name: "Acme Studio" }];
@@ -10,6 +16,14 @@ const mockUser = {
 };
 
 export function DashboardShell({ children }: { children: React.ReactNode }) {
+
+  return (
+    <div className="flex h-screen overflow-hidden bg-[#f7f8fc]">
+      <DashboardSidebar slug="dashboard" workspace={mockWorkspace} user={mockUser} />
+      <main
+        className="flex-1 overflow-y-auto"
+        id="main-content"
+      >
   return (
     <div className="flex h-screen overflow-hidden bg-background text-foreground">
       <WorkspaceSidebar orgs={mockOrgs} currentSlug="acme-studio" user={mockUser} />

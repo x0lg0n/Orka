@@ -1,3 +1,5 @@
+import type { LucideIcon } from "lucide-react";
+
 export interface DashboardUser {
   id: string;
   firstName: string;
@@ -5,6 +7,14 @@ export interface DashboardUser {
   avatar?: string;
 }
 
+export interface MetricData {
+  title: string;
+  value: string;
+  subtitle: string;
+  icon: LucideIcon;
+  trend?: string;
+  trendUp?: boolean;
+  iconBg: string;
 export type MetricKey = "projects" | "escrow" | "approvals" | "payments";
 
 export interface MetricData {
@@ -20,6 +30,27 @@ export interface MetricData {
 export interface Milestone {
   id: string;
   project: string;
+  name: string;
+  date: string;
+  icon: LucideIcon;
+}
+
+export interface Approval {
+  id: string;
+  project: string;
+  description: string;
+  type: "review" | "sign" | "release";
+}
+
+export interface Activity {
+  id: string;
+  text: string;
+  boldPart: string;
+  timestamp: string;
+  icon: LucideIcon;
+  iconBg: string;
+}
+
   projectId: string;
   name: string;
   date: string;
@@ -63,6 +94,9 @@ export interface Project {
   client: string;
   progress: number;
   escrow: string;
+  status: "In Progress" | "Pending Approval" | "Completed";
+  nextMilestone: string;
+  nextDate: string;
   status: ProjectStatus;
   nextMilestone: string;
   nextDate: string;
