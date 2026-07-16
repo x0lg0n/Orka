@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import type { ReactNode } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { listOrgsForUser } from "@/lib/orka";
-import { WorkspaceSidebar } from "@/components/dashboard/sidebar/WorkspaceSidebar";
+import { WorkspaceSidebar } from "./components/sidebar/WorkspaceSidebar";
 
 export default async function WorkspaceLayout({
   children,
@@ -24,20 +24,24 @@ export default async function WorkspaceLayout({
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("full_name")
+    .select("full_name, avatar_url")
     .eq("id", user.id)
     .maybeSingle();
   const name =
     (profile?.full_name as string | null) ??
     (user.user_metadata?.full_name as string | null) ??
-    "";
+    (user.email ?? "");
 
   return (
-    <div className="flex h-screen overflow-hidden bg-[#f7f8fc]">
+    <div className="flex h-screen overflow-hidden bg-surfaceMuted">
       <WorkspaceSidebar
         orgs={orgs.map((o) => ({ slug: o.slug, name: o.name }))}
         currentSlug={slug}
-        user={{ name: name || (user.email ?? ""), email: user.email ?? "" }}
+        user={{
+          name: name || (user.email ?? ""),
+          email: user.email ?? "",
+          avatarUrl: (profile?.avatar_url as string | null) ?? undefined,
+        }}
       />
       <main
         className="flex-1 overflow-y-auto overflow-x-hidden"

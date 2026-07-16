@@ -26,6 +26,13 @@ export type NavGroupConfig = {
   items: NavLinkConfig[];
 };
 
+export type NavItemConfig = {
+  title: string;
+  path: string;
+  icon: LucideIcon;
+  badge?: string;
+};
+
 export const workspaceNav: NavGroupConfig[] = [
   {
     id: "overview",
@@ -62,4 +69,16 @@ export const workspaceNav: NavGroupConfig[] = [
       { title: "Settings", path: "settings", icon: Settings, requiredRole: "owner" },
     ],
   },
+];
+
+/** Flat, single-level sidebar nav (no groups/accordions). */
+export const flatSidebarNav: NavItemConfig[] = [
+  { title: "Dashboard", path: "dashboard", icon: Home },
+  { title: "Projects", path: "projects", icon: FolderKanban },
+  { title: "Clients", path: "clients", icon: Users },
+  { title: "Payments", path: "payments", icon: CreditCard },
+  { title: "Invoices", path: "invoices", icon: ReceiptText },
+  { title: "Analytics", path: "analytics", icon: LayoutDashboard },
+  { title: "AI", path: "ai", icon: Sparkles, badge: "Beta" },
+  { title: "Settings", path: "settings", icon: Settings },
 ];

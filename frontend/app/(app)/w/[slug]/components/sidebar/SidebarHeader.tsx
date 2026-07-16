@@ -7,7 +7,7 @@ export function SidebarHeader() {
   return (
     <Link
       href="/"
-      className="flex shrink-0 items-center gap-2.5 px-5 py-4"
+      className="flex items-center justify-center-safe gap-5 px-5 py-4"
       aria-label="ORKA home"
     >
       <Image

@@ -1,6 +1,6 @@
 "use client";
 
-import { WorkspaceSidebar } from "@/components/dashboard/sidebar/WorkspaceSidebar";
+import { WorkspaceSidebar } from "@/app/(app)/w/[slug]/components/sidebar/WorkspaceSidebar";
 
 const mockOrgs = [{ slug: "acme-studio", name: "Acme Studio" }];
 
