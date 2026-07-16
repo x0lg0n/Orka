@@ -6,7 +6,6 @@ import {
   CheckCircle2 as CheckBadge,
 } from "lucide-react";
 import type { Approval, ApprovalType } from "@/types/dashboard";
-import { EmptyState } from "@/components/dashboard/EmptyState";
 
 interface ActionRequiredProps {
   approvals: Approval[];
@@ -48,13 +47,9 @@ export function ActionRequired({ approvals }: ActionRequiredProps) {
       </div>
 
       {approvals.length === 0 ? (
-        <EmptyState
-          compact
-          tone="teal"
-          icon={CheckBadge}
-          title="You're all caught up"
-          description="No milestones are waiting on your review right now."
-        />
+        <p className="py-2 text-sm font-medium text-[#8b95aa]">
+          You&apos;re all caught up.
+        </p>
       ) : (
         <div className="flex flex-col gap-3">
           {approvals.map((approval) => {

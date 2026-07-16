@@ -1,6 +1,5 @@
 import { Calendar } from "lucide-react";
 import type { Milestone } from "@/types/dashboard";
-import { EmptyState } from "@/components/dashboard/EmptyState";
 
 interface UpcomingMilestonesProps {
   milestones: Milestone[];
@@ -19,13 +18,9 @@ export function UpcomingMilestones({ milestones }: UpcomingMilestonesProps) {
       </div>
 
       {milestones.length === 0 ? (
-        <EmptyState
-          compact
-          tone="violet"
-          icon={Calendar}
-          title="No upcoming milestones"
-          description="Funded or in-review milestones will appear here once work begins."
-        />
+        <p className="py-2 text-sm font-medium text-[#8b95aa]">
+          No upcoming milestones.
+        </p>
       ) : (
         <div className="flex flex-col gap-3">
           {milestones.map((milestone) => (

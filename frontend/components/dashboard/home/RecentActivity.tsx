@@ -8,7 +8,6 @@ import {
   ShieldAlert,
 } from "lucide-react";
 import type { ActivityEventType, Activity } from "@/types/dashboard";
-import { EmptyState } from "@/components/dashboard/EmptyState";
 
 type Tone = "cyan" | "violet" | "teal" | "orange" | "lime" | "coral";
 
@@ -49,13 +48,9 @@ export function RecentActivity({ activities }: RecentActivityProps) {
       <h2 className="mb-4 text-base font-bold text-[#11182d]">Recent Activity</h2>
 
       {activities.length === 0 ? (
-        <EmptyState
-          compact
-          tone="cyan"
-          icon={Scale}
-          title="No activity yet"
-          description="Fund, release, or sign off on a milestone to start your on-chain audit trail."
-        />
+        <p className="py-2 text-sm font-medium text-[#8b95aa]">
+          No activity yet.
+        </p>
       ) : (
         <div className="flex flex-col gap-4">
           {activities.map((activity) => {
