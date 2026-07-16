@@ -7,6 +7,7 @@ import { UpgradeCard } from "./UpgradeCard";
 import { UserProfile } from "./UserProfile";
 
 interface DashboardSidebarProps {
+  slug: string;
   workspace: {
     name: string;
     role: string;
@@ -19,7 +20,7 @@ interface DashboardSidebarProps {
   };
 }
 
-export function DashboardSidebar({ workspace, user }: DashboardSidebarProps) {
+export function DashboardSidebar({ slug, workspace, user }: DashboardSidebarProps) {
   return (
     <aside
       className="flex h-screen w-[280px] shrink-0 flex-col border-r border-white/[0.06] bg-[#06101f]"
@@ -34,7 +35,7 @@ export function DashboardSidebar({ workspace, user }: DashboardSidebarProps) {
       </div>
 
       <nav className="flex-1 overflow-y-auto pb-4">
-        <Navigation />
+        <Navigation slug={slug} />
       </nav>
 
       <div className="pb-4">

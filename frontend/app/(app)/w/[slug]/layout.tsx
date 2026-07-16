@@ -35,6 +35,7 @@ export default async function WorkspaceLayout({
   return (
     <div className="flex h-screen overflow-hidden bg-[#f7f8fc]">
       <DashboardSidebar
+        slug={slug}
         workspace={{ name: activeOrg.name, role: activeOrg.role }}
         user={{ name: name || (user.email ?? ""), email: user.email ?? "" }}
       />
