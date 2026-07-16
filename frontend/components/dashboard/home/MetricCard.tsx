@@ -1,4 +1,6 @@
+import Link from "next/link";
 import {
+  ArrowUpRight,
   CheckCircle2,
   CircleDollarSign,
   FolderKanban,
@@ -36,6 +38,7 @@ interface MetricCardProps {
   value: string;
   subtitle: string;
   metricKey?: MetricKey;
+  href?: string;
   trend?: string;
   trendUp?: boolean;
 }
@@ -45,14 +48,15 @@ export function MetricCard({
   value,
   subtitle,
   metricKey = "projects",
+  href,
   trend,
   trendUp,
 }: MetricCardProps) {
   const Icon = metricIcon[metricKey];
   const tone = metricTone[metricKey];
 
-  return (
-    <div className="rounded-xl border border-[#e5e8f0] bg-white p-5 transition-shadow duration-200 hover:shadow-md">
+  const inner = (
+    <>
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-3">
           <div
@@ -62,20 +66,42 @@ export function MetricCard({
           </div>
           <span className="text-sm font-medium text-[#5f6b86]">{title}</span>
         </div>
-        {trend ? (
-          <span
-            className={`text-xs font-semibold ${
-              trendUp ? "text-teal" : "text-[#5f6b86]"
-            }`}
-          >
-            {trend}
-          </span>
-        ) : null}
+        <div className="flex items-center gap-2">
+          {trend ? (
+            <span
+              className={`text-xs font-semibold ${
+                trendUp ? "text-teal" : "text-[#5f6b86]"
+              }`}
+            >
+              {trend}
+            </span>
+          ) : null}
+          {href ? (
+            <ArrowUpRight className="h-4 w-4 text-[#9aa3b8]" aria-hidden />
+          ) : null}
+        </div>
       </div>
       <p className="mt-3 text-2xl font-bold tracking-tight text-[#11182d]">
         {value}
       </p>
       <p className="mt-1 text-xs font-medium text-[#5f6b86]">{subtitle}</p>
-    </div>
+    </>
+  );
+
+  if (!href) {
+    return (
+      <div className="rounded-xl border border-[#e5e8f0] bg-white p-5">
+        {inner}
+      </div>
+    );
+  }
+
+  return (
+    <Link
+      href={href}
+      className="group block rounded-xl border border-[#e5e8f0] bg-white p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-[#c9d2e8] hover:shadow-md"
+    >
+      {inner}
+    </Link>
   );
 }

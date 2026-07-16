@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import {
   Banknote,
@@ -40,9 +41,10 @@ const toneClasses: Record<Tone, string> = {
 
 interface RecentActivityProps {
   activities: Activity[];
+  slug: string;
 }
 
-export function RecentActivity({ activities }: RecentActivityProps) {
+export function RecentActivity({ activities, slug }: RecentActivityProps) {
   return (
     <div className="rounded-xl border border-[#e5e8f0] bg-white p-5">
       <h2 className="mb-4 text-base font-bold text-[#11182d]">Recent Activity</h2>
@@ -57,8 +59,8 @@ export function RecentActivity({ activities }: RecentActivityProps) {
             const Icon = activityIcon[activity.eventType];
             const tone = activityTone[activity.eventType];
 
-            return (
-              <div key={activity.id} className="flex gap-3">
+            const inner = (
+              <div className="flex gap-3">
                 <div className="flex flex-col items-center">
                   <div
                     className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${toneClasses[tone]}`}
@@ -79,14 +81,29 @@ export function RecentActivity({ activities }: RecentActivityProps) {
                 </div>
               </div>
             );
+
+            return activity.href ? (
+              <Link
+                key={activity.id}
+                href={activity.href}
+                className="block rounded-lg transition-colors duration-150 hover:bg-[#f7f8fc]"
+              >
+                {inner}
+              </Link>
+            ) : (
+              <div key={activity.id}>{inner}</div>
+            );
           })}
         </div>
       )}
 
-      <button className="mt-4 flex items-center gap-1.5 text-sm font-semibold text-[#7c3aed] transition-colors duration-150 hover:text-[#6d28d9]">
+      <Link
+        href={`/w/${slug}/projects`}
+        className="mt-4 flex items-center gap-1.5 text-sm font-semibold text-[#7c3aed] transition-colors duration-150 hover:text-[#6d28d9]"
+      >
         View all activity
         <ArrowRight className="h-4 w-4" />
-      </button>
+      </Link>
     </div>
   );
 }

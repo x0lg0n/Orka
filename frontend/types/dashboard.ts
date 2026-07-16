@@ -12,6 +12,7 @@ export interface MetricData {
   metricKey: MetricKey;
   value: string;
   subtitle: string;
+  href: string;
   trend?: string;
   trendUp?: boolean;
 }
@@ -19,8 +20,10 @@ export interface MetricData {
 export interface Milestone {
   id: string;
   project: string;
+  projectId: string;
   name: string;
   date: string;
+  href: string;
 }
 
 export type ApprovalType = "review" | "sign" | "release";
@@ -28,8 +31,10 @@ export type ApprovalType = "review" | "sign" | "release";
 export interface Approval {
   id: string;
   project: string;
+  projectId: string;
   description: string;
   type: ApprovalType;
+  href: string;
 }
 
 export type ActivityEventType =
@@ -45,7 +50,9 @@ export interface Activity {
   eventType: ActivityEventType;
   text: string;
   boldPart: string;
+  projectId: string;
   timestamp: string;
+  href?: string;
 }
 
 export type ProjectStatus = "Pending" | "In Progress" | "Completed" | "Archived";
@@ -59,6 +66,7 @@ export interface Project {
   status: ProjectStatus;
   nextMilestone: string;
   nextDate: string;
+  href: string;
 }
 
 export interface QuickSummaryData {

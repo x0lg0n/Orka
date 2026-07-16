@@ -70,15 +70,15 @@ export function UserProfile({
           />
         </button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent side="top" className="w-(--radix-dropdown-menu-trigger-width) border-white/[0.06] bg-[#0c1a2e] text-white">
+      <DropdownMenuContent side="top" className="w-(--radix-dropdown-menu-trigger-width) border-white/6 bg-[#0c1a2e] text-white">
         <DropdownMenuLabel className="text-white/45">{user.name}</DropdownMenuLabel>
-        <DropdownMenuItem asChild className="gap-2 font-extrabold text-white hover:bg-hover focus:bg-hover data-[highlighted]:bg-hover">
+        <DropdownMenuItem asChild className="gap-2 font-extrabold text-white hover:bg-hover focus:bg-hover data-highlighted:bg-hover">
           <span>
             <UserIcon className="size-4" aria-hidden /> Profile
           </span>
         </DropdownMenuItem>
         <DropdownMenuSeparator className="bg-sidebar-border/50" />
-        <DropdownMenuItem asChild className="gap-2 p-0 font-extrabold text-white hover:bg-hover focus:bg-hover data-[highlighted]:bg-hover">
+        <DropdownMenuItem asChild className="gap-2 p-0 font-extrabold text-white hover:bg-hover focus:bg-hover data-highlighted:bg-hover">
           <SignOutButton />
         </DropdownMenuItem>
       </DropdownMenuContent>

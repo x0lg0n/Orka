@@ -1,7 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import { DashboardContent } from "@/components/dashboard/home/DashboardContent";
 import { getDashboardData } from "@/lib/workspace/queries";
-import { getActiveOrgId } from "@/lib/orka";
+import { getActiveOrgId, getActiveOrgSlug } from "@/lib/orka";
 import { getSupabase } from "@/lib/supabase";
 
 export default async function DashboardHomePage() {
@@ -14,6 +14,7 @@ export default async function DashboardHomePage() {
   if (!orgId || !user) {
     return (
       <DashboardContent
+        slug=""
         data={{
           user: { id: "", firstName: "there", lastName: "", avatar: undefined },
           metrics: [],
@@ -38,12 +39,17 @@ export default async function DashboardHomePage() {
     );
   }
 
-  const data = await getDashboardData(orgId, {
-    id: user.id,
-    firstName: user.user_metadata?.full_name ?? "there",
-    lastName: "dashboard",
-    avatar: user.user_metadata?.avatar_url,
-  });
+  const slug = await getActiveOrgSlug(supabase);
+  const data = await getDashboardData(
+    orgId,
+    slug ?? "",
+    {
+      id: user.id,
+      firstName: user.user_metadata?.full_name ?? "there",
+      lastName: "dashboard",
+      avatar: user.user_metadata?.avatar_url,
+    },
+  );
 
-  return <DashboardContent data={data} />;
+  return <DashboardContent data={data} slug={slug ?? ""} />;
 }

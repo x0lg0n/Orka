@@ -29,17 +29,17 @@ export default async function WorkspaceDashboardPage({
   } = await supabase.auth.getUser();
 
   if (!org || !user) {
-    return <DashboardContent data={emptyDashboard()} />;
+    return <DashboardContent data={emptyDashboard()} slug={slug} />;
   }
 
-  const data = await getDashboardData(org.id, {
+  const data = await getDashboardData(org.id, slug, {
     id: user.id,
     firstName: user.user_metadata?.full_name ?? "there",
     lastName: org.name,
     avatar: user.user_metadata?.avatar_url,
   });
 
-  return <DashboardContent data={data} />;
+  return <DashboardContent data={data} slug={slug} />;
 }
 
 function emptyDashboard() {

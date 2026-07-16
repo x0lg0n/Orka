@@ -67,6 +67,33 @@ export async function getActiveOrgBySlug(
   return data as OrgBySlug;
 }
 
+// Returns the active organization's slug for URL routing (used by legacy dashboard route).
+export async function getActiveOrgSlug(
+  supabase: SupabaseClient,
+): Promise<string | null> {
+  const selectedOrgId = (await cookies()).get("orka_active_org")?.value;
+  const from = selectedOrgId
+    ? supabase
+        .from("organization_members")
+        .select("organizations(slug)")
+        .eq("org_id", selectedOrgId)
+        .maybeSingle()
+    : supabase
+        .from("organization_members")
+        .select("organizations(slug)")
+        .limit(1)
+        .maybeSingle();
+  const { data } = await from;
+  const org = Array.isArray(
+    (data as { organizations?: unknown })?.organizations,
+  )
+    ? ((data as { organizations?: unknown[] })?.organizations?.[0] as {
+        slug?: string;
+      })
+    : (data as { organizations?: { slug?: string } })?.organizations;
+  return org?.slug ?? null;
+}
+
 // Lists the organizations a user belongs to, with slug for URL routing.
 export async function listOrgsForUser(
   supabase: SupabaseClient,

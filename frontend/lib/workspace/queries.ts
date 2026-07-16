@@ -67,6 +67,7 @@ interface LedgerRow {
   event_type: string;
   amount: number | null;
   asset: string | null;
+  project_id: string | null;
   projects?: { title: string } | null;
   created_at: string;
 }
@@ -97,6 +98,7 @@ function statusLabel(status: string): ProjectStatus {
 export async function getProjects(
   supabase: SupabaseClient,
   orgId: string,
+  slug: string,
 ): Promise<Project[]> {
   const { data, error } = await supabase
     .from("projects")
@@ -118,12 +120,14 @@ export async function getProjects(
     status: statusLabel(p.status),
     nextMilestone: "—",
     nextDate: "—",
+    href: `/w/${slug}/projects/${p.id}`,
   }));
 }
 
 export async function getMilestones(
   supabase: SupabaseClient,
   orgId: string,
+  slug: string,
 ): Promise<Milestone[]> {
   const { data, error } = await supabase
     .from("milestones")
@@ -138,14 +142,17 @@ export async function getMilestones(
   return rows.map((m) => ({
     id: m.id,
     project: (m.projects?.title as string) || "Project",
+    projectId: m.project_id,
     name: m.title,
     date: "—",
+    href: `/w/${slug}/projects/${m.project_id}`,
   }));
 }
 
 export async function getApprovals(
   supabase: SupabaseClient,
   orgId: string,
+  slug: string,
 ): Promise<Approval[]> {
   // Review approvals: milestones awaiting review.
   const { data: review, error } = await supabase
@@ -161,14 +168,17 @@ export async function getApprovals(
   return rows.map((m) => ({
     id: m.id,
     project: (m.projects?.title as string) || "Project",
+    projectId: m.project_id,
     description: `Review milestone "${m.title}"`,
     type: "review" as ApprovalType,
+    href: `/w/${slug}/projects/${m.project_id}`,
   }));
 }
 
 export async function getActivity(
   supabase: SupabaseClient,
   orgId: string,
+  slug: string,
 ): Promise<Activity[]> {
   const { data, error } = await supabase
     .from("ledger_events")
@@ -200,10 +210,12 @@ export async function getActivity(
       eventType: v.event,
       text: `${v.verb} ${proj}${amt}`,
       boldPart: proj,
+      projectId: e.project_id ?? "",
       timestamp: new Date(e.created_at).toLocaleDateString("en-US", {
         month: "short",
         day: "numeric",
       }),
+      href: e.project_id ? `/w/${slug}/projects/${e.project_id}` : undefined,
     };
   });
 }
@@ -211,6 +223,7 @@ export async function getActivity(
 export async function getSummary(
   supabase: SupabaseClient,
   orgId: string,
+  slug: string,
 ): Promise<{
   metrics: MetricData[];
   summary: QuickSummaryData;
@@ -251,24 +264,28 @@ export async function getSummary(
       metricKey: "projects" as MetricKey,
       value: String(projectCount ?? 0),
       subtitle: "across your workspace",
+      href: `/w/${slug}/projects`,
     },
     {
       title: "In Escrow",
       metricKey: "escrow" as MetricKey,
       value: money(escrowTotal),
       subtitle: "funded & in review",
+      href: `/w/${slug}/payments`,
     },
     {
       title: "Pending Approvals",
       metricKey: "approvals" as MetricKey,
       value: String(approvalCount ?? 0),
       subtitle: "awaiting your review",
+      href: `/w/${slug}/projects?tab=milestones`,
     },
     {
       title: "Payments Cleared",
       metricKey: "payments" as MetricKey,
       value: String(paidInvoices ?? 0),
       subtitle: "invoices paid",
+      href: `/w/${slug}/invoices`,
     },
   ];
 
@@ -290,17 +307,18 @@ export async function getSummary(
 
 export async function getDashboardData(
   orgId: string,
+  slug: string,
   user: { id: string; firstName: string; lastName: string; avatar?: string },
 ): Promise<DashboardData> {
   const supabase = createServerSupabase();
 
   const [projects, milestones, approvals, activities, { metrics, summary }] =
     await Promise.all([
-      getProjects(supabase, orgId),
-      getMilestones(supabase, orgId),
-      getApprovals(supabase, orgId),
-      getActivity(supabase, orgId),
-      getSummary(supabase, orgId),
+      getProjects(supabase, orgId, slug),
+      getMilestones(supabase, orgId, slug),
+      getApprovals(supabase, orgId, slug),
+      getActivity(supabase, orgId, slug),
+      getSummary(supabase, orgId, slug),
     ]);
 
   return {

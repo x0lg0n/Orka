@@ -1,10 +1,5 @@
-import {
-  ChevronRight,
-  FileText,
-  Pen,
-  ArrowUpCircle,
-  CheckCircle2 as CheckBadge,
-} from "lucide-react";
+import Link from "next/link";
+import { ChevronRight, FileText, Pen, ArrowUpCircle } from "lucide-react";
 import type { Approval, ApprovalType } from "@/types/dashboard";
 
 interface ActionRequiredProps {
@@ -57,9 +52,10 @@ export function ActionRequired({ approvals }: ActionRequiredProps) {
             const Icon = config.icon;
 
             return (
-              <div
+              <Link
                 key={approval.id}
-                className="flex items-center gap-3 rounded-lg border border-[#e5e8f0] p-3 transition-colors duration-150 hover:bg-[#f7f8fc]"
+                href={approval.href}
+                className="flex items-center gap-3 rounded-lg border border-[#e5e8f0] p-3 transition-colors duration-150 hover:border-[#7c3aed] hover:bg-[#f7f8fc]"
               >
                 <div
                   className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${config.iconBg}`}
@@ -72,11 +68,11 @@ export function ActionRequired({ approvals }: ActionRequiredProps) {
                   </p>
                   <p className="text-xs text-[#5f6b86]">{approval.description}</p>
                 </div>
-                <button className="flex shrink-0 items-center gap-1 rounded-lg border border-[#e5e8f0] px-3 py-1.5 text-xs font-semibold text-[#5f6b86] transition-colors duration-150 hover:border-[#7c3aed] hover:text-[#7c3aed]">
+                <span className="flex shrink-0 items-center gap-1 rounded-lg border border-[#e5e8f0] px-3 py-1.5 text-xs font-semibold text-[#5f6b86]">
                   {config.buttonLabel}
                   <ChevronRight className="h-3 w-3" />
-                </button>
-              </div>
+                </span>
+              </Link>
             );
           })}
         </div>
