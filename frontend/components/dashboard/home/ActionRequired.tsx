@@ -1,11 +1,25 @@
-import { ChevronRight, FileText, Pen, ArrowUpCircle } from "lucide-react";
-import type { Approval } from "@/types/dashboard";
+import {
+  ChevronRight,
+  FileText,
+  Pen,
+  ArrowUpCircle,
+  CheckCircle2 as CheckBadge,
+} from "lucide-react";
+import type { Approval, ApprovalType } from "@/types/dashboard";
+import { EmptyState } from "@/components/dashboard/EmptyState";
 
 interface ActionRequiredProps {
   approvals: Approval[];
 }
 
-const actionConfig = {
+const actionConfig: Record<
+  ApprovalType,
+  {
+    icon: typeof FileText;
+    iconBg: string;
+    buttonLabel: string;
+  }
+> = {
   review: {
     icon: FileText,
     iconBg: "bg-purple-100 text-purple-600",
@@ -21,7 +35,7 @@ const actionConfig = {
     iconBg: "bg-green-100 text-green-600",
     buttonLabel: "Release",
   },
-} as const;
+};
 
 export function ActionRequired({ approvals }: ActionRequiredProps) {
   return (
@@ -33,35 +47,45 @@ export function ActionRequired({ approvals }: ActionRequiredProps) {
         </span>
       </div>
 
-      <div className="flex flex-col gap-3">
-        {approvals.map((approval) => {
-          const config = actionConfig[approval.type];
-          const Icon = config.icon;
+      {approvals.length === 0 ? (
+        <EmptyState
+          compact
+          tone="teal"
+          icon={CheckBadge}
+          title="You're all caught up"
+          description="No milestones are waiting on your review right now."
+        />
+      ) : (
+        <div className="flex flex-col gap-3">
+          {approvals.map((approval) => {
+            const config = actionConfig[approval.type];
+            const Icon = config.icon;
 
-          return (
-            <div
-              key={approval.id}
-              className="flex items-center gap-3 rounded-lg border border-[#e5e8f0] p-3 transition-colors duration-150 hover:bg-[#f7f8fc]"
-            >
+            return (
               <div
-                className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${config.iconBg}`}
+                key={approval.id}
+                className="flex items-center gap-3 rounded-lg border border-[#e5e8f0] p-3 transition-colors duration-150 hover:bg-[#f7f8fc]"
               >
-                <Icon className="h-5 w-5" />
+                <div
+                  className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${config.iconBg}`}
+                >
+                  <Icon className="h-5 w-5" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-semibold text-[#11182d]">
+                    {approval.project}
+                  </p>
+                  <p className="text-xs text-[#5f6b86]">{approval.description}</p>
+                </div>
+                <button className="flex shrink-0 items-center gap-1 rounded-lg border border-[#e5e8f0] px-3 py-1.5 text-xs font-semibold text-[#5f6b86] transition-colors duration-150 hover:border-[#7c3aed] hover:text-[#7c3aed]">
+                  {config.buttonLabel}
+                  <ChevronRight className="h-3 w-3" />
+                </button>
               </div>
-              <div className="min-w-0 flex-1">
-                <p className="text-sm font-semibold text-[#11182d]">
-                  {approval.project}
-                </p>
-                <p className="text-xs text-[#5f6b86]">{approval.description}</p>
-              </div>
-              <button className="flex shrink-0 items-center gap-1 rounded-lg border border-[#e5e8f0] px-3 py-1.5 text-xs font-semibold text-[#5f6b86] transition-colors duration-150 hover:border-[#7c3aed] hover:text-[#7c3aed]">
-                {config.buttonLabel}
-                <ChevronRight className="h-3 w-3" />
-              </button>
-            </div>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }

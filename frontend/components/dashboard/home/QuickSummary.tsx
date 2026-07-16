@@ -47,7 +47,7 @@ export function QuickSummary({ summary }: QuickSummaryProps) {
 
       <div className="flex flex-col gap-3">
         <div className="flex items-center justify-between">
-          <span className="text-sm text-[#5f6b86]">Revenue (XLM)</span>
+          <span className="text-sm text-[#5f6b86]">In Escrow</span>
           <div className="flex items-center gap-1.5">
             <span className="text-sm font-bold text-[#11182d]">
               {summary.revenue}
