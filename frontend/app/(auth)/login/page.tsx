@@ -9,7 +9,7 @@ export default function LoginPage() {
   return (
     <div className="text-center">
       <h1 className="display text-3xl uppercase">Log in</h1>
-      <p className="mt-2 text-sm font-bold text-night/70">
+      <p className="mt-2 text-sm font-bold text-muted-foreground">
         Login is coming soon. In the meantime, create a new account.
       </p>
       <Link

@@ -69,14 +69,21 @@ export function WorkspaceGrid({ workspaces }: { workspaces: Workspace[] }) {
 
   return (
     <div className="mt-8 flex flex-col gap-6">
-      <div className="relative max-w-[460px]">
-        <Search className="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-white/40" aria-hidden />
-        <Input
-          value={q}
-          onChange={(e) => setQ(e.target.value)}
-          placeholder="Search workspaces..."
-          className="pl-12"
-        />
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+        <div className="relative w-full sm:max-w-[460px]">
+          <Search className="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-muted-foreground" aria-hidden />
+          <Input
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            placeholder="Search workspaces..."
+            className="pl-12"
+          />
+        </div>
+        <Button asChild size="sm" className="shrink-0 sm:ml-auto">
+          <Link href="/workspaces/new">
+            <Plus className="size-4" aria-hidden /> New workspace
+          </Link>
+        </Button>
       </div>
 
       {workspaces.length === 0 ? (
@@ -86,7 +93,7 @@ export function WorkspaceGrid({ workspaces }: { workspaces: Workspace[] }) {
           </div>
           <div>
             <p className="text-2xl font-extrabold tracking-[-0.02em]">Welcome to Orka</p>
-            <p className="mt-2 max-w-sm text-base font-bold text-white/50">
+            <p className="mt-2 max-w-sm text-base font-bold text-muted-foreground">
               Let&apos;s create your first workspace.
             </p>
           </div>
@@ -98,9 +105,9 @@ export function WorkspaceGrid({ workspaces }: { workspaces: Workspace[] }) {
         </div>
       ) : filtered.length === 0 ? (
         <div className="flex flex-col items-center gap-3 rounded-[16px] border border-border bg-card p-10 text-center">
-          <Building2 className="size-8 text-white/40" aria-hidden />
-          <p className="text-lg font-extrabold">No workspaces match</p>
-          <p className="max-w-sm text-sm font-bold text-white/50">
+          <Building2 className="size-8 text-muted-foreground" aria-hidden />
+          <p className="text-lg font-extrabold text-foreground">No workspaces match</p>
+          <p className="max-w-sm text-sm font-bold text-muted-foreground">
             Try a different search term, or create a new workspace.
           </p>
         </div>
@@ -109,15 +116,15 @@ export function WorkspaceGrid({ workspaces }: { workspaces: Workspace[] }) {
           {filtered.map((w) => (
             <WorkspaceCard key={w.id} workspace={w} />
           ))}
-          <Link
+           <Link
             href="/workspaces/new"
-            className="group flex min-h-[340px] flex-col items-center justify-center rounded-[16px] border border-dashed border-white/20 bg-card p-7 text-center transition hover:border-primary hover:bg-primary/[0.04]"
+            className="group flex min-h-[280px] flex-col items-center justify-center rounded-[16px] border border-dashed border-border bg-card p-7 text-center transition hover:border-primary hover:bg-primary/[0.04]"
           >
             <span className="grid size-14 place-items-center rounded-full border border-primary text-primary transition group-hover:bg-primary group-hover:text-white">
               <Plus className="size-7" aria-hidden />
             </span>
-            <span className="mt-6 text-[21px] font-extrabold tracking-[-0.02em]">New workspace</span>
-            <span className="mt-4 max-w-[18rem] text-base font-bold leading-7 text-white/50">
+            <span className="mt-6 text-[21px] font-extrabold tracking-[-0.02em] text-foreground">New workspace</span>
+            <span className="mt-4 max-w-[18rem] text-base font-bold leading-7 text-muted-foreground">
               Create a new workspace to manage your projects and clients.
             </span>
           </Link>
@@ -125,7 +132,7 @@ export function WorkspaceGrid({ workspaces }: { workspaces: Workspace[] }) {
       )}
 
       {workspaces.length > 0 ? (
-        <p className="flex items-center justify-center gap-2 pt-2 text-sm font-bold text-white/35">
+        <p className="flex items-center justify-center gap-2 pt-2 text-sm font-bold text-muted-foreground">
           Can&apos;t find your workspace?{" "}
           <Link href="/workspaces/new" className="text-primary hover:underline">
             Create New Workspace
@@ -138,11 +145,11 @@ export function WorkspaceGrid({ workspaces }: { workspaces: Workspace[] }) {
 
 function WorkspaceCard({ workspace: w }: { workspace: Workspace }) {
   return (
-    <Card className="flex min-h-[340px] flex-col rounded-[16px] border-border p-6 transition duration-200 hover:scale-[1.01] hover:border-primary hover:shadow-[0_12px_30px_rgba(148,116,255,0.18)]">
+    <Card className="flex min-h-[280px] flex-col rounded-[16px] border-border p-5 transition duration-200 hover:scale-[1.01] hover:border-primary hover:shadow-[0_12px_30px_rgba(148,116,255,0.18)]">
       <div className="flex items-start justify-between">
-        <Avatar className="size-14 rounded-[10px]">
+        <Avatar className="size-12 rounded-[10px]">
           {w.logoUrl ? <AvatarImage src={w.logoUrl} alt={w.name} /> : null}
-          <AvatarFallback className="rounded-[10px] bg-primary text-2xl font-extrabold text-white">
+          <AvatarFallback className="rounded-[10px] bg-primary text-xl font-extrabold text-white">
             {w.name.charAt(0).toUpperCase()}
           </AvatarFallback>
         </Avatar>
@@ -156,10 +163,10 @@ function WorkspaceCard({ workspace: w }: { workspace: Workspace }) {
         </div>
       </div>
 
-      <h2 className="mt-5 text-[22px] font-extrabold tracking-[-0.02em]">{w.name}</h2>
-      <p className="mt-2 text-sm font-bold text-white/45">Last active {formatLastActive(w.lastActive)}</p>
+      <h2 className="mt-4 text-[19px] font-extrabold tracking-[-0.02em] text-foreground">{w.name}</h2>
+      <p className="mt-1.5 text-sm font-bold text-muted-foreground">Last active {formatLastActive(w.lastActive)}</p>
 
-      <div className="mt-5 grid grid-cols-3 gap-3 border-t border-border pt-5">
+      <div className="mt-4 grid grid-cols-3 gap-3 border-t border-border pt-4">
         <Stat icon={BriefcaseBusiness} label="Projects" value={String(w.projects)} />
         <Stat icon={Users} label="Clients" value={String(w.clients)} />
         <Stat icon={CircleDollarSign} label="Members" value={String(w.members)} />
@@ -178,11 +185,11 @@ function WorkspaceCard({ workspace: w }: { workspace: Workspace }) {
 function Stat({ icon: Icon, value, label }: { icon: LucideIcon; value: string; label: string }) {
   return (
     <div>
-      <div className="flex items-center gap-2 text-[15px] font-extrabold">
-        <Icon className="size-4 text-white/40" aria-hidden />
+      <div className="flex items-center gap-2 text-[15px] font-extrabold text-foreground">
+        <Icon className="size-4 text-muted-foreground" aria-hidden />
         {value}
       </div>
-      <p className="mt-2 text-[13px] font-bold text-white/40">{label}</p>
+      <p className="mt-2 text-[13px] font-bold text-muted-foreground">{label}</p>
     </div>
   );
 }

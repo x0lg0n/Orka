@@ -38,7 +38,7 @@ export default async function SignupPage() {
         <SignupForm />
       </div>
 
-      <p className="text-center text-sm font-bold text-night/70">
+      <p className="text-center text-sm font-bold text-muted-foreground">
         Just exploring?{" "}
         <Link href="/" className="text-lime underline">
           Back to home

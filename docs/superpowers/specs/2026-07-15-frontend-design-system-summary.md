@@ -22,19 +22,18 @@
 - Phases A–F + page consolidation (commit `13bce7e`): `/w/[slug]` architecture, grouped sidebar, public portal, `(auth)`/`(marketing)` groups, top-level route moves.
 - Navbar restoration + grouping (uncommitted): `app/(marketing)/layout.tsx` uses `<Navbar/>` in `bg-night` + `<Footer/>`; `components/Navbar.tsx` Link-based, 3 dropdown groups; `lib/content.ts` has productLinks/resourcesLinks/companyLinks.
 - **Design-system token foundation:** backed up globals.css; applied preset `b3HZiW6oVe`; removed `orka-*`; brand-aligned `:root`/`.dark`/`.dashboard-light`; fixed font self-ref; `pnpm build` GREEN.
-- **Light/dark switcher foundation (this segment):** created `components/theme-provider.tsx` (`next-themes` wrapper) + `components/theme-toggle.tsx` (sun/moon, shadcn `Button` outline icon); wrapped root layout with `ThemeProvider` + `TooltipProvider` (+ `suppressHydrationWarning`); rewrote `(auth)/layout.tsx` theme-aware with `ThemeToggle`; made `SignupForm.tsx` + `signup/page.tsx` theme-aware (semantic tokens, system `focus:ring`, violet primary mode-toggle, lime/teal accents retained). `pnpm build` GREEN (all routes compile).
+- **Light/dark switcher foundation:** `ThemeProvider` + `TooltipProvider` + `theme-toggle.tsx` + `(auth)/layout.tsx` theme-aware; `SignupForm.tsx`/`signup/page.tsx` theme-aware.
+- **Dashboard semantic-token migration (this segment):** `components/shell/AppShell.tsx` is now a client component reading `useTheme()` and applying `dashboard-light` (light) or `dark` (dark) — so the switcher drives the whole app shell. `app/workspaces/page.tsx` + `app/workspaces/new/page.tsx` switched from hardcoded `product-ui dark` to `product-ui dashboard-light`. Remaining auth pages (`login`, `forgot-password`, `reset-password`, `verify-email`, `invite/[token]`, `signup`) migrated from hardcoded `text-night`/`bg-white`/`border-night/15`/`bg-hover` to semantic tokens (`text-foreground`/`bg-background`/`border-border`/`bg-muted`/`text-muted-foreground`); brand lime/orange button retained. Removed a duplicate `.dashboard-light` block in `globals.css`. Fixed a pre-existing type error in dead `components/dashboard/DashboardShell.tsx` (`aria-current={pathname}`) that blocked the build. `pnpm build` GREEN (all routes compile).
 
 ### Active
-- Deferred: dashboard semantic-token migration so `dark` isn't hardcoded (AppShell + workspaces pages) — enables true light mode across the app.
-- Optional: apply same theme-aware treatment to remaining auth pages (`login` placeholder, `forgot-password`, `reset-password`, `verify-email`) if/when built out.
 - Keep marketing pages AS-IS per user.
 
 ### Blocked
-- (none)
+- `frontend/supabase/portal.sql` must be applied to the Supabase project (SQL editor or `supabase` CLI) before `/p/[token]` resolves data — CLI not installed locally; needs user action.
 
 ## Next Move
-1. (Done) ThemeProvider + TooltipProvider + toggle + auth pages theme-aware; verify in browser (dev server currently stopped — restart to smoke-test toggle).
-2. Defer: dashboard light-mode migration (replace hardcoded `product-ui dark` + `bg-shell`/`text-white` with semantic tokens) so the switcher affects the whole app.
+1. (Done) ThemeProvider + TooltipProvider + toggle; dashboard (AppShell + workspaces) + all auth pages theme-aware; `pnpm build` GREEN; dev smoke-tested (signup 200 + toggle present, workspaces redirects to /signup when unauth).
+2. (Blocked) Apply `frontend/supabase/portal.sql` to Supabase so `/p/[token]` resolves (needs user action — CLI not installed).
 3. Keep marketing pages AS-IS per user; new marketing pages match existing style.
 
 ## Relevant Files

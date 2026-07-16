@@ -1,4 +1,7 @@
+"use client";
+
 import type { ReactNode } from "react";
+import { useTheme } from "next-themes";
 import { Sidebar, type ShellUser } from "./Sidebar";
 import { MobileNav } from "./MobileNav";
 
@@ -15,8 +18,11 @@ export function AppShell({
   user: ShellUser;
   children: ReactNode;
 }) {
+  const { resolvedTheme } = useTheme();
+  const themeClass = resolvedTheme === "light" ? "dashboard-light" : "dark";
+
   return (
-    <div className="product-ui dark min-h-screen bg-shell font-product text-white">
+    <div className={`product-ui ${themeClass} min-h-screen bg-shell font-product`}>
       <MobileNav orgs={orgs} currentSlug={currentSlug} role={role} user={user} />
       <div className="relative flex min-h-screen flex-col lg:flex-row">
         <div className="hidden lg:block">

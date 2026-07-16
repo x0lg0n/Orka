@@ -36,12 +36,12 @@ export default function VerifyEmailPage() {
   return (
     <div>
       <h1 className="display text-3xl uppercase">Verify email</h1>
-      <p className="mt-2 text-sm font-bold text-night/70">
+      <p className="mt-2 text-sm font-bold text-muted-foreground">
         Enter the code we sent to confirm your address.
       </p>
 
       {done ? (
-        <p className="mt-6 rounded-[12px] bg-hover p-3 text-sm font-bold text-night">
+        <p className="mt-6 rounded-[12px] bg-muted p-3 text-sm font-bold text-foreground">
           Email verified. You&apos;re all set.
         </p>
       ) : (
@@ -52,7 +52,7 @@ export default function VerifyEmailPage() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="you@company.com"
-            className="w-full rounded-[12px] border border-night/15 bg-white px-4 py-3 text-sm font-bold text-night outline-none focus:border-lime"
+            className="w-full rounded-[12px] border border-border bg-background px-4 py-3 text-sm font-bold text-foreground outline-none focus:border-lime"
           />
           <input
             type="text"
@@ -60,7 +60,7 @@ export default function VerifyEmailPage() {
             value={code}
             onChange={(e) => setCode(e.target.value)}
             placeholder="123456"
-            className="w-full rounded-[12px] border border-night/15 bg-white px-4 py-3 text-sm font-bold tracking-[0.3em] text-night outline-none focus:border-lime"
+            className="w-full rounded-[12px] border border-border bg-background px-4 py-3 text-sm font-bold tracking-[0.3em] text-foreground outline-none focus:border-lime"
           />
           {error ? <p className="text-sm font-bold text-coral">{error}</p> : null}
           <button type="submit" className={btn}>
@@ -69,7 +69,7 @@ export default function VerifyEmailPage() {
           <button
             type="button"
             onClick={onResend}
-            className="block w-full text-center text-xs font-bold text-night/60 underline-offset-4 hover:underline"
+            className="block w-full text-center text-xs font-bold text-muted-foreground underline-offset-4 hover:underline"
           >
             Resend code
           </button>
@@ -78,7 +78,7 @@ export default function VerifyEmailPage() {
 
       <Link
         href="/login"
-        className="mt-6 block text-xs font-bold text-night/60 underline-offset-4 hover:underline"
+        className="mt-6 block text-xs font-bold text-muted-foreground underline-offset-4 hover:underline"
       >
         Back to login
       </Link>

@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import type { ReactNode } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { listOrgsForUser } from "@/lib/orka";
-import { DashboardSidebar } from "@/components/dashboard/sidebar/DashboardSidebar";
+import { WorkspaceSidebar } from "@/components/dashboard/sidebar/WorkspaceSidebar";
 
 export default async function WorkspaceLayout({
   children,
@@ -34,8 +34,9 @@ export default async function WorkspaceLayout({
 
   return (
     <div className="flex h-screen overflow-hidden bg-[#f7f8fc]">
-      <DashboardSidebar
-        workspace={{ name: activeOrg.name, role: activeOrg.role }}
+      <WorkspaceSidebar
+        orgs={orgs.map((o) => ({ slug: o.slug, name: o.name }))}
+        currentSlug={slug}
         user={{ name: name || (user.email ?? ""), email: user.email ?? "" }}
       />
       <main

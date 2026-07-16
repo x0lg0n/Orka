@@ -1,12 +1,8 @@
 "use client";
 
-import { usePathname } from "next/navigation";
-import { DashboardSidebar } from "@/components/dashboard/sidebar/DashboardSidebar";
+import { WorkspaceSidebar } from "@/components/dashboard/sidebar/WorkspaceSidebar";
 
-const mockWorkspace = {
-  name: "Acme Studio",
-  role: "Owner",
-};
+const mockOrgs = [{ slug: "acme-studio", name: "Acme Studio" }];
 
 const mockUser = {
   name: "Siddhartha Kunwar",
@@ -14,16 +10,10 @@ const mockUser = {
 };
 
 export function DashboardShell({ children }: { children: React.ReactNode }) {
-  const pathname = usePathname();
-
   return (
     <div className="flex h-screen overflow-hidden bg-[#f7f8fc]">
-      <DashboardSidebar workspace={mockWorkspace} user={mockUser} />
-      <main
-        className="flex-1 overflow-y-auto"
-        id="main-content"
-        aria-current={pathname}
-      >
+      <WorkspaceSidebar orgs={mockOrgs} currentSlug="acme-studio" user={mockUser} />
+      <main className="flex-1 overflow-y-auto" id="main-content">
         <div className="mx-auto w-full max-w-7xl px-6 py-6">
           {children}
         </div>
