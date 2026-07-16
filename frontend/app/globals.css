@@ -526,6 +526,34 @@ input {
   color: #11182d;
 }
 
+/* ── Dashboard light theme override ── */
+.dashboard-light {
+  --background: #f7f8fc;
+  --foreground: #11182d;
+  --card: #ffffff;
+  --card-foreground: #11182d;
+  --border: #e5e8f0;
+  --input: #e5e8f0;
+  --primary: #7c3aed;
+  --primary-foreground: #ffffff;
+  --muted: #f7f8fc;
+  --muted-foreground: #5f6b86;
+  --accent: #f7f8fc;
+  --accent-foreground: #11182d;
+  --ring: #7c3aed;
+  color-scheme: light;
+}
+
+.dashboard-light,
+.dashboard-light * {
+  border-color: #e5e8f0;
+}
+
+.dashboard-light {
+  background: #f7f8fc;
+  color: #11182d;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
