@@ -47,9 +47,13 @@ export default function WalletSignIn() {
       router.refresh();
     } catch (e) {
       const msg = e instanceof Error ? e.message : "";
-      setError(
-        msg.includes("Freighter") ? "Install the Freighter extension to continue." : "Something went wrong. Try again.",
-      );
+      if (msg.includes("not available") || msg.includes("not installed")) {
+        setError("Install the Freighter extension to continue.");
+      } else if (msg.includes("reject") || msg.includes("denied")) {
+        setError("Connection request was denied. Approve it in Freighter and retry.");
+      } else {
+        setError("Something went wrong. Try again.");
+      }
     } finally {
       setLoading(false);
     }
