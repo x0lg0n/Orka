@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
-import Navbar from "../../components/Navbar";
-import WaitlistCta from "../../components/WaitlistCta";
-import Footer from "../../components/Footer";
+import WaitlistCta from "@/components/WaitlistCta";
 
 export const metadata: Metadata = {
   title: "About ORKA",
@@ -118,7 +116,7 @@ const phases: {
   {
     tag: "Phase 5",
     title: "Developer Platform & Scale",
-    goal: "Become the \u201cStripe for Web3 marketplaces\u201d — public API, SDKs, and an embeddable escrow widget.",
+    goal: "Become the “Stripe for Web3 marketplaces” — public API, SDKs, and an embeddable escrow widget.",
     gate: "$1M+ annualized volume, 100+ agencies, 5+ marketplace partners.",
     color: "bg-teal text-night",
   },
@@ -128,7 +126,7 @@ const standard: [string, string][] = [
   ["Sign up", "Email or Google. No wallet, no seed phrase."],
   ["Create & invite", "Spin up a project and invite the client by email."],
   ["Fund", "Client pays in USD via card/bank → USDC locked in Soroban, ORKA pays the gas."],
-  ["Verify", "Freelancer delivers → AI verifies GitHub/Figma → client gets \u201cverified, approve?\u201d"],
+  ["Verify", "Freelancer delivers → AI verifies GitHub/Figma → client gets “verified, approve?”"],
   ["Release", "USDC released via client + operator multi-sig → off-ramped to the freelancer's bank → invoice emailed."],
   ["Resolve", "Any dispute is split by a human arbiter according to the contract."],
   ["Report", "Year-end tax report exported per jurisdiction."],
@@ -136,10 +134,9 @@ const standard: [string, string][] = [
 
 export default function AboutPage() {
   return (
-    <main className="overflow-hidden bg-paper">
+    <div className="overflow-hidden">
       {/* ── Header / hero ── */}
       <section className="relative overflow-hidden rounded-b-[42px] bg-night px-4 pb-16 pt-5 text-white md:rounded-b-[72px] md:px-8 lg:px-12">
-        <Navbar />
         <div className="relative z-10 mx-auto max-w-5xl pt-16 pb-4 text-center">
           <span className="text-[15px] font-medium text-white sm:text-[18px]">
             ❤️ The Autonomous Financial OS
@@ -303,7 +300,6 @@ export default function AboutPage() {
       </section>
 
       <WaitlistCta />
-      <Footer />
-    </main>
+    </div>
   );
 }

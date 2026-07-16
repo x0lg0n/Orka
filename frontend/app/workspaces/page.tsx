@@ -1,9 +1,6 @@
-import Image from "next/image";
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "../../lib/supabase/server";
-import { Avatar, AvatarFallback, AvatarImage } from "../../components/ui/avatar";
-import SignOutButton from "../../components/SignOutButton";
+import { WorkspaceNav } from "../../components/shell/WorkspaceNav";
 import { WorkspaceGrid, type Workspace } from "./_components/WorkspaceGrid";
 
 export const metadata = { title: "Choose a Workspace · ORKA" };
@@ -86,26 +83,13 @@ export default async function WorkspacesPage({
     .toUpperCase();
 
   return (
-    <main className="product-ui dark min-h-screen bg-shell font-product text-white">
-      <header className="sticky top-0 z-20 flex items-center justify-between border-b border-border bg-shell/80 px-5 py-4 backdrop-blur sm:px-8">
-        <Link href="/workspaces" className="flex items-center gap-2.5">
-          <Image src="/Logo/LOGO.svg" alt="ORKA" width={28} height={28} className="size-7 object-contain" />
-          <span className="text-[22px] font-extrabold tracking-[-0.03em]">ORKA</span>
-        </Link>
-        <div className="flex items-center gap-3">
-          <Avatar className="size-9">
-            <AvatarFallback className="bg-primary/20 text-xs font-extrabold text-primary">
-              {initials}
-            </AvatarFallback>
-          </Avatar>
-          <SignOutButton />
-        </div>
-      </header>
+    <main className="product-ui dashboard-light min-h-screen bg-shell font-product">
+      <WorkspaceNav name={name} initials={initials} />
 
-      <div className="mx-auto w-full max-w-300 px-5 py-10 sm:px-8">
+      <div className="mx-auto w-full max-w-7xl px-5 py-10 sm:px-8">
         <div className="flex flex-col gap-2">
-          <h1 className="text-[32px] font-extrabold tracking-[-0.035em] sm:text-[38px]">Choose a Workspace</h1>
-          <p className="text-[15px] font-bold text-white/50 sm:text-[16px]">
+          <h1 className="text-[32px] font-extrabold tracking-[-0.035em] text-foreground sm:text-[38px]">Choose a Workspace</h1>
+          <p className="text-[15px] font-bold text-muted-foreground sm:text-[16px]">
             Select a workspace to continue or create a new one.
           </p>
         </div>

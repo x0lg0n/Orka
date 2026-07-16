@@ -59,8 +59,8 @@ export function CreateWorkspaceForm() {
 
   return (
     <Card className="rounded-[16px] border-border bg-card p-7">
-      <h1 className="text-2xl font-extrabold tracking-[-0.02em]">Create Workspace</h1>
-      <p className="mt-2 text-sm font-bold text-white/55">
+      <h1 className="text-2xl font-extrabold tracking-[-0.02em] text-foreground">Create Workspace</h1>
+      <p className="mt-2 text-sm font-bold text-muted-foreground">
         Your workspace is where you manage projects, clients and payments.
       </p>
 
@@ -83,14 +83,14 @@ export function CreateWorkspaceForm() {
             </span>
           </button>
           <div className="min-w-0">
-            <p className="text-sm font-bold text-white/80">Workspace logo</p>
-            <p className="text-xs font-bold text-white/40">Optional. Upload or we&apos;ll use your initial.</p>
+            <p className="text-sm font-bold text-foreground">Workspace logo</p>
+            <p className="text-xs font-bold text-muted-foreground">Optional. Upload or we&apos;ll use your initial.</p>
             <input ref={fileRef} type="file" name="logo" accept="image/*" className="hidden" onChange={onFile} />
           </div>
         </div>
 
         <div>
-          <Label htmlFor="ws-name" className="mb-1.5 block text-sm font-bold text-white/80">
+          <Label htmlFor="ws-name" className="mb-1.5 block text-sm font-bold text-foreground">
             Workspace name
           </Label>
           <Input
@@ -104,7 +104,7 @@ export function CreateWorkspaceForm() {
         </div>
 
         <div>
-          <Label className="mb-1.5 block text-sm font-bold text-white/80">Workspace type</Label>
+          <Label className="mb-1.5 block text-sm font-bold text-foreground">Workspace type</Label>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button type="button" variant="outline" className="w-full justify-between">
@@ -112,12 +112,12 @@ export function CreateWorkspaceForm() {
                 <Check className="size-4 opacity-0" aria-hidden />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-[--radix-dropdown-menu-trigger-width] border-border bg-card text-white">
+            <DropdownMenuContent className="w-[--radix-dropdown-menu-trigger-width] border-border bg-card text-foreground">
               {TYPES.map((t) => (
                 <DropdownMenuItem
                   key={t}
                   onSelect={() => setType(t)}
-                  className="text-white hover:bg-hover focus:bg-hover data-[highlighted]:bg-hover dark:hover:bg-hover dark:focus:bg-hover dark:data-[highlighted]:bg-hover"
+                  className="text-foreground hover:bg-hover focus:bg-hover data-[highlighted]:bg-hover"
                 >
                   {t}
                   {type === t ? <Check className="ml-auto size-4 text-primary" aria-hidden /> : null}
@@ -129,11 +129,11 @@ export function CreateWorkspaceForm() {
         </div>
 
         <div>
-          <Label htmlFor="ws-slug" className="mb-1.5 block text-sm font-bold text-white/80">
+          <Label htmlFor="ws-slug" className="mb-1.5 block text-sm font-bold text-foreground">
             Workspace slug
           </Label>
           <div className="flex items-center gap-2">
-            <span className="text-sm font-bold text-white/40">orka.io/</span>
+            <span className="text-sm font-bold text-muted-foreground">orka.io/</span>
             <Input
               id="ws-slug"
               name="slug"

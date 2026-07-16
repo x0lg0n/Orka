@@ -15,6 +15,16 @@ export interface MetricData {
   trend?: string;
   trendUp?: boolean;
   iconBg: string;
+export type MetricKey = "projects" | "escrow" | "approvals" | "payments";
+
+export interface MetricData {
+  title: string;
+  metricKey: MetricKey;
+  value: string;
+  subtitle: string;
+  href: string;
+  trend?: string;
+  trendUp?: boolean;
 }
 
 export interface Milestone {
@@ -41,6 +51,43 @@ export interface Activity {
   iconBg: string;
 }
 
+  projectId: string;
+  name: string;
+  date: string;
+  href: string;
+}
+
+export type ApprovalType = "review" | "sign" | "release";
+
+export interface Approval {
+  id: string;
+  project: string;
+  projectId: string;
+  description: string;
+  type: ApprovalType;
+  href: string;
+}
+
+export type ActivityEventType =
+  | "release"
+  | "sign"
+  | "edit"
+  | "fund"
+  | "dispute"
+  | "refund";
+
+export interface Activity {
+  id: string;
+  eventType: ActivityEventType;
+  text: string;
+  boldPart: string;
+  projectId: string;
+  timestamp: string;
+  href?: string;
+}
+
+export type ProjectStatus = "Pending" | "In Progress" | "Completed" | "Archived";
+
 export interface Project {
   id: string;
   name: string;
@@ -50,6 +97,10 @@ export interface Project {
   status: "In Progress" | "Pending Approval" | "Completed";
   nextMilestone: string;
   nextDate: string;
+  status: ProjectStatus;
+  nextMilestone: string;
+  nextDate: string;
+  href: string;
 }
 
 export interface QuickSummaryData {

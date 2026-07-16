@@ -26,12 +26,12 @@ export default function ForgotPasswordPage() {
   return (
     <div>
       <h1 className="display text-3xl uppercase">Reset password</h1>
-      <p className="mt-2 text-sm font-bold text-night/70">
+      <p className="mt-2 text-sm font-bold text-muted-foreground">
         Enter your email and we&apos;ll send a reset link.
       </p>
 
       {sent ? (
-        <p className="mt-6 rounded-[12px] bg-hover p-3 text-sm font-bold text-night">
+        <p className="mt-6 rounded-[12px] bg-muted p-3 text-sm font-bold text-foreground">
           If that account exists, a reset link is on its way.
         </p>
       ) : (
@@ -42,7 +42,7 @@ export default function ForgotPasswordPage() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="you@company.com"
-            className="w-full rounded-[12px] border border-night/15 bg-white px-4 py-3 text-sm font-bold text-night outline-none focus:border-lime"
+            className="w-full rounded-[12px] border border-border bg-background px-4 py-3 text-sm font-bold text-foreground outline-none focus:border-lime"
           />
           {error ? (
             <p className="text-sm font-bold text-coral">{error}</p>
@@ -55,7 +55,7 @@ export default function ForgotPasswordPage() {
 
       <Link
         href="/login"
-        className="mt-6 block text-xs font-bold text-night/60 underline-offset-4 hover:underline"
+        className="mt-6 block text-xs font-bold text-muted-foreground underline-offset-4 hover:underline"
       >
         Back to login
       </Link>

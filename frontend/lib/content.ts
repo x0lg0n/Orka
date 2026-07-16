@@ -179,3 +179,14 @@ export const productLinks = [
   { label: "Method", href: "/#method" },
   { label: "FAQ", href: "/#faq" },
 ];
+
+export const resourcesLinks = [
+  { label: "Docs", href: "/docs" },
+  { label: "Blog", href: "/blog" },
+];
+
+export const companyLinks = [
+  { label: "About", href: "/about" },
+  { label: "Pricing", href: "/pricing" },
+  { label: "Contact", href: "/contact" },
+];

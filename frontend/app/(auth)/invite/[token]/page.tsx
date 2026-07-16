@@ -34,12 +34,12 @@ export default function InvitePage() {
   return (
     <div>
       <h1 className="display text-3xl uppercase">Accept invite</h1>
-      <p className="mt-2 text-sm font-bold text-night/70">
+      <p className="mt-2 text-sm font-bold text-muted-foreground">
         You&apos;ve been invited to a workspace. Create your account to join.
       </p>
 
       {done ? (
-        <p className="mt-6 rounded-[12px] bg-hover p-3 text-sm font-bold text-night">
+        <p className="mt-6 rounded-[12px] bg-muted p-3 text-sm font-bold text-foreground">
           Account created. Check your email to finish verifying.
         </p>
       ) : (
@@ -50,7 +50,7 @@ export default function InvitePage() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="you@company.com"
-            className="w-full rounded-[12px] border border-night/15 bg-white px-4 py-3 text-sm font-bold text-night outline-none focus:border-lime"
+            className="w-full rounded-[12px] border border-border bg-background px-4 py-3 text-sm font-bold text-foreground outline-none focus:border-lime"
           />
           <input
             type="password"
@@ -59,7 +59,7 @@ export default function InvitePage() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="New password"
-            className="w-full rounded-[12px] border border-night/15 bg-white px-4 py-3 text-sm font-bold text-night outline-none focus:border-lime"
+            className="w-full rounded-[12px] border border-border bg-background px-4 py-3 text-sm font-bold text-foreground outline-none focus:border-lime"
           />
           {error ? <p className="text-sm font-bold text-coral">{error}</p> : null}
           <button type="submit" className={btn}>
@@ -70,7 +70,7 @@ export default function InvitePage() {
 
       <Link
         href="/login"
-        className="mt-6 block text-xs font-bold text-night/60 underline-offset-4 hover:underline"
+        className="mt-6 block text-xs font-bold text-muted-foreground underline-offset-4 hover:underline"
       >
         Back to login
       </Link>

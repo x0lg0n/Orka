@@ -1,11 +1,22 @@
 import { ChevronRight, FileText, Pen, ArrowUpCircle } from "lucide-react";
 import type { Approval } from "@/types/dashboard";
+import Link from "next/link";
+import { ChevronRight, FileText, Pen, ArrowUpCircle } from "lucide-react";
+import type { Approval, ApprovalType } from "@/types/dashboard";
 
 interface ActionRequiredProps {
   approvals: Approval[];
 }
 
 const actionConfig = {
+const actionConfig: Record<
+  ApprovalType,
+  {
+    icon: typeof FileText;
+    iconBg: string;
+    buttonLabel: string;
+  }
+> = {
   review: {
     icon: FileText,
     iconBg: "bg-purple-100 text-purple-600",
@@ -22,6 +33,7 @@ const actionConfig = {
     buttonLabel: "Release",
   },
 } as const;
+};
 
 export function ActionRequired({ approvals }: ActionRequiredProps) {
   return (
@@ -62,6 +74,42 @@ export function ActionRequired({ approvals }: ActionRequiredProps) {
           );
         })}
       </div>
+      {approvals.length === 0 ? (
+        <p className="py-2 text-sm font-medium text-[#8b95aa]">
+          You&apos;re all caught up.
+        </p>
+      ) : (
+        <div className="flex flex-col gap-3">
+          {approvals.map((approval) => {
+            const config = actionConfig[approval.type];
+            const Icon = config.icon;
+
+            return (
+              <Link
+                key={approval.id}
+                href={approval.href}
+                className="flex items-center gap-3 rounded-lg border border-[#e5e8f0] p-3 transition-colors duration-150 hover:border-[#7c3aed] hover:bg-[#f7f8fc]"
+              >
+                <div
+                  className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${config.iconBg}`}
+                >
+                  <Icon className="h-5 w-5" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-semibold text-[#11182d]">
+                    {approval.project}
+                  </p>
+                  <p className="text-xs text-[#5f6b86]">{approval.description}</p>
+                </div>
+                <span className="flex shrink-0 items-center gap-1 rounded-lg border border-[#e5e8f0] px-3 py-1.5 text-xs font-semibold text-[#5f6b86]">
+                  {config.buttonLabel}
+                  <ChevronRight className="h-3 w-3" />
+                </span>
+              </Link>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }

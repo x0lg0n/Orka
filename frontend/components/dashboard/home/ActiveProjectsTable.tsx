@@ -1,8 +1,10 @@
+import Link from "next/link";
 import { ArrowRight, MoreHorizontal, FolderKanban } from "lucide-react";
 import type { Project } from "@/types/dashboard";
 
 interface ActiveProjectsTableProps {
   projects: Project[];
+  slug: string;
 }
 
 const statusStyles: Record<string, string> = {
@@ -18,6 +20,7 @@ const progressColors: Record<string, string> = {
 };
 
 export function ActiveProjectsTable({ projects }: ActiveProjectsTableProps) {
+export function ActiveProjectsTable({ projects, slug }: ActiveProjectsTableProps) {
   return (
     <div className="rounded-xl border border-[#e5e8f0] bg-white p-5">
       <div className="mb-4 flex items-center justify-between">
@@ -27,6 +30,12 @@ export function ActiveProjectsTable({ projects }: ActiveProjectsTableProps) {
         <button className="text-xs font-semibold text-[#7c3aed] transition-colors duration-150 hover:text-[#6d28d9]">
           View all
         </button>
+        <Link
+          href={`/w/${slug}/projects`}
+          className="text-xs font-semibold text-[#7c3aed] transition-colors duration-150 hover:text-[#6d28d9]"
+        >
+          View all
+        </Link>
       </div>
 
       <div className="overflow-x-auto">
@@ -69,6 +78,17 @@ export function ActiveProjectsTable({ projects }: ActiveProjectsTableProps) {
                       {project.name}
                     </span>
                   </div>
+                  <Link
+                    href={project.href}
+                    className="group flex items-center gap-2"
+                  >
+                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-purple-100 text-purple-600">
+                      <FolderKanban className="h-4 w-4" />
+                    </div>
+                    <span className="text-sm font-semibold text-[#11182d] group-hover:text-[#7c3aed] group-hover:underline">
+                      {project.name}
+                    </span>
+                  </Link>
                 </td>
                 <td className="py-3 text-sm text-[#5f6b86]">
                   {project.client}
@@ -113,6 +133,13 @@ export function ActiveProjectsTable({ projects }: ActiveProjectsTableProps) {
                   >
                     <MoreHorizontal className="h-4 w-4" />
                   </button>
+                  <Link
+                    href={project.href}
+                    className="flex h-8 w-8 items-center justify-center rounded-lg text-[#8b95aa] transition-colors duration-150 hover:bg-[#f0f0f5] hover:text-[#5f6b86]"
+                    aria-label={`Open ${project.name}`}
+                  >
+                    <MoreHorizontal className="h-4 w-4" />
+                  </Link>
                 </td>
               </tr>
             ))}
@@ -124,6 +151,13 @@ export function ActiveProjectsTable({ projects }: ActiveProjectsTableProps) {
         View all projects
         <ArrowRight className="h-4 w-4" />
       </button>
+      <Link
+        href={`/w/${slug}/projects`}
+        className="mt-4 flex items-center gap-1.5 text-sm font-semibold text-[#7c3aed] transition-colors duration-150 hover:text-[#6d28d9]"
+      >
+        View all projects
+        <ArrowRight className="h-4 w-4" />
+      </Link>
     </div>
   );
 }
