@@ -167,6 +167,7 @@ export async function createProject(formData: FormData) {
   const orgId = await getActiveOrgId(supabase);
   if (!orgId) redirect("/workspaces");
 
+  const slug = String(formData.get("slug") || "").trim();
   const title = String(formData.get("title") || "").trim();
   const description = String(formData.get("description") || "").trim();
   const clientName = String(formData.get("clientName") || "").trim();
@@ -174,11 +175,12 @@ export async function createProject(formData: FormData) {
   const freelancerName = String(formData.get("freelancerName") || "").trim();
   const freelancerEmail = String(formData.get("freelancerEmail") || "").trim();
 
-  if (!title) redirect("/dashboard/projects/new?error=Project title is required.");
+  const errorBase = slug ? `/w/${slug}/projects/new` : "/workspaces";
+  if (!title) redirect(`${errorBase}?error=Project title is required.`);
   if (clientEmail && !EMAIL_RE.test(clientEmail))
-    redirect("/dashboard/projects/new?error=Client email is invalid.");
+    redirect(`${errorBase}?error=Client email is invalid.`);
   if (freelancerEmail && !EMAIL_RE.test(freelancerEmail))
-    redirect("/dashboard/projects/new?error=Freelancer email is invalid.");
+    redirect(`${errorBase}?error=Freelancer email is invalid.`);
 
   const { error } = await supabase.from("projects").insert({
     org_id: orgId,
@@ -190,10 +192,11 @@ export async function createProject(formData: FormData) {
     freelancer_email: freelancerEmail,
     status: "draft",
   });
-  if (error) redirect(`/dashboard/projects/new?error=${encodeURIComponent(error.message)}`);
+  if (error) redirect(`${errorBase}?error=${encodeURIComponent(error.message)}`);
 
-  revalidatePath("/dashboard/projects");
-  redirect("/dashboard/projects");
+  const redirectPath = slug ? `/w/${slug}/projects` : "/workspaces";
+  revalidatePath(redirectPath);
+  redirect(redirectPath);
 }
 
 export async function addMilestone(formData: FormData) {

@@ -308,13 +308,13 @@ export default function ProjectsPage() {
               3
             </span>
           </button>
-          <button
-            type="button"
+          <Link
+            href={`/w/${slug}/projects/new`}
             className="flex h-9 items-center gap-2 rounded-lg bg-[#7c3aed] px-4 text-sm font-medium text-white shadow-sm hover:bg-[#6d28d9]"
           >
             <Plus className="h-4 w-4" />
             New Project
-          </button>
+          </Link>
         </div>
       </div>
 
