@@ -19,6 +19,8 @@ Compact guidance for OpenCode sessions in the ORKA repo.
 - **`app/p/[projectToken]/...`** — public, no-auth client portal. Data is resolved by a `shared_token` through the `get_portal_project` **SECURITY DEFINER** RPC (granted to `anon`); the schema lives in `frontend/supabase/portal.sql` and must be applied to the DB. `lib/portal.ts` wraps the call. Do **not** add a service-role read path for this.
 - **Shared chrome** lives in `components/shell/` (`AppShell`, `Sidebar`, `WorkspaceSwitcher`, `PageHeader`, `MobileNav`, `Tabs`). `PageHeader` is re-exported from `components/dashboard/DashboardUI.tsx` for backward compatibility.
 - **No `lib/routes.ts`** — route strings are inline template literals (`` `/w/${slug}/...` ``). Keep slug literals consistent if you add links.
+- **Co-located components: use a `components/` folder next to the route `page.tsx`**, NOT `_components`. Import with a relative `./components/...` path (e.g. `app/(app)/w/[slug]/projects/page.tsx` → `./components/ProjectRow`). Already-followed examples: `clients/components/*`, `proposals/components/*`, `analytics/components/*`, `invoices/components/*`, `invoices/[invoiceId]/components/*`, `projects/[id]/components/*`, `workspaces/components/*`. Shared/root-level components (shell, ui, dashboard chrome) stay under `components/`. Only extract a separate component file when a route's `page.tsx` grows large (≈150+ lines) or the piece is reused; keep small pages (≤~100 lines) inline.
+- **`app/auth/callback/route.ts` is an intentional exception** — it must stay at `app/auth/callback/` (its URL `/auth/callback` is hardcoded in the OAuth flows). Do NOT move it under the `(auth)` route group, or the OAuth redirect URL would change to `/callback`.
 
 ## Commands
 

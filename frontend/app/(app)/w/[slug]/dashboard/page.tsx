@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { DashboardContent } from "@/components/dashboard/home/DashboardContent";
+import { DashboardContent } from "./components/DashboardContent";
 import { createClient } from "@supabase/supabase-js";
 import { getDashboardData } from "@/lib/workspace/queries";
 import { getActiveOrgBySlug } from "@/lib/orka";

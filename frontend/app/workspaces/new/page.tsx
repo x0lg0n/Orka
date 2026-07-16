@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "../../../lib/supabase/server";
 import { WorkspaceNav } from "../../../components/shell/WorkspaceNav";
-import { CreateWorkspaceForm } from "./_components/CreateWorkspaceForm";
+import { CreateWorkspaceForm } from "./components/CreateWorkspaceForm";
 
 export const metadata = { title: "Create Workspace · ORKA" };
 

@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "../../lib/supabase/server";
 import { WorkspaceNav } from "../../components/shell/WorkspaceNav";
-import { WorkspaceGrid, type Workspace } from "./_components/WorkspaceGrid";
+import { WorkspaceGrid, type Workspace } from "./components/WorkspaceGrid";
 
 export const metadata = { title: "Choose a Workspace · ORKA" };
 

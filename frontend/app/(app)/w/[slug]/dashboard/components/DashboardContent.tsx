@@ -1,14 +1,14 @@
 "use client";
 
 import type { DashboardData } from "@/types/dashboard";
-import { DashboardHeader } from "@/components/dashboard/home/DashboardHeader";
-import { MetricCards } from "@/components/dashboard/home/MetricCards";
-import { ActionRequired } from "@/components/dashboard/home/ActionRequired";
-import { RecentActivity } from "@/components/dashboard/home/RecentActivity";
-import { UpcomingMilestones } from "@/components/dashboard/home/UpcomingMilestones";
-import { ActiveProjectsTable } from "@/components/dashboard/home/ActiveProjectsTable";
-import { AICopilot } from "@/components/dashboard/home/AICopilot";
-import { QuickSummary } from "@/components/dashboard/home/QuickSummary";
+import { DashboardHeader } from "./DashboardHeader";
+import { MetricCards } from "./MetricCards";
+import { ActionRequired } from "./ActionRequired";
+import { RecentActivity } from "./RecentActivity";
+import { UpcomingMilestones } from "./UpcomingMilestones";
+import { ActiveProjectsTable } from "./ActiveProjectsTable";
+import { AICopilot } from "./AICopilot";
+import { QuickSummary } from "./QuickSummary";
 
 export function DashboardContent({
   data,
