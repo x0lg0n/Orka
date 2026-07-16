@@ -40,7 +40,7 @@ export default async function WorkspaceLayout({
         user={{ name: name || (user.email ?? ""), email: user.email ?? "" }}
       />
       <main
-        className="flex-1 overflow-y-auto"
+        className="flex-1 overflow-y-auto overflow-x-hidden"
         id="main-content"
       >
         <div className="mx-auto w-full max-w-7xl px-6 py-6">

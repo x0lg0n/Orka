@@ -1,46 +1,89 @@
-import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
-import { getActiveOrgBySlug } from "@/lib/orka";
+"use client";
 
-export const metadata = { title: "Invoices · ORKA" };
+import { useState, useMemo } from "react";
+import { use } from "react";
+import { Search, Filter, Plus, ChevronDown } from "lucide-react";
+import Link from "next/link";
+import InvoiceStats from "./components/InvoiceStats";
+import InvoiceFilters from "./components/InvoiceFilters";
+import InvoiceTable from "./components/InvoiceTable";
+import InvoiceSummaryCard from "./components/InvoiceSummaryCard";
+import InvoiceActivityCard from "./components/InvoiceActivityCard";
+import InvoiceAICard from "./components/InvoiceAICard";
+import { mockInvoices, type InvoiceStatus } from "./components/listMockData";
 
-export default async function InvoicesPage({
+export default function InvoicesPage({
   params,
 }: {
   params: Promise<{ slug: string }>;
 }) {
-  const { slug } = await params;
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) redirect("/signup");
-  const org = await getActiveOrgBySlug(supabase, slug);
-  if (!org) redirect("/workspaces");
+  const { slug } = use(params);
+  const [activeTab, setActiveTab] = useState<InvoiceStatus | "all">("all");
+  const [searchQuery, setSearchQuery] = useState("");
 
-  const { data: invoices } = await supabase
-    .from("invoices")
-    .select("id, invoice_number, amount, currency, status, project_id, created_at")
-    .eq("org_id", org.id)
-    .order("created_at", { ascending: false });
+  const filteredInvoices = useMemo(() => {
+    return mockInvoices.filter((inv) => {
+      if (activeTab !== "all" && inv.status !== activeTab) return false;
+      if (
+        searchQuery &&
+        !inv.number.toLowerCase().includes(searchQuery.toLowerCase()) &&
+        !inv.client.toLowerCase().includes(searchQuery.toLowerCase()) &&
+        !inv.project.toLowerCase().includes(searchQuery.toLowerCase())
+      ) {
+        return false;
+      }
+      return true;
+    });
+  }, [activeTab, searchQuery]);
 
   return (
-    <main className="mx-auto max-w-3xl px-4 py-10 text-white">
-      <h1 className="display text-4xl uppercase">Invoices</h1>
-      <div className="mt-6 flex flex-col gap-3">
-        {invoices?.map((inv) => (
-          <div key={inv.id} className="rounded-[18px] bg-white p-4 text-night shadow-hard">
-            <div className="flex items-center justify-between">
-              <p className="font-black uppercase">{inv.invoice_number}</p>
-              <span className="rounded-full bg-night px-3 py-1 text-xs font-black uppercase text-white">{inv.status}</span>
-            </div>
-            <p className="text-sm font-bold text-night/70">{inv.amount} {inv.currency}</p>
+    <div className="space-y-6">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Invoices</h1>
+          <p className="mt-1 text-sm text-gray-500">
+            Create, manage and track all your invoices in one place.
+          </p>
+        </div>
+        <div className="flex items-center gap-3">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Search invoices..."
+              className="h-10 w-64 rounded-lg border border-gray-200 bg-white pl-10 pr-4 text-sm text-gray-900 placeholder-gray-400 focus:border-[#7c3aed] focus:outline-none focus:ring-1 focus:ring-[#7c3aed]"
+            />
           </div>
-        ))}
-        {(!invoices || invoices.length === 0) && (
-          <p className="text-sm font-bold text-white/70">No invoices yet — release a milestone to generate one.</p>
-        )}
+          <button className="inline-flex h-10 items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 text-sm font-medium text-gray-700 hover:bg-gray-50">
+            <Filter className="h-4 w-4" />
+            Filters
+          </button>
+          <button className="inline-flex h-10 items-center gap-2 rounded-lg bg-[#7c3aed] px-4 text-sm font-medium text-white hover:bg-[#6d28d9]">
+            <Plus className="h-4 w-4" />
+            New Invoice
+            <ChevronDown className="h-3.5 w-3.5" />
+          </button>
+        </div>
       </div>
-    </main>
+
+      <InvoiceStats />
+
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <div className="space-y-6 lg:col-span-2">
+          <InvoiceFilters
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+          />
+          <InvoiceTable invoices={filteredInvoices} slug={slug} />
+        </div>
+        <div className="space-y-6">
+          <InvoiceSummaryCard />
+          <InvoiceActivityCard />
+          <InvoiceAICard slug={slug} />
+        </div>
+      </div>
+    </div>
   );
 }
