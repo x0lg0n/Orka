@@ -1,12 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { ChevronsUpDown, User as UserIcon } from "lucide-react";
+import { ChevronsUpDown, User as UserIcon, Settings, LogOut } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import SignOutButton from "@/components/SignOutButton";
@@ -59,9 +60,19 @@ export function UserProfile({
         >
           <Link href={`/w/${slug}/settings`}>
             <UserIcon className="size-4 text-white/50" aria-hidden />
-            Profile
+            Workspace Settings
           </Link>
         </DropdownMenuItem>
+        <DropdownMenuItem
+          asChild
+          className="flex justify-center gap-2.5 rounded-lg px-3 py-2 text-sm font-semibold text-white/65 outline-hidden transition-colors hover:bg-white/6 hover:text-white focus:bg-white/6 focus:text-white data-highlighted:bg-white/6 data-highlighted:text-white"
+        >
+          <Link href="/settings">
+            <Settings className="size-4 text-white/50" aria-hidden />
+            Personal Settings
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuSeparator className="bg-white/10" />
         <DropdownMenuItem
           asChild
           className="flex justify-center gap-2.5 rounded-lg px-3 py-2 text-sm font-semibold text-white/65 outline-hidden transition-colors hover:bg-white/6 hover:text-white focus:bg-white/6 focus:text-white data-highlighted:bg-white/6 data-highlighted:text-white"
