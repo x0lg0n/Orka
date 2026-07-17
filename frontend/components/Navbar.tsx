@@ -123,6 +123,8 @@ export default function Navbar() {
           Star
         </a>
 
+
+
         {/* Hamburger (mobile) */}
         <button
           className="ml-auto flex size-10 items-center justify-center rounded-full text-white transition-all hover:bg-white/10 md:hidden"
@@ -197,6 +199,8 @@ export default function Navbar() {
               <Star size={16} className="star-wiggle shrink-0" fill="currentColor" />
               Star on GitHub
             </a>
+
+            {/* Theme toggler (mobile) */}
           </div>
         </div>
       )}

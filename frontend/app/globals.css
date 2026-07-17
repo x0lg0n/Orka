@@ -10,7 +10,6 @@
 /* ORKA brand tokens — namespaced to avoid colliding with shadcn semantic tokens */
 @theme inline {
 
-
   /* ORKA brand colors — simple names so existing product-UI classes
      (bg-shell, text-lime, from-orange, to-violet, bg-coral, …) keep working.
      These are reconciled onto shadcn semantic tokens in the shell/dashboard
@@ -564,4 +563,15 @@ input {
   html {
     @apply font-sans;
   }
+}
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+/* Scoped to AnimatedThemeToggler — the toggler sets the data-attribute and the
+   variable only during a theme toggle, so it doesn't affect other view transitions. */
+html[data-magicui-theme-vt="active"]::view-transition-group(root) {
+  animation-duration: var(--magicui-theme-toggle-vt-duration);
 }
