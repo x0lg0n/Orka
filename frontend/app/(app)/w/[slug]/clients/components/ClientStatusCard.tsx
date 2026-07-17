@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import type { Client } from "./client-types";
+import type { ClientSummary, ClientStatus } from "./client-types";
 
 function DonutChart({
   segments,
@@ -12,17 +12,14 @@ function DonutChart({
 
   const offsets = useMemo(
     () =>
-      segments.reduce<Array<{ dash: number; offset: number }>>(
-        (prev, seg) => {
-          const dash = (seg.pct / 100) * circumference;
-          const offset =
-            prev.length > 0
-              ? prev[prev.length - 1].offset + prev[prev.length - 1].dash
-              : 0;
-          return [...prev, { dash, offset }];
-        },
-        [],
-      ),
+      segments.reduce<Array<{ dash: number; offset: number }>>((prev, seg) => {
+        const dash = (seg.pct / 100) * circumference;
+        const offset =
+          prev.length > 0
+            ? prev[prev.length - 1].offset + prev[prev.length - 1].dash
+            : 0;
+        return [...prev, { dash, offset }];
+      }, []),
     [segments, circumference],
   );
 
@@ -63,38 +60,46 @@ function DonutChart({
   );
 }
 
-export function ClientStatusCard({ clients }: { clients: Client[] }) {
-  const total = clients.length;
-  const active = clients.filter((c) => c.status === "Active").length;
-  const inactive = clients.filter((c) => c.status === "Inactive").length;
-  const lead = clients.filter((c) => c.status === "Lead").length;
+const COLOR: Record<ClientStatus, string> = {
+  active: "#22c55e",
+  inactive: "#94a3b8",
+  lead: "#3b82f6",
+  archived: "#cbd5e1",
+};
 
-  const segments = [
-    {
-      label: "Active",
-      value: active,
-      pct: total > 0 ? (active / total) * 100 : 0,
-      color: "#22c55e",
-    },
-    {
-      label: "Inactive",
-      value: inactive,
-      pct: total > 0 ? (inactive / total) * 100 : 0,
-      color: "#94a3b8",
-    },
-    {
-      label: "Lead",
-      value: lead,
-      pct: total > 0 ? (lead / total) * 100 : 0,
-      color: "#3b82f6",
-    },
-  ];
+const LABEL: Record<ClientStatus, string> = {
+  active: "Active",
+  inactive: "Inactive",
+  lead: "Lead",
+  archived: "Archived",
+};
+
+export function ClientStatusCard({ clients }: { clients: ClientSummary[] }) {
+  const total = clients.length;
+  const counts: Record<ClientStatus, number> = {
+    active: 0,
+    inactive: 0,
+    lead: 0,
+    archived: 0,
+  };
+  for (const c of clients) counts[c.status] += 1;
+
+  const segments = (Object.keys(counts) as ClientStatus[]).map((k) => ({
+    label: LABEL[k],
+    value: counts[k],
+    pct: total > 0 ? (counts[k] / total) * 100 : 0,
+    color: COLOR[k],
+  }));
 
   return (
     <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
       <h3 className="text-sm font-semibold text-gray-900">Client Status</h3>
       <div className="mt-4">
-        <DonutChart segments={segments} />
+        {total > 0 ? (
+          <DonutChart segments={segments} />
+        ) : (
+          <p className="text-sm text-gray-400">No clients yet.</p>
+        )}
       </div>
     </div>
   );

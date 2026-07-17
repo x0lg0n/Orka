@@ -1,5 +1,5 @@
 import { Globe, Building2, Calendar, DollarSign, Lock } from "lucide-react";
-import type { ProjectFormData } from "../page";
+import type { ProjectFormData } from "./NewProjectForm";
 
 export function PreviewCard({ formData }: { formData: ProjectFormData }) {
   const hasData =
@@ -52,21 +52,15 @@ export function PreviewCard({ formData }: { formData: ProjectFormData }) {
                 </span>
               </div>
             )}
-            <div className="flex items-center gap-2">
-              <DollarSign className="h-3.5 w-3.5 text-gray-400" />
-              <span className="text-xs text-gray-600">
-                {formData.engagementType === "fixed"
-                  ? "Fixed Price"
-                  : formData.engagementType === "hourly"
-                    ? "Hourly"
-                    : "Retainer"}
-              </span>
-            </div>
+            {formData.category && (
+              <div className="flex items-center gap-2">
+                <DollarSign className="h-3.5 w-3.5 text-gray-400" />
+                <span className="text-xs text-gray-600">{formData.category}</span>
+              </div>
+            )}
             <div className="flex items-center gap-2">
               <Lock className="h-3.5 w-3.5 text-gray-400" />
-              <span className="text-xs text-gray-600">
-                {formData.visibility === "private" ? "Private" : "Public"}
-              </span>
+              <span className="text-xs text-gray-600">Private</span>
             </div>
           </div>
 

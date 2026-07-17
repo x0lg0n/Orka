@@ -170,31 +170,109 @@ export async function createProject(formData: FormData) {
   const slug = String(formData.get("slug") || "").trim();
   const title = String(formData.get("title") || "").trim();
   const description = String(formData.get("description") || "").trim();
-  const clientName = String(formData.get("clientName") || "").trim();
-  const clientEmail = String(formData.get("clientEmail") || "").trim();
-  const freelancerName = String(formData.get("freelancerName") || "").trim();
-  const freelancerEmail = String(formData.get("freelancerEmail") || "").trim();
+  const clientId = String(formData.get("clientId") || "").trim() || null;
+  const clientName = String(formData.get("clientName") || "").trim() || null;
+  const category = String(formData.get("category") || "").trim();
+  const timeline = String(formData.get("timeline") || "").trim();
+  const mode = String(formData.get("mode") || "project"); // "draft" | "project"
 
   const errorBase = slug ? `/w/${slug}/projects/new` : "/workspaces";
+  // Save Draft requires only a name; Save Project requires name + client.
   if (!title) redirect(`${errorBase}?error=Project title is required.`);
-  if (clientEmail && !EMAIL_RE.test(clientEmail))
-    redirect(`${errorBase}?error=Client email is invalid.`);
-  if (freelancerEmail && !EMAIL_RE.test(freelancerEmail))
-    redirect(`${errorBase}?error=Freelancer email is invalid.`);
+  if (mode === "project" && !clientId)
+    redirect(`${errorBase}?error=Please select a client.`);
+
+  const userId = (await supabase.auth.getUser()).data.user?.id;
+
+  // Auto-generate a per-org project code (PRJ-001, PRJ-002, ...).
+  const { count } = await supabase
+    .from("projects")
+    .select("id", { count: "exact", head: true })
+    .eq("org_id", orgId);
+  const code = `PRJ-${String((count ?? 0) + 1).padStart(3, "0")}`;
 
   const { error } = await supabase.from("projects").insert({
     org_id: orgId,
+    code,
     title,
     description,
+    client_id: clientId,
     client_name: clientName,
-    client_email: clientEmail,
-    freelancer_name: freelancerName,
-    freelancer_email: freelancerEmail,
-    status: "draft",
+    created_by: userId ?? null,
+    metadata: {
+      ...(category ? { category } : {}),
+      ...(timeline ? { timeline } : {}),
+    },
+    status: mode === "draft" ? "draft" : "active",
   });
   if (error) redirect(`${errorBase}?error=${encodeURIComponent(error.message)}`);
 
   const redirectPath = slug ? `/w/${slug}/projects` : "/workspaces";
+  revalidatePath(redirectPath);
+  redirect(redirectPath);
+}
+
+// Creates a client for an organization. All non-core attributes (type, contact,
+// website, industry, billing address, notes, tags, currency, payment terms) are
+// stored in the clients.metadata jsonb column. `orgId` is passed by the caller
+// (resolved from the workspace slug server-side).
+export async function createClientAction(formData: FormData) {
+  const supabase = await createClient();
+
+  const orgId = String(formData.get("orgId") || "").trim();
+  const slug = String(formData.get("slug") || "").trim();
+  const name = String(formData.get("name") || "").trim();
+  const email = String(formData.get("email") || "").trim();
+  const errorBase = slug ? `/w/${slug}/clients/new` : "/workspaces";
+
+  if (!orgId) redirect("/workspaces");
+  if (!name) redirect(`${errorBase}?error=Client name is required.`);
+  if (email && !EMAIL_RE.test(email))
+    redirect(`${errorBase}?error=Please enter a valid email address.`);
+
+  const status = String(formData.get("status") || "active").toLowerCase();
+  const safeStatus = ["active", "inactive", "lead", "archived"].includes(status)
+    ? status
+    : "active";
+
+  const metadata: Record<string, unknown> = {
+    clientType: String(formData.get("clientType") || "").trim() || null,
+    description: String(formData.get("description") || "").trim() || null,
+    contactName: String(formData.get("contactName") || "").trim() || null,
+    contactEmail: String(formData.get("contactEmail") || "").trim() || null,
+    phone: String(formData.get("phone") || "").trim() || null,
+    jobTitle: String(formData.get("jobTitle") || "").trim() || null,
+    website: String(formData.get("website") || "").trim() || null,
+    industry: String(formData.get("industry") || "").trim() || null,
+    companySize: String(formData.get("companySize") || "").trim() || null,
+    taxId: String(formData.get("taxId") || "").trim() || null,
+    billing: {
+      addressLine1: String(formData.get("addressLine1") || "").trim() || null,
+      addressLine2: String(formData.get("addressLine2") || "").trim() || null,
+      city: String(formData.get("city") || "").trim() || null,
+      state: String(formData.get("state") || "").trim() || null,
+      postalCode: String(formData.get("postalCode") || "").trim() || null,
+      country: String(formData.get("country") || "").trim() || null,
+    },
+    notes: String(formData.get("notes") || "").trim() || null,
+    tags: String(formData.get("tags") || "")
+      .split(",")
+      .map((t) => t.trim())
+      .filter(Boolean),
+    preferredCurrency: String(formData.get("preferredCurrency") || "").trim() || null,
+    paymentTerms: String(formData.get("paymentTerms") || "").trim() || null,
+  };
+
+  const { error } = await supabase.from("clients").insert({
+    org_id: orgId,
+    name,
+    email: email || null,
+    metadata,
+    status: safeStatus,
+  });
+  if (error) redirect(`${errorBase}?error=${encodeURIComponent(error.message)}`);
+
+  const redirectPath = slug ? `/w/${slug}/clients` : "/workspaces";
   revalidatePath(redirectPath);
   redirect(redirectPath);
 }

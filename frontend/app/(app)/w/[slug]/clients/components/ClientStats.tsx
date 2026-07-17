@@ -1,5 +1,5 @@
 import { Users, FolderKanban, DollarSign, Lock } from "lucide-react";
-import type { Client } from "./client-types";
+import type { ClientSummary } from "./client-types";
 
 function StatCard({
   icon: Icon,
@@ -36,14 +36,9 @@ function StatCard({
   );
 }
 
-export function ClientStats({ clients }: { clients: Client[] }) {
+export function ClientStats({ clients }: { clients: ClientSummary[] }) {
   const totalClients = clients.length;
-  const activeProjects = clients.reduce(
-    (sum, c) => sum + c.activeProjects,
-    0,
-  );
-  const totalBilled = clients.reduce((sum, c) => sum + c.totalBilled, 0);
-  const escrowInHold = clients.reduce((sum, c) => sum + c.escrowInHold, 0);
+  const active = clients.filter((c) => c.status === "active").length;
 
   return (
     <div className="mt-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
@@ -53,33 +48,33 @@ export function ClientStats({ clients }: { clients: Client[] }) {
         iconColor="text-violet-500"
         label="Total Clients"
         value={String(totalClients)}
-        sub="2 from last month"
-        subColor="text-emerald-500"
+        sub="in this workspace"
+        subColor="text-gray-400"
       />
       <StatCard
         icon={FolderKanban}
         iconBg="bg-emerald-50"
         iconColor="text-emerald-500"
-        label="Active Projects"
-        value={String(activeProjects)}
-        sub="4 from last month"
-        subColor="text-emerald-500"
+        label="Active"
+        value={String(active)}
+        sub="active clients"
+        subColor="text-gray-400"
       />
       <StatCard
         icon={DollarSign}
         iconBg="bg-amber-50"
         iconColor="text-amber-500"
         label="Total Billed"
-        value={`${totalBilled.toLocaleString()} XLM`}
-        sub={`≈ $${(totalBilled * 0.5125).toFixed(2)} USD`}
+        value="—"
+        sub="billing coming soon"
       />
       <StatCard
         icon={Lock}
         iconBg="bg-emerald-50"
         iconColor="text-emerald-500"
         label="Escrow in Hold"
-        value={`${escrowInHold.toLocaleString()} XLM`}
-        sub={`≈ $${(escrowInHold * 0.5125).toFixed(2)} USD`}
+        value="—"
+        sub="escrow coming soon"
       />
     </div>
   );

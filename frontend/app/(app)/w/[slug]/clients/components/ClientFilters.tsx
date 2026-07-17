@@ -1,16 +1,20 @@
 "use client";
 
+import type { ClientStatus } from "./client-types";
+
 export function ClientFilters({
   activeTab,
   setActiveTab,
 }: {
-  activeTab: "all" | "active" | "archived";
-  setActiveTab: (t: "all" | "active" | "archived") => void;
+  activeTab: "all" | ClientStatus;
+  setActiveTab: (t: "all" | ClientStatus) => void;
 }) {
-  const tabs = [
-    { key: "all" as const, label: "All Clients" },
-    { key: "active" as const, label: "Active Clients" },
-    { key: "archived" as const, label: "Archived Clients" },
+  const tabs: { key: "all" | ClientStatus; label: string }[] = [
+    { key: "all", label: "All Clients" },
+    { key: "active", label: "Active" },
+    { key: "lead", label: "Leads" },
+    { key: "inactive", label: "Inactive" },
+    { key: "archived", label: "Archived" },
   ];
 
   return (

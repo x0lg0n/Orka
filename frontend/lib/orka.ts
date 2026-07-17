@@ -117,3 +117,60 @@ export async function listOrgsForUser(
     })
     .filter((o): o is OrgSummary => Boolean(o && o.slug));
 }
+
+export type ClientStatus = "active" | "inactive" | "lead" | "archived";
+
+export type ClientSummary = {
+  id: string;
+  name: string;
+  email: string | null;
+  status: ClientStatus;
+  metadata: Record<string, unknown> | null;
+  created_at: string;
+};
+
+// Lists the clients belonging to an organization (for the project create dropdown
+// and the clients list view).
+export async function listClients(
+  supabase: SupabaseClient,
+  orgId: string,
+): Promise<ClientSummary[]> {
+  const { data, error } = await supabase
+    .from("clients")
+    .select("id, name, email, status, metadata, created_at")
+    .eq("org_id", orgId)
+    .order("created_at", { ascending: false });
+  if (error || !data) return [];
+  return data as ClientSummary[];
+}
+
+export type ProjectStatus =
+  | "draft"
+  | "active"
+  | "completed"
+  | "archived";
+
+export type ProjectSummary = {
+  id: string;
+  title: string;
+  code: string | null;
+  client_name: string | null;
+  client_email: string | null;
+  status: ProjectStatus;
+  created_at: string;
+  updated_at: string;
+};
+
+// Lists the projects belonging to an organization (workspace project list view).
+export async function listProjects(
+  supabase: SupabaseClient,
+  orgId: string,
+): Promise<ProjectSummary[]> {
+  const { data, error } = await supabase
+    .from("projects")
+    .select("id, title, code, client_name, client_email, status, created_at, updated_at")
+    .eq("org_id", orgId)
+    .order("created_at", { ascending: false });
+  if (error || !data) return [];
+  return data as ProjectSummary[];
+}

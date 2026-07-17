@@ -1,5 +1,5 @@
 import { Sparkles, CheckCircle2 } from "lucide-react";
-import type { ProjectFormData } from "../page";
+import type { ProjectFormData } from "./NewProjectForm";
 
 const SUGGESTIONS = [
   "Generating project scope",

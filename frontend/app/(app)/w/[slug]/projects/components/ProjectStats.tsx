@@ -5,59 +5,66 @@ import {
   Pause,
   DollarSign,
 } from "lucide-react";
+import type { ProjectSummary } from "@/lib/orka";
 
-const STAT_CARDS = [
-  {
-    label: "Total Projects",
-    value: "24",
-    detail: "2 from last month",
-    icon: FolderKanban,
-    color: "text-violet-500",
-    bg: "bg-violet-50",
-    pct: null as number | null,
-  },
-  {
-    label: "In Progress",
-    value: "12",
-    detail: "50% of total",
-    icon: TrendingUp,
-    color: "text-amber-500",
-    bg: "bg-amber-50",
-    pct: 50,
-  },
-  {
-    label: "Completed",
-    value: "8",
-    detail: "33% of total",
-    icon: CheckCircle2,
-    color: "text-emerald-500",
-    bg: "bg-emerald-50",
-    pct: 33,
-  },
-  {
-    label: "On Hold",
-    value: "2",
-    detail: "8% of total",
-    icon: Pause,
-    color: "text-amber-600",
-    bg: "bg-amber-50",
-    pct: 8,
-  },
-  {
-    label: "Total Value",
-    value: "2,450 XLM",
-    detail: "$1,412.50 USD",
-    icon: DollarSign,
-    color: "text-violet-500",
-    bg: "bg-violet-50",
-    pct: null,
-  },
-];
+export function ProjectStats({ projects }: { projects: ProjectSummary[] }) {
+  const total = projects.length;
+  const active = projects.filter((p) => p.status === "active").length;
+  const completed = projects.filter((p) => p.status === "completed").length;
+  const draft = projects.filter((p) => p.status === "draft").length;
+  const pct = (n: number) => (total > 0 ? Math.round((n / total) * 100) : 0);
 
-export function ProjectStats() {
+  const cards = [
+    {
+      label: "Total Projects",
+      value: String(total),
+      detail: "in this workspace",
+      icon: FolderKanban,
+      color: "text-violet-500",
+      bg: "bg-violet-50",
+      pct: null as number | null,
+    },
+    {
+      label: "In Progress",
+      value: String(active),
+      detail: `${pct(active)}% of total`,
+      icon: TrendingUp,
+      color: "text-amber-500",
+      bg: "bg-amber-50",
+      pct: pct(active),
+    },
+    {
+      label: "Completed",
+      value: String(completed),
+      detail: `${pct(completed)}% of total`,
+      icon: CheckCircle2,
+      color: "text-emerald-500",
+      bg: "bg-emerald-50",
+      pct: pct(completed),
+    },
+    {
+      label: "Draft",
+      value: String(draft),
+      detail: `${pct(draft)}% of total`,
+      icon: Pause,
+      color: "text-amber-600",
+      bg: "bg-amber-50",
+      pct: pct(draft),
+    },
+    {
+      label: "Total Value",
+      value: "—",
+      detail: "budget coming soon",
+      icon: DollarSign,
+      color: "text-violet-500",
+      bg: "bg-violet-50",
+      pct: null as number | null,
+    },
+  ];
+
   return (
     <div className="mt-6 grid grid-cols-2 gap-4 lg:grid-cols-5">
-      {STAT_CARDS.map((card) => (
+      {cards.map((card) => (
         <div
           key={card.label}
           className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm"
@@ -84,8 +91,7 @@ export function ProjectStats() {
               </div>
             </div>
           ) : (
-            <p className="mt-2 flex items-center gap-1 text-xs text-emerald-500">
-              <TrendingUp className="h-3 w-3" />
+            <p className="mt-2 flex items-center gap-1 text-xs text-gray-400">
               {card.detail}
             </p>
           )}
