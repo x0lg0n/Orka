@@ -19,7 +19,7 @@ export type Testimonial = TweetTestimonial | QuoteTestimonial
 export const testimonials: Testimonial[] = [
   {
     type: "tweet",
-    id: "1668408059125702661",
+    id: "2073820124415742461",
     handle: "@buildwithorka",
   },
   {
@@ -32,7 +32,12 @@ export const testimonials: Testimonial[] = [
   },
   {
     type: "tweet",
-    id: "1668408059125702661",
+    id: "2073809072605069678",
+    handle: "@buildwithorka",
+  },
+  {
+    type: "tweet",
+    id: "2074015365450096980",
     handle: "@buildwithorka",
   },
   {
@@ -51,4 +56,4 @@ export const testimonials: Testimonial[] = [
     role: "Freelance Product Designer",
     avatarColor: "from-violet to-orange",
   },
-]
+];
