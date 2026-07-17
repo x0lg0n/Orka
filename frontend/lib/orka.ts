@@ -129,6 +129,16 @@ export type ClientSummary = {
   created_at: string;
 };
 
+export type ClientDetail = {
+  id: string;
+  org_id: string;
+  name: string;
+  email: string | null;
+  status: ClientStatus;
+  metadata: Record<string, unknown> | null;
+  created_at: string;
+};
+
 // Lists the clients belonging to an organization (for the project create dropdown
 // and the clients list view).
 export async function listClients(
@@ -142,6 +152,23 @@ export async function listClients(
     .order("created_at", { ascending: false });
   if (error || !data) return [];
   return data as ClientSummary[];
+}
+
+// Fetches a single client by id, scoped to the organization (for the
+// client detail page). Returns null if not found or outside the org.
+export async function getClient(
+  supabase: SupabaseClient,
+  orgId: string,
+  clientId: string,
+): Promise<ClientDetail | null> {
+  const { data, error } = await supabase
+    .from("clients")
+    .select("id, org_id, name, email, status, metadata, created_at")
+    .eq("id", clientId)
+    .eq("org_id", orgId)
+    .maybeSingle();
+  if (error || !data) return null;
+  return data as ClientDetail;
 }
 
 export type ProjectStatus =
@@ -162,15 +189,18 @@ export type ProjectSummary = {
 };
 
 // Lists the projects belonging to an organization (workspace project list view).
+// When clientId is provided, scopes to that client's projects (client detail page).
 export async function listProjects(
   supabase: SupabaseClient,
   orgId: string,
+  clientId?: string,
 ): Promise<ProjectSummary[]> {
-  const { data, error } = await supabase
+  let query = supabase
     .from("projects")
     .select("id, title, code, client_name, client_email, status, created_at, updated_at")
-    .eq("org_id", orgId)
-    .order("created_at", { ascending: false });
+    .eq("org_id", orgId);
+  if (clientId) query = query.eq("client_id", clientId);
+  const { data, error } = await query.order("created_at", { ascending: false });
   if (error || !data) return [];
   return data as ProjectSummary[];
 }
