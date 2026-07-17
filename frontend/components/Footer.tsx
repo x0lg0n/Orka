@@ -33,7 +33,7 @@ export default function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={label}
-                className="block size-6 bg-background transition-[transform,background-color] duration-200 hover:scale-110 hover:bg-orange"
+                className="block size-6 bg-night transition-[transform,background-color] duration-200 hover:scale-110 hover:bg-orange"
                 style={{
                   maskImage: `url("${src}")`,
                   WebkitMaskImage: `url("${src}")`,
@@ -47,7 +47,7 @@ export default function Footer() {
               />
             ))}
           </div>
-          <p className="mt-4 text-base leading-7 text-background/60 sm:text-[18px] sm:leading-8">
+          <p className="mt-4 text-base leading-7 text-night/80 sm:text-[18px] sm:leading-8">
             Autonomous financial operations for the global service economy.
             AI-powered proposals, escrow, verification, and payouts.
           </p>
@@ -63,7 +63,7 @@ export default function Footer() {
               <a
                 key={label}
                 href={href}
-                className="group display flex items-center gap-3 text-2xl font-normal uppercase text-background transition hover:text-orange sm:text-[28px]">
+                className="group display flex items-center gap-3 text-2xl font-normal uppercase text-night transition hover:text-orange sm:text-[28px]">
                  <span className="grid size-8 place-items-center rounded-full bg-violet text-white transition-colors duration-300 group-hover:bg-orange">
                   <ArrowUpRight size={16} strokeWidth={3} className="transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1" />
                 </span>
@@ -71,7 +71,7 @@ export default function Footer() {
               </a>
             ))}
           </div>
-          <div className="max-w-7xl text-left text-[16px] font-medium uppercase text-background/60">
+          <div className="max-w-7xl text-left text-[16px] font-medium uppercase text-night/80">
             Copyright © 2026 ORKA. All rights reserved.
           </div>
         </div>

@@ -3,12 +3,12 @@ import WaitlistForm from "./WaitlistForm";
 export default function WaitlistCta() {
   return (
     <section id="waitlist" className="px-4 py-16 md:px-8 lg:px-12">
-      <div className=" relative overflow-hidden mx-auto max-w-7xl rounded-[28px] bg-ink p-6 text-white md:p-10 lg:rounded-[36px]">
+      <div className=" relative overflow-hidden mx-auto max-w-7xl rounded-[28px] bg-night p-6 text-white md:p-10 lg:rounded-[36px]">
         {/* Floating stickers */}
         <span className="sticker absolute right-[5%] top-[35%] rounded-full bg-coral px-4 py-2 text-xs font-black uppercase text-white shadow-hard hidden lg:block">
           Brand Strategy
         </span>
-        <span className="sticker absolute right-[3%] top-[45%] rounded-full bg-lime px-4 py-2 text-xs font-black uppercase text-ink shadow-hard hidden lg:block" style={{ transform: "rotate(5deg)" }}>
+        <span className="sticker absolute right-[3%] top-[45%] rounded-full bg-lime px-4 py-2 text-xs font-black uppercase text-night shadow-hard hidden lg:block" style={{ transform: "rotate(5deg)" }}>
           Performance Metrics
         </span>
         <span className="sticker absolute right-[5%] top-[55%] rounded-full bg-violet px-4 py-2 text-xs font-black uppercase text-white shadow-hard hidden lg:block" style={{ transform: "rotate(-3deg)" }}>
@@ -24,7 +24,7 @@ export default function WaitlistCta() {
               <span className="text-orange">full</span> potential?
             </h2>
           </div>
-          <div className="rounded-[18px] bg-white p-5 text-ink md:p-6">
+          <div className="rounded-[18px] bg-white p-5 text-night md:p-6">
             <WaitlistForm />
           </div>
         </div>

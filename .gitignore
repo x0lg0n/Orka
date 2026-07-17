@@ -1,9 +1,46 @@
-.next
-.qwen
+# Dependencies
+node_modules/
+.pnp/
+.pnp.js
+.yarn/
 
+# Accidental npm lockfiles (repo uses pnpm)
+package-lock.json
+
+# Secrets / env
+.env
+.env.*
+!.env.example
+
+# Build outputs
+.next/
+out/
+dist/
+build/
+target/
+*.tsbuildinfo
+.turbo/
+coverage/
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+
+# Editor / OS
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Agent / tooling (local only)
+.qwen
 .planning
 .planning/codebase
-
 .qodo
 .superpowers
 .gstack/

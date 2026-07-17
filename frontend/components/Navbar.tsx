@@ -4,24 +4,29 @@ import Image from "next/image";
 import Link from "next/link";
 import { ChevronDown, Menu, Star, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { productLinks } from "../lib/content";
+import { companyLinks, productLinks, resourcesLinks } from "../lib/content";
 
 const GITHUB_URL = "https://github.com/x0lg0n/Orka";
 
+type NavGroup = { id: string; label: string; links: { label: string; href: string }[] };
+
+const desktopGroups: NavGroup[] = [
+  { id: "product", label: "Product", links: productLinks },
+  { id: "resources", label: "Resources", links: resourcesLinks },
+  { id: "company", label: "Company", links: companyLinks },
+];
+
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [productOpen, setProductOpen] = useState(false);
-  const [mobileProductOpen, setMobileProductOpen] = useState(false);
-  const productRef = useRef<HTMLDivElement>(null);
+  const [open, setOpen] = useState<string | null>(null);
+  const [mobileOpen, setMobileOpen] = useState<string | null>(null);
+  const navRef = useRef<HTMLDivElement>(null);
 
-  // Close desktop product dropdown when clicking outside
+  // Close desktop dropdown when clicking outside
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
-      if (
-        productRef.current &&
-        !productRef.current.contains(e.target as Node)
-      ) {
-        setProductOpen(false);
+      if (navRef.current && !navRef.current.contains(e.target as Node)) {
+        setOpen(null);
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
@@ -33,7 +38,7 @@ export default function Navbar() {
     function handleResize() {
       if (window.innerWidth >= 768) {
         setMenuOpen(false);
-        setMobileProductOpen(false);
+        setMobileOpen(null);
       }
     }
     window.addEventListener("resize", handleResize);
@@ -42,7 +47,7 @@ export default function Navbar() {
 
   function closeMobileMenu() {
     setMenuOpen(false);
-    setMobileProductOpen(false);
+    setMobileOpen(null);
   }
 
   return (
@@ -64,55 +69,39 @@ export default function Navbar() {
           <span className="display text-[40px] text-white">ORKA</span>
         </Link>
 
-        {/* Desktop nav links — left of spacer */}
-        <div className="hidden items-center gap-4 md:flex">
-          {/* Product dropdown */}
-          <div ref={productRef} className="relative">
-            <button
-              onClick={() => setProductOpen((v) => !v)}
-              className={`flex items-center gap-2 rounded-full px-4 py-2 text-sm font-normal uppercase text-white transition-all ${
-                productOpen ? "bg-orange" : "hover:bg-orange"
-              }`}
-              aria-expanded={productOpen}
-              aria-haspopup="true">
-              Product
-              <ChevronDown
-                size={16}
-                className={`transition-transform duration-300 ${productOpen ? "rotate-180" : ""}`}
-              />
-            </button>
+        {/* Desktop dropdown groups */}
+        <div ref={navRef} className="hidden items-center gap-2 md:flex">
+          {desktopGroups.map((group) => (
+            <div key={group.id} className="relative">
+              <button
+                onClick={() => setOpen(open === group.id ? null : group.id)}
+                className={`flex items-center gap-2 rounded-full px-4 py-2 text-sm font-normal uppercase text-white transition-all ${
+                  open === group.id ? "bg-orange" : "hover:bg-orange"
+                }`}
+                aria-expanded={open === group.id}
+                aria-haspopup="true">
+                {group.label}
+                <ChevronDown
+                  size={16}
+                  className={`transition-transform duration-300 ${open === group.id ? "rotate-180" : ""}`}
+                />
+              </button>
 
-            {/* Dropdown panel */}
-            {productOpen && (
-              <div className="dropdown-panel absolute left-0 top-full mt-2 min-w-[180px] rounded-2xl border border-white/10 bg-ink p-2 shadow-hard">
-                {productLinks.map((link) => (
-                  <a
-                    key={link.label}
-                    href={link.href}
-                    onClick={() => setProductOpen(false)}
-                    className="block rounded-full px-4 py-2 text-sm font-normal uppercase text-white transition-all hover:bg-orange">
-                    {link.label}
-                  </a>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* About */}
-          <a
-            href="/about"
-            onClick={() => setProductOpen(false)}
-            className="rounded-full px-4 py-2 text-sm font-normal uppercase text-white transition-all hover:bg-orange">
-            About
-          </a>
-
-          {/* Docs */}
-          <a
-            href="/docs"
-            onClick={() => setProductOpen(false)}
-            className="rounded-full px-4 py-2 text-sm font-normal uppercase text-white transition-all hover:bg-orange">
-            Docs
-          </a>
+              {open === group.id && (
+                <div className="dropdown-panel absolute left-0 top-full mt-2 min-w-[180px] rounded-2xl border border-white/10 bg-night p-2 shadow-hard">
+                  {group.links.map((link) => (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      onClick={() => setOpen(null)}
+                      className="block rounded-full px-4 py-2 text-sm font-normal uppercase text-white transition-all hover:bg-orange">
+                      {link.label}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
         </div>
 
         {/* Spacer */}
@@ -129,9 +118,9 @@ export default function Navbar() {
           href={GITHUB_URL}
           target="_blank"
           rel="noopener noreferrer"
-          className="hidden items-center gap-4 rounded-full border-4 border-white bg-white px-6 py-3 text-[18px] font-black uppercase text-ink transition-all duration-200 hover:-translate-y-0.5 hover:bg-transparent hover:text-white hover:border-white md:flex">
+          className="hidden items-center gap-4 rounded-full border-4 border-white bg-white px-6 py-3 text-[18px] font-black uppercase text-night transition-all duration-200 hover:-translate-y-0.5 hover:bg-transparent hover:text-white hover:border-white md:flex">
           <Star size={18} fill="current" className="star-wiggle shrink-0" />
-          Star on GitHub
+          Star
         </a>
 
         {/* Hamburger (mobile) */}
@@ -150,51 +139,49 @@ export default function Navbar() {
       {menuOpen && (
         <div className="mobile-menu md:hidden">
           <div className="flex flex-col gap-1 px-4 pb-6">
-            {/* Product accordion */}
-            <button
-              onClick={() => setMobileProductOpen((v) => !v)}
-              aria-expanded={mobileProductOpen}
-              className={`flex w-full items-center justify-between rounded-full px-4 py-3 text-sm font-black uppercase text-white transition-all ${
-                mobileProductOpen ? "bg-orange" : "hover:bg-orange"
-              }`}>
-              Product
-              <ChevronDown
-                size={16}
-                className={`transition-transform duration-300 ${mobileProductOpen ? "rotate-180" : ""}`}
-              />
-            </button>
+            {/* Group accordions */}
+            {desktopGroups.map((group) => (
+              <div key={group.id}>
+                <button
+                  onClick={() =>
+                    setMobileOpen(mobileOpen === group.id ? null : group.id)
+                  }
+                  aria-expanded={mobileOpen === group.id}
+                  className={`flex w-full items-center justify-between rounded-full px-4 py-3 text-sm font-black uppercase text-white transition-all ${
+                    mobileOpen === group.id ? "bg-orange" : "hover:bg-orange"
+                  }`}>
+                  {group.label}
+                  <ChevronDown
+                    size={16}
+                    className={`transition-transform duration-300 ${mobileOpen === group.id ? "rotate-180" : ""}`}
+                  />
+                </button>
 
-            {mobileProductOpen && (
-              <div className="submenu flex flex-col gap-1">
-                {productLinks.map((link) => (
-                  <a
-                    key={link.label}
-                    href={link.href}
-                    onClick={closeMobileMenu}
-                    className="block rounded-full px-4 py-2.5 text-sm font-black uppercase text-white/80 transition-all hover:bg-orange hover:text-white">
-                    {link.label}
-                  </a>
-                ))}
+                {mobileOpen === group.id && (
+                  <div className="submenu flex flex-col gap-1">
+                    {group.links.map((link) => (
+                      <Link
+                        key={link.href}
+                        href={link.href}
+                        onClick={closeMobileMenu}
+                        className="block rounded-full px-4 py-2.5 text-sm font-black uppercase text-white/80 transition-all hover:bg-orange hover:text-white">
+                        {link.label}
+                      </Link>
+                    ))}
+                  </div>
+                )}
               </div>
-            )}
+            ))}
 
-            {/* About */}
-            <a
-              href="/about"
+            {/* Log in */}
+            <Link
+              href="/login"
               onClick={closeMobileMenu}
               className="rounded-full px-4 py-3 text-sm font-black uppercase text-white transition-all hover:bg-orange">
-              About
-            </a>
+              Log in
+            </Link>
 
-            {/* Docs */}
-            <a
-              href="/docs"
-              onClick={closeMobileMenu}
-              className="rounded-full px-4 py-3 text-sm font-black uppercase text-white transition-all hover:bg-orange">
-              Docs
-            </a>
-
-            {/* CTA */}
+            {/* CTA — Sign Up */}
             <Link
               href="/signup"
               onClick={closeMobileMenu}
@@ -206,7 +193,7 @@ export default function Navbar() {
               target="_blank"
               rel="noopener noreferrer"
               onClick={closeMobileMenu}
-              className="mt-2 flex items-center justify-center gap-2 rounded-full border-2 border-white bg-white px-5 py-3 text-sm font-black uppercase text-ink transition-all hover:border-white hover:bg-transparent hover:text-white">
+              className="mt-2 flex items-center justify-center gap-2 rounded-full border-2 border-white bg-white px-5 py-3 text-sm font-black uppercase text-night transition-all hover:border-white hover:bg-transparent hover:text-white">
               <Star size={16} className="star-wiggle shrink-0" fill="currentColor" />
               Star on GitHub
             </a>

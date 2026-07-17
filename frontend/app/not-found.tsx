@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export default function NotFound() {
   return (
-    <main className="grid min-h-screen place-items-center bg-ink px-6 text-white">
+    <main className="grid min-h-screen place-items-center bg-night px-6 text-white">
       <section className="max-w-2xl text-center">
         <p className="section-label">404</p>
         <h1 className="display mt-3 text-7xl uppercase md:text-8xl">
@@ -13,7 +13,7 @@ export default function NotFound() {
         </p>
         <Link
           href="/"
-          className="mt-8 inline-flex rounded-full bg-lime px-6 py-3 text-sm font-black uppercase text-ink transition hover:bg-orange"
+          className="mt-8 inline-flex rounded-full bg-lime px-6 py-3 text-sm font-black uppercase text-night transition hover:bg-orange"
         >
           Back to ORKA
         </Link>

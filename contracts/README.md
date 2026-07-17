@@ -1,22 +1,39 @@
-# Soroban Project
+# ORKA Soroban Contracts
 
-## Project Structure
+Soroban (Stellar smart contract) workspace holding the ORKA escrow contracts. The backend in [`services/`](../services) signs and indexes these contracts; see the root `ROADMAP.md` for the custody model they implement.
 
-This repository uses the recommended structure for a Soroban project:
+## Workspace
 
-```text
-.
-├── contracts
-│   └── hello_world
-│       ├── src
-│       │   ├── lib.rs
-│       │   └── test.rs
-│       └── Cargo.toml
-├── Cargo.toml
-└── README.md
+Cargo workspace (`resolver = "2"`) with two member crates:
+
+| Member | Crate | Purpose |
+|--------|--------|---------|
+| `escrow/` | `orka-escrow` | The per-deal escrow contract (fund / submit / approve / release / refund / dispute / resolve). |
+| `escrow-factory/` | `orka-escrow-factory` | Deploys new `orka-escrow` instances. |
+
+The `[workspace.dependencies]` block pins `soroban-sdk`. Each contract has its own `Cargo.toml` relying on the workspace for shared dependencies. The release profile is tuned for wasm (`opt-level = "z"`, `lto`, `panic = "abort"`, `overflow-checks`).
+
+## Prerequisites
+
+- Rust stable with the `wasm32v1-none` target:
+
+```bash
+rustup target add wasm32v1-none
 ```
 
-- New Soroban contracts can be put in `contracts`, each in their own directory. There is already a `hello_world` contract in there to get you started.
-- If you initialized this project with any other example contracts via `--with-example`, those contracts will be in the `contracts` directory as well.
-- Contracts should have their own `Cargo.toml` files that rely on the top-level `Cargo.toml` workspace for their dependencies.
-- Frontend libraries can be added to the top-level directory as well. If you initialized this project with a frontend template via `--frontend-template` you will have those files already included.
+## Build
+
+```bash
+# build the escrow wasm (required before the escrow-factory tests)
+cargo build -p orka-escrow --target wasm32v1-none --release
+```
+
+## Test
+
+```bash
+cargo test
+```
+
+Tests use `soroban-sdk` testutils and assert against snapshot JSON under `test_snapshots/`.
+
+> **CI note:** the GitHub workflow builds the `orka-escrow` wasm *before* running `cargo test`, because the `escrow-factory` tests depend on the compiled wasm.

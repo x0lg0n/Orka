@@ -1,0 +1,14 @@
+# Supabase CLI config for ORKA Edge Functions.
+# Deploy with: supabase functions deploy wallet-login
+# Required secrets (set via `supabase secrets set` or the dashboard):
+#   SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY  (auto-provided in hosted Supabase)
+#   SUPABASE_ANON_KEY                         (for client-side calls)
+
+project_id = "orka"
+
+[api]
+enabled = true
+port = 54321
+
+[functions.wallet-login]
+verify_jwt = false
