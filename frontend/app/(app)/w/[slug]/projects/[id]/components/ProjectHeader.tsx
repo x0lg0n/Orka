@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Star, Share2, MoreHorizontal, Plus } from "lucide-react";
+import { Star, Share2, MoreHorizontal, Plus, ChevronLeft } from "lucide-react";
 
 function statusBadge(status: string) {
   const map: Record<string, string> = {
@@ -24,7 +24,15 @@ export function ProjectHeader({
 }) {
   return (
     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-      <div className="flex items-center gap-3">
+      <div className="flex flex-col gap-2">
+        <Link
+          href={`/w/${slug}/projects`}
+          className="flex w-fit items-center gap-1 text-sm font-medium text-gray-500 transition hover:text-gray-700"
+        >
+          <ChevronLeft className="h-4 w-4" />
+          Projects
+        </Link>
+        <div className="flex items-center gap-3">
         <h1 className="text-2xl font-bold text-gray-900">{title}</h1>
         <span
           className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${statusBadge(status)}`}
@@ -38,6 +46,7 @@ export function ProjectHeader({
         >
           <Star className="h-5 w-5" />
         </button>
+        </div>
       </div>
 
       <div className="flex items-center gap-2">
