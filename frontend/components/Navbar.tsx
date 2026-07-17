@@ -2,9 +2,10 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ChevronDown, Menu, Star, X } from "lucide-react";
+import { ChevronDown, Star } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { companyLinks, productLinks, resourcesLinks } from "../lib/content";
+import StaggeredMenu, { type StaggeredMenuItem, type StaggeredMenuSocialItem } from "./ui/staggered-menu";
 
 const GITHUB_URL = "https://github.com/x0lg0n/Orka";
 
@@ -16,10 +17,21 @@ const desktopGroups: NavGroup[] = [
   { id: "company", label: "Company", links: companyLinks },
 ];
 
+const mobileMenuItems: StaggeredMenuItem[] = [
+  ...productLinks.map((l) => ({ label: l.label, ariaLabel: l.label, link: l.href })),
+  ...resourcesLinks.map((l) => ({ label: l.label, ariaLabel: l.label, link: l.href })),
+  ...companyLinks.map((l) => ({ label: l.label, ariaLabel: l.label, link: l.href })),
+  { label: "Sign Up", ariaLabel: "Sign up", link: "/signup" },
+];
+
+const mobileSocialItems: StaggeredMenuSocialItem[] = [
+  { label: "X", link: "https://x.com/get_orka" },
+  { label: "GitHub", link: GITHUB_URL },
+  { label: "LinkedIn", link: "https://linkedin.com" },
+];
+
 export default function Navbar() {
-  const [menuOpen, setMenuOpen] = useState(false);
   const [open, setOpen] = useState<string | null>(null);
-  const [mobileOpen, setMobileOpen] = useState<string | null>(null);
   const navRef = useRef<HTMLDivElement>(null);
 
   // Close desktop dropdown when clicking outside
@@ -32,23 +44,6 @@ export default function Navbar() {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
-
-  // Close mobile menu on resize to desktop
-  useEffect(() => {
-    function handleResize() {
-      if (window.innerWidth >= 768) {
-        setMenuOpen(false);
-        setMobileOpen(null);
-      }
-    }
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  function closeMobileMenu() {
-    setMenuOpen(false);
-    setMobileOpen(null);
-  }
 
   return (
     <div className="relative z-20">
@@ -125,85 +120,29 @@ export default function Navbar() {
 
 
 
-        {/* Hamburger (mobile) */}
-        <button
-          className="ml-auto flex size-10 items-center justify-center rounded-full text-white transition-all hover:bg-white/10 md:hidden"
-          onClick={() => setMenuOpen((v) => !v)}
-          aria-label={menuOpen ? "Close menu" : "Open menu"}
-          aria-expanded={menuOpen}>
-          {menuOpen ?
-            <X size={22} />
-          : <Menu size={22} />}
-        </button>
-      </nav>
-
-      {/* ── Mobile menu ── */}
-      {menuOpen && (
-        <div className="mobile-menu md:hidden">
-          <div className="flex flex-col gap-1 px-4 pb-6">
-            {/* Group accordions */}
-            {desktopGroups.map((group) => (
-              <div key={group.id}>
-                <button
-                  onClick={() =>
-                    setMobileOpen(mobileOpen === group.id ? null : group.id)
-                  }
-                  aria-expanded={mobileOpen === group.id}
-                  className={`flex w-full items-center justify-between rounded-full px-4 py-3 text-sm font-black uppercase text-white transition-all ${
-                    mobileOpen === group.id ? "bg-orange" : "hover:bg-orange"
-                  }`}>
-                  {group.label}
-                  <ChevronDown
-                    size={16}
-                    className={`transition-transform duration-300 ${mobileOpen === group.id ? "rotate-180" : ""}`}
-                  />
-                </button>
-
-                {mobileOpen === group.id && (
-                  <div className="submenu flex flex-col gap-1">
-                    {group.links.map((link) => (
-                      <Link
-                        key={link.href}
-                        href={link.href}
-                        onClick={closeMobileMenu}
-                        className="block rounded-full px-4 py-2.5 text-sm font-black uppercase text-white/80 transition-all hover:bg-orange hover:text-white">
-                        {link.label}
-                      </Link>
-                    ))}
-                  </div>
-                )}
-              </div>
-            ))}
-
-            {/* Log in */}
-            <Link
-              href="/login"
-              onClick={closeMobileMenu}
-              className="rounded-full px-4 py-3 text-sm font-black uppercase text-white transition-all hover:bg-orange">
-              Log in
-            </Link>
-
-            {/* CTA — Sign Up */}
-            <Link
-              href="/signup"
-              onClick={closeMobileMenu}
-              className="mt-2 flex items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-black uppercase text-white transition-all hover:border-white hover:border-2 hover:text-white">
-              Sign Up
-            </Link>
-            <a
-              href={GITHUB_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={closeMobileMenu}
-              className="mt-2 flex items-center justify-center gap-2 rounded-full border-2 border-white bg-white px-5 py-3 text-sm font-black uppercase text-night transition-all hover:border-white hover:bg-transparent hover:text-white">
-              <Star size={16} className="star-wiggle shrink-0" fill="currentColor" />
-              Star on GitHub
-            </a>
-
-            {/* Theme toggler (mobile) */}
-          </div>
+        {/* Staggered menu (mobile only) */}
+        <div className="md:hidden">
+          <StaggeredMenu
+            position="right"
+            items={mobileMenuItems}
+            socialItems={mobileSocialItems}
+            displaySocials
+            displayItemNumbering
+            accentColor="#9474ff"
+            colors={["#9474ff", "#5227FF", "#1a1a1a"]}
+            menuButtonColor="#ffffff"
+            openMenuButtonColor="#ffffff"
+            changeMenuColorOnOpen
+            isFixed
+            onMenuClose={() => {
+              document.body.style.overflow = "";
+            }}
+            onMenuOpen={() => {
+              document.body.style.overflow = "hidden";
+            }}
+          />
         </div>
-      )}
+      </nav>
     </div>
   );
 }

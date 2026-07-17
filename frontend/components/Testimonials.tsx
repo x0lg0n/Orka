@@ -36,7 +36,7 @@ export default function Testimonials() {
                 </blockquote>
                 <figcaption className="mt-5 flex items-center gap-3">
                   <div
-                    className={`size-9 shrink-0 rounded-full bg-gradient-to-br ${
+                    className={`size-9 shrink-0 rounded-full bg-linear-to-br ${
                       item.avatarColor ?? "from-violet to-orange"
                     }`}
                   />

@@ -19,20 +19,32 @@ export type Testimonial = TweetTestimonial | QuoteTestimonial
 export const testimonials: Testimonial[] = [
   {
     type: "tweet",
-    id: "2073820124415742461",
+    id: "2078172336541548921",
     handle: "@buildwithorka",
   },
   {
-    type: "quote",
-    quote:
-      "Orka has completely transformed how we manage client work and get paid. The escrow feature gives our clients so much confidence.",
-    name: "Sarah Chen",
-    role: "Founder, PixelCraft",
-    avatarColor: "from-violet to-orange",
+    type: "tweet",
+    id: "2078171437479997872",
+    handle: "@buildwithorka",
   },
   {
     type: "tweet",
     id: "2073809072605069678",
+    handle: "@buildwithorka",
+  },
+  {
+    type: "tweet",
+    id: "2073833852246634540",
+    handle: "@buildwithorka",
+  },
+  {
+    type: "tweet",
+    id: "2073827235858153748",
+    handle: "@buildwithorka",
+  },
+  {
+    type: "tweet",
+    id: "2076166965513863632",
     handle: "@buildwithorka",
   },
   {
