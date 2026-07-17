@@ -86,7 +86,7 @@ export async function POST(request: Request) {
   } catch (e) {
     console.error("auth-v2 register error:", e);
     return NextResponse.json(
-      { error: "Something went wrong. Try again." },
+      { error: process.env.NODE_ENV === "development" ? String(e) : "Something went wrong. Try again." },
       { status: 500 }
     );
   }
