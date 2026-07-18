@@ -1,3 +1,4 @@
+import { useState } from "react";
 import Link from "next/link";
 import { ArrowRight, FolderKanban } from "lucide-react";
 import type { ProjectSummary, ProjectStatus } from "@/lib/orka";
@@ -53,14 +54,15 @@ export function ProjectRow({
   slug: string;
 }) {
   const p = project;
+  const [now] = useState(() => Date.now());
   const clientName = p.client_name ?? "No client";
   const clientInitial = clientName.charAt(0).toUpperCase();
   const clientColor = colorFromString(clientName);
   // Budget / due date / progress / team are not yet stored on projects.
   const dueLabel = "—";
 
-  function timeAgo(iso: string): string {
-    const diff = Date.now() - new Date(iso).getTime();
+  function timeAgo(iso: string, now: number): string {
+    const diff = now - new Date(iso).getTime();
     const mins = Math.floor(diff / 60000);
     if (mins < 1) return "just now";
     if (mins < 60) return `${mins} min ago`;
@@ -127,7 +129,7 @@ export function ProjectRow({
 
       {/* Last Updated */}
       <td className="px-4 py-3 text-sm text-gray-500">
-        {timeAgo(p.updated_at)}
+        {timeAgo(p.updated_at, now)}
       </td>
 
       {/* Actions */}
