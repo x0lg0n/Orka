@@ -39,7 +39,7 @@ export const testimonials: Testimonial[] = [
   },
   {
     type: "tweet",
-    id: "2073827235858153748",
+    id: "2078177499545207157",
     handle: "@buildwithorka",
   },
   {
@@ -53,19 +53,13 @@ export const testimonials: Testimonial[] = [
     handle: "@buildwithorka",
   },
   {
-    type: "quote",
-    quote:
-      "We closed three agency deals in our first week on Orka. Milestone payments mean we never chase invoices again.",
-    name: "Marcus Reid",
-    role: "Studio Lead, Northbound",
-    avatarColor: "from-orange to-violet",
+    type: "tweet",
+    id: "2075884782664442266",
+    handle: "@buildwithorka",
   },
   {
-    type: "quote",
-    quote:
-      "Borderless payouts on Stellar were the dealbreaker for our international clients. Setup took minutes, not weeks.",
-    name: "Lina Okafor",
-    role: "Freelance Product Designer",
-    avatarColor: "from-violet to-orange",
+    type: "tweet",
+    id: "2073827235858153748",
+    handle: "@buildwithorka",
   },
 ];
