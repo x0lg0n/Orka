@@ -22,7 +22,7 @@ ed25519-dalek = { version = "2", features = ["rand_core"] }
 base64 = "0.22"
 rand = "0.8"
 stellar-xdr = { version = "25", default-features = false, features = ["std", "curr", "base64"] }
-sha2 = "0.10"
+sha2 = "0.11"
 
 [dev-dependencies]
 rsa = "0.9"
