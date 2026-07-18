@@ -18,7 +18,7 @@ tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 
 jsonwebtoken = "9"
-ed25519-dalek = { version = "2", features = ["rand_core"] }
+ed25519-dalek = { version = "3", features = ["rand_core"] }
 base64 = "0.22"
 rand = "0.8"
 stellar-xdr = { version = "25", default-features = false, features = ["std", "curr", "base64"] }
