@@ -1,13 +1,6 @@
 import Link from "next/link";
 import { StickyNote } from "lucide-react";
-
-type Note = {
-  id: string;
-  title: string;
-  description: string | null;
-  created_by_name: string | null;
-  created_at: string;
-};
+import type { Note } from "./types";
 
 export function RecentNotesCard({
   notes,

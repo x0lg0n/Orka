@@ -6,29 +6,7 @@ import { ActivitySummaryCard } from "./ActivitySummaryCard";
 import { TopContributorsCard } from "./TopContributorsCard";
 import { TimelineFilterCard } from "./TimelineFilterCard";
 import { RecentNotesCard } from "./RecentNotesCard";
-import type { ActivityGroup } from "./types";
-
-type SummaryStats = {
-  totalActivities: number;
-  totalMilestones: number;
-  totalPayments: number;
-  totalFiles: number;
-  totalComments: number;
-  totalContracts: number;
-};
-
-type Contributor = {
-  name: string;
-  count: number;
-};
-
-type Note = {
-  id: string;
-  title: string;
-  description: string | null;
-  created_by_name: string | null;
-  created_at: string;
-};
+import type { ActivityGroup, SummaryStats, Contributor, Note } from "./types";
 
 export function ProjectActivityView({
   slug,

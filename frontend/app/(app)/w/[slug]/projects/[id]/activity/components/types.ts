@@ -1,3 +1,25 @@
+export type SummaryStats = {
+  totalActivities: number;
+  totalMilestones: number;
+  totalPayments: number;
+  totalFiles: number;
+  totalComments: number;
+  totalContracts: number;
+};
+
+export type Contributor = {
+  name: string;
+  count: number;
+};
+
+export type Note = {
+  id: string;
+  title: string;
+  description: string | null;
+  created_by_name: string | null;
+  created_at: string;
+};
+
 export type ActivityCategory =
   | "milestone"
   | "payment"

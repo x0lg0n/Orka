@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo } from "react";
-import { CheckCircle2, Circle } from "lucide-react";
 import { ActivityCard } from "./ActivityCard";
 import { ActivityFilters } from "./ActivityFilters";
 import { ActivityEmptyState } from "./ActivityEmptyState";

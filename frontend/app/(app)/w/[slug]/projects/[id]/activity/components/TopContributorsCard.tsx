@@ -1,7 +1,4 @@
-type Contributor = {
-  name: string;
-  count: number;
-};
+import type { Contributor } from "./types";
 
 export function TopContributorsCard({
   contributors,

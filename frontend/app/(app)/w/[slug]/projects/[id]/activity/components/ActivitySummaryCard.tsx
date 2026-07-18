@@ -7,15 +7,7 @@ import {
   MessageSquare,
   FileSignature,
 } from "lucide-react";
-
-type SummaryStats = {
-  totalActivities: number;
-  totalMilestones: number;
-  totalPayments: number;
-  totalFiles: number;
-  totalComments: number;
-  totalContracts: number;
-};
+import type { SummaryStats } from "./types";
 
 function StatCard({
   icon: Icon,
