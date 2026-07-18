@@ -195,7 +195,7 @@ export function generateActivityItems(
     const type = act.type;
     let category: ActivityCategory = "system";
     let title = "Activity recorded";
-    let description =
+    const description =
       typeof act.payload?.description === "string"
         ? act.payload.description
         : "Event recorded.";
