@@ -3,7 +3,7 @@ Thanks for contributing to ORKA! Please fill out this template.
 Read CONTRIBUTING.md before opening a PR.
 -->
 
-## Summary
+# Summary
 
 <!-- What does this PR do and why? -->
 

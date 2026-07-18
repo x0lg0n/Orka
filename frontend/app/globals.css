@@ -1,10 +1,129 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@source "../app";
+@source "../components";
+
+/* ORKA brand tokens — namespaced to avoid colliding with shadcn semantic tokens */
+@theme inline {
+
+  /* ORKA brand colors — simple names so existing product-UI classes
+     (bg-shell, text-lime, from-orange, to-violet, bg-coral, …) keep working.
+     These are reconciled onto shadcn semantic tokens in the shell/dashboard
+     migration (Task 7/8). */
+  --color-shell: #030914;
+  --color-night: #082033;
+  --color-panel: #0a1c2e;
+  --color-paper: #fffaf2;
+  --color-bone: #f5efe4;
+  --color-lime: #eaff35;
+  --color-orange: #ff8a22;
+  --color-coral: #ff4f42;
+  --color-teal: #22bd93;
+  --color-violet: #9474ff;
+  --color-success: #22bd93;
+  --color-warning: #ff8a22;
+  --color-danger: #ff4f42;
+  --color-info: #3b82f6;
+  --color-hover: rgba(255, 255, 255, 0.06);
+  --color-disabled: rgba(255, 255, 255, 0.3);
+  --color-focus: rgba(148, 116, 255, 0.55);
+  --color-line: #e5e8f0;
+  --color-surface: #ffffff;
+  --color-surfaceMuted: #f7f8fc;
+  --color-text: #11182d;
+  --color-textMuted: #5f6b86;
+  --color-textSubtle: #8b95aa;
+
+  --font-product: var(--font-dm-sans), "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  --radius-control: 8px;
+  --radius-card: 12px;
+  --radius-panel: 16px;
+
+  --shadow-hard: 8px 8px 0 #061a2b;
+  --shadow-glow: 0 24px 70px rgba(234, 255, 53, 0.18);
+  --shadow-product-card: 0 1px 2px rgba(16, 24, 40, 0.03), 0 8px 24px rgba(16, 24, 40, 0.04);
+  --font-heading: var(--font-dm-sans);
+  --font-sans: var(--font-dm-sans);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-foreground: var(--foreground);
+  --color-background: var(--background);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
 
 :root {
   color-scheme: light;
   background: #fffaf2;
+  --background: #fffaf2;
+  --foreground: #082033;
+  --card: #ffffff;
+  --card-foreground: #082033;
+  --popover: #ffffff;
+  --popover-foreground: #082033;
+  --primary: #9474ff;
+  --primary-foreground: #ffffff;
+  --secondary: #f4f7fb;
+  --secondary-foreground: #082033;
+  --muted: #f4f7fb;
+  --muted-foreground: #5b6b80;
+  --accent: #f4f7fb;
+  --accent-foreground: #082033;
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: rgba(8, 32, 51, 0.10);
+  --input: rgba(8, 32, 51, 0.15);
+  --ring: #9474ff;
+  --chart-1: #ff8a22;
+  --chart-2: #eaff35;
+  --chart-3: #22bd93;
+  --chart-4: #ff4f42;
+  --chart-5: #9474ff;
+  --radius: 0.75rem;
+  --sidebar: #f4f7fb;
+  --sidebar-foreground: #082033;
+  --sidebar-primary: #9474ff;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #f4f7fb;
+  --sidebar-accent-foreground: #082033;
+  --sidebar-border: rgba(8, 32, 51, 0.10);
+  --sidebar-ring: #9474ff;
 }
 
 * {
@@ -39,6 +158,13 @@ input {
 
 .sticker {
   transform: rotate(-4deg);
+}
+
+/* Financial figures only — JetBrains Mono with tabular numerals */
+.tabular {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
 }
 
 .section-label {
@@ -218,4 +344,234 @@ input {
   .star-wiggle:hover {
     animation: none !important;
   }
+}
+
+/* ── ORKA product UI system ── */
+.product-ui {
+  --product-ease: cubic-bezier(0.23, 1, 0.32, 1);
+}
+.product-icon {
+  display: inline-grid;
+  flex: 0 0 auto;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 12px;
+  border: 1px solid transparent;
+}
+.product-icon-violet {
+  color: #9474ff;
+  background: rgba(148, 116, 255, 0.12);
+  border-color: rgba(148, 116, 255, 0.18);
+}
+.product-icon-success {
+  color: #22bd93;
+  background: rgba(34, 189, 147, 0.12);
+  border-color: rgba(34, 189, 147, 0.18);
+}
+.product-icon-warning {
+  color: #ff8a22;
+  background: rgba(255, 138, 34, 0.12);
+  border-color: rgba(255, 138, 34, 0.18);
+}
+.product-icon-info {
+  color: #5f8ff8;
+  background: rgba(95, 143, 248, 0.12);
+  border-color: rgba(95, 143, 248, 0.18);
+}
+.product-icon-danger {
+  color: #ff4f42;
+  background: rgba(255, 79, 66, 0.12);
+  border-color: rgba(255, 79, 66, 0.18);
+}
+.product-progress {
+  height: 0.5rem;
+  overflow: hidden;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.1);
+}
+.product-progress-fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  transition: width 220ms var(--product-ease);
+}
+.product-progress-primary { background: #9474ff; }
+.product-progress-success { background: #22bd93; }
+.product-progress-warning { background: #ff8a22; }
+.product-progress-danger { background: #ff4f42; }
+.product-table-wrap {
+  overflow-x: auto;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+}
+.product-table-wrap table {
+  min-width: 42rem;
+  width: 100%;
+  border-collapse: collapse;
+}
+.product-table-wrap th {
+  padding: 0.8rem 1rem;
+  text-align: left;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.product-table-wrap td {
+  padding: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+.product-timeline {
+  display: grid;
+  gap: 0;
+}
+.product-timeline-item {
+  position: relative;
+  display: flex;
+  gap: 0.875rem;
+  min-height: 4rem;
+  padding-bottom: 1.25rem;
+}
+.product-timeline-item:not(:last-child)::before {
+  position: absolute;
+  left: 0.4rem;
+  top: 1rem;
+  bottom: 0;
+  width: 1px;
+  background: rgba(255, 255, 255, 0.12);
+  content: "";
+}
+.product-timeline-dot {
+  z-index: 1;
+  width: 0.8rem;
+  height: 0.8rem;
+  margin-top: 0.15rem;
+  flex: 0 0 auto;
+  border-radius: 9999px;
+  border: 2px solid #64748b;
+  background: #030914;
+}
+.product-timeline-complete { border-color: #22bd93; background: #22bd93; }
+.product-timeline-current { border-color: #9474ff; background: #9474ff; box-shadow: 0 0 0 4px rgba(148, 116, 255, 0.15); }
+:focus-visible {
+  outline: 2px solid rgba(148, 116, 255, 0.55);
+  outline-offset: 2px;
+}
+
+.dark {
+  --background: #030914;
+  --foreground: #f4f7fb;
+  --card: #0a1c2e;
+  --card-foreground: #f4f7fb;
+  --popover: #0a1c2e;
+  --popover-foreground: #f4f7fb;
+  --primary: #9474ff;
+  --primary-foreground: #ffffff;
+  --secondary: #0c1626;
+  --secondary-foreground: #f4f7fb;
+  --muted: #0c1626;
+  --muted-foreground: #9fb0c3;
+  --accent: #0c1626;
+  --accent-foreground: #f4f7fb;
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: rgba(255, 255, 255, 0.10);
+  --input: rgba(255, 255, 255, 0.15);
+  --ring: #9474ff;
+  --chart-1: #ff8a22;
+  --chart-2: #eaff35;
+  --chart-3: #22bd93;
+  --chart-4: #ff4f42;
+  --chart-5: #9474ff;
+  --sidebar: #06101f;
+  --sidebar-foreground: #f4f7fb;
+  --sidebar-primary: #9474ff;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #0c1626;
+  --sidebar-accent-foreground: #f4f7fb;
+  --sidebar-border: rgba(255, 255, 255, 0.10);
+  --sidebar-ring: #9474ff;
+}
+
+/* ── Dashboard light theme override ── */
+.dashboard-light {
+  --background: #f7f8fc;
+  --foreground: #11182d;
+  --card: #ffffff;
+  --card-foreground: #11182d;
+  --border: #e5e8f0;
+  --input: #e5e8f0;
+  --primary: #9474ff;
+  --primary-foreground: #ffffff;
+  --muted: #f7f8fc;
+  --muted-foreground: #5f6b86;
+  --accent: #f7f8fc;
+  --accent-foreground: #11182d;
+  --ring: #9474ff;
+  color-scheme: light;
+}
+
+.dashboard-light,
+.dashboard-light * {
+  border-color: #e5e8f0;
+}
+
+.dashboard-light {
+  background: #f7f8fc;
+  color: #11182d;
+}
+
+/* ── Dashboard light theme override ── */
+.dashboard-light {
+  --background: #f7f8fc;
+  --foreground: #11182d;
+  --card: #ffffff;
+  --card-foreground: #11182d;
+  --border: #e5e8f0;
+  --input: #e5e8f0;
+  --primary: #7c3aed;
+  --primary-foreground: #ffffff;
+  --muted: #f7f8fc;
+  --muted-foreground: #5f6b86;
+  --accent: #f7f8fc;
+  --accent-foreground: #11182d;
+  --ring: #7c3aed;
+  color-scheme: light;
+}
+
+.dashboard-light,
+.dashboard-light * {
+  border-color: #e5e8f0;
+}
+
+.dashboard-light {
+  background: #f7f8fc;
+  color: #11182d;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
+  }
+}
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+/* Scoped to AnimatedThemeToggler — the toggler sets the data-attribute and the
+   variable only during a theme toggle, so it doesn't affect other view transitions. */
+html[data-magicui-theme-vt="active"]::view-transition-group(root) {
+  animation-duration: var(--magicui-theme-toggle-vt-duration);
 }

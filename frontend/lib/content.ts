@@ -47,7 +47,7 @@ export const engines: Engine[] = [
   {
     title: "Analytics & Reporting",
     copy: "Real-time dashboards for project health, cash flow, and team performance across borders.",
-    color: "bg-ink",
+    color: "bg-night",
   },
 ];
 
@@ -178,4 +178,15 @@ export const productLinks = [
   { label: "Engines", href: "/#engines" },
   { label: "Method", href: "/#method" },
   { label: "FAQ", href: "/#faq" },
+];
+
+export const resourcesLinks = [
+  { label: "Docs", href: "/docs" },
+  { label: "Blog", href: "/blog" },
+];
+
+export const companyLinks = [
+  { label: "About", href: "/about" },
+  { label: "Pricing", href: "/pricing" },
+  { label: "Contact", href: "/contact" },
 ];

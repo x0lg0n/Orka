@@ -11,7 +11,7 @@ export default function Faq() {
           <h2 className="display mt-2 text-4xl uppercase sm:text-5xl md:text-6xl lg:text-[80px]">
             Your questions answered.
           </h2>
-          <p className="mx-auto mt-5 max-w-sm text-base font-normal leading-7 text-ink/80 sm:text-[18px] lg:mx-0">
+          <p className="mx-auto mt-5 max-w-sm text-base font-normal leading-7 text-night/80 sm:text-[18px] lg:mx-0">
             Everything you need to know about ORKA. We have answers to your
             questions about our services and approach.
           </p>
@@ -22,14 +22,14 @@ export default function Faq() {
           {faqs.map(([question, answer]) => (
             <details key={question} className="group py-6">
               <summary className="flex cursor-pointer gap-4">
-                <span className="grid size-9 shrink-0 place-items-center rounded-full bg-ink text-white transition-all duration-300 group-open:rotate-45 group-open:bg-violet">
+                <span className="grid size-9 shrink-0 place-items-center rounded-full bg-night text-white transition-all duration-300 group-open:rotate-45 group-open:bg-violet">
                   <Plus size={24} className="transition-transform duration-200 group-hover:scale-110" />
                 </span>
-                <span className="display text-[22px] font-normal uppercase leading-[30px] text-ink transition-colors duration-200 group-open:text-violet sm:text-[28px] sm:leading-[39px]">
+                <span className="display text-[22px] font-normal uppercase leading-7.5 text-night transition-colors duration-200 group-open:text-violet sm:text-[28px] sm:leading-9.75">
                   {question}
                 </span>
               </summary>
-              <p className="mt-4 max-w-2xl text-base leading-7 text-ink/70 sm:text-[18px] sm:leading-[31px]">
+              <p className="mt-4 max-w-2xl text-base leading-7 text-night/80 sm:text-[18px] sm:leading-7.5">
                 {answer}
               </p>
             </details>

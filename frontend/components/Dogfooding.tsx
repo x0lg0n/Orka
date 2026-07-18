@@ -8,7 +8,7 @@ export default function Dogfooding() {
         </div>
         <div className="grid gap-4">
           {["Migrate real agency projects into ORKA.", "Log every time the team leaves ORKA for Notion, Gmail, Wise, or spreadsheets.", "Use real transaction volume to harden escrow, verification, and ledger workflows.", "Open the product to agencies, then clients, then marketplaces."].map((item) => (
-            <div key={item} className="cut-corner rounded-[14px] border-2 border-ink bg-white p-5 text-base font-black">
+            <div key={item} className="cut-corner rounded-[14px] border-2 border-night bg-white p-5 text-base font-black">
               {item}
             </div>
           ))}

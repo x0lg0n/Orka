@@ -2,7 +2,9 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
 import { createClient } from "../lib/supabase/server";
+import { getSupabase } from "../lib/supabase";
 import { fakeTx, getActiveOrgId } from "../lib/orka";
 import { callServices } from "../lib/backend";
 
@@ -16,6 +18,33 @@ const EVENT_PATH: Record<string, string | undefined> = {
   approve: "/escrow/approve",
   release: "/escrow/release",
 };
+
+export async function selectOrg(formData: FormData) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect("/signup");
+
+  const orgId = String(formData.get("orgId") || "").trim();
+  if (!orgId) redirect("/workspaces?error=Workspace selection is invalid.");
+
+  const { data: membership } = await supabase
+    .from("organization_members")
+    .select("org_id")
+    .eq("user_id", user.id)
+    .eq("org_id", orgId)
+    .maybeSingle();
+  if (!membership) redirect("/workspaces?error=You do not have access to that workspace.");
+
+  (await cookies()).set("orka_active_org", orgId, {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+  });
+  redirect(`/workspaces/${orgId}`);
+}
 
 async function onChainTx(
   supabase: Awaited<ReturnType<typeof createClient>>,
@@ -78,64 +107,180 @@ export async function createOrg(formData: FormData) {
 
   const name = String(formData.get("name") || "").trim();
   if (!name) {
-    redirect("/onboarding?error=Workspace name is required.");
+    redirect("/workspaces/new?error=Workspace name is required.");
   }
 
-  const { data: org, error } = await supabase
+  const rawType = String(formData.get("type") || "").trim();
+  const type = ["freelancer", "agency", "studio", "consultancy", "startup"].includes(rawType)
+    ? rawType
+    : null;
+
+  const rawSlug = String(formData.get("slug") || "").trim();
+  const slug =
+    (rawSlug || name)
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "")
+      .slice(0, 60) || undefined;
+
+  const admin = getSupabase();
+  const { data: org, error } = await admin
     .from("organizations")
-    .insert({ name })
+    .insert({ name, slug, type })
     .select("id")
     .single();
   if (error) {
-    redirect(`/onboarding?error=${encodeURIComponent(error.message)}`);
+    redirect(`/workspaces/new?error=${encodeURIComponent(error.message)}`);
   }
 
-  await supabase
+  // Optional logo upload to the public workspace-logos bucket.
+  const logoFile = formData.get("logo");
+  if (logoFile instanceof File && logoFile.size > 0) {
+    const ext = (logoFile.name.split(".").pop() || "png").toLowerCase().replace(/[^a-z0-9]/g, "");
+    const path = `${org.id}/${crypto.randomUUID()}.${ext}`;
+    const { error: upErr } = await admin.storage
+      .from("workspace-logos")
+      .upload(path, logoFile, { upsert: true, contentType: logoFile.type || "image/png" });
+    if (!upErr) {
+      const { data: urlData } = admin.storage.from("workspace-logos").getPublicUrl(path);
+      await admin.from("organizations").update({ logo_url: urlData.publicUrl }).eq("id", org.id);
+    }
+  }
+
+  await admin
     .from("organization_members")
     .insert({ org_id: org.id, user_id: user.id, role: "owner" });
 
-  revalidatePath("/dashboard/projects");
-  redirect("/dashboard/projects");
+  (await cookies()).set("orka_active_org", org.id, {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+  });
+
+  revalidatePath("/workspaces");
+  redirect(`/workspaces/${org.id}`);
 }
 
 export async function createProject(formData: FormData) {
   const supabase = await createClient();
   const orgId = await getActiveOrgId(supabase);
-  if (!orgId) redirect("/onboarding");
+  if (!orgId) redirect("/workspaces");
 
+  const slug = String(formData.get("slug") || "").trim();
   const title = String(formData.get("title") || "").trim();
   const description = String(formData.get("description") || "").trim();
-  const clientName = String(formData.get("clientName") || "").trim();
-  const clientEmail = String(formData.get("clientEmail") || "").trim();
-  const freelancerName = String(formData.get("freelancerName") || "").trim();
-  const freelancerEmail = String(formData.get("freelancerEmail") || "").trim();
+  const clientId = String(formData.get("clientId") || "").trim() || null;
+  const clientName = String(formData.get("clientName") || "").trim() || null;
+  const category = String(formData.get("category") || "").trim();
+  const timeline = String(formData.get("timeline") || "").trim();
+  const mode = String(formData.get("mode") || "project"); // "draft" | "project"
 
-  if (!title) redirect("/dashboard/projects/new?error=Project title is required.");
-  if (clientEmail && !EMAIL_RE.test(clientEmail))
-    redirect("/dashboard/projects/new?error=Client email is invalid.");
-  if (freelancerEmail && !EMAIL_RE.test(freelancerEmail))
-    redirect("/dashboard/projects/new?error=Freelancer email is invalid.");
+  const errorBase = slug ? `/w/${slug}/projects/new` : "/workspaces";
+  // Save Draft requires only a name; Save Project requires name + client.
+  if (!title) redirect(`${errorBase}?error=Project title is required.`);
+  if (mode === "project" && !clientId)
+    redirect(`${errorBase}?error=Please select a client.`);
+
+  const userId = (await supabase.auth.getUser()).data.user?.id;
+
+  // Auto-generate a per-org project code (PRJ-001, PRJ-002, ...).
+  const { count } = await supabase
+    .from("projects")
+    .select("id", { count: "exact", head: true })
+    .eq("org_id", orgId);
+  const code = `PRJ-${String((count ?? 0) + 1).padStart(3, "0")}`;
 
   const { error } = await supabase.from("projects").insert({
     org_id: orgId,
+    code,
     title,
     description,
+    client_id: clientId,
     client_name: clientName,
-    client_email: clientEmail,
-    freelancer_name: freelancerName,
-    freelancer_email: freelancerEmail,
-    status: "draft",
+    created_by: userId ?? null,
+    metadata: {
+      ...(category ? { category } : {}),
+      ...(timeline ? { timeline } : {}),
+    },
+    status: mode === "draft" ? "draft" : "active",
   });
-  if (error) redirect(`/dashboard/projects/new?error=${encodeURIComponent(error.message)}`);
+  if (error) redirect(`${errorBase}?error=${encodeURIComponent(error.message)}`);
 
-  revalidatePath("/dashboard/projects");
-  redirect("/dashboard/projects");
+  const redirectPath = slug ? `/w/${slug}/projects` : "/workspaces";
+  revalidatePath(redirectPath);
+  redirect(redirectPath);
+}
+
+// Creates a client for an organization. All non-core attributes (type, contact,
+// website, industry, billing address, notes, tags, currency, payment terms) are
+// stored in the clients.metadata jsonb column. `orgId` is passed by the caller
+// (resolved from the workspace slug server-side).
+export async function createClientAction(formData: FormData) {
+  const supabase = await createClient();
+
+  const orgId = String(formData.get("orgId") || "").trim();
+  const slug = String(formData.get("slug") || "").trim();
+  const name = String(formData.get("name") || "").trim();
+  const email = String(formData.get("email") || "").trim();
+  const errorBase = slug ? `/w/${slug}/clients/new` : "/workspaces";
+
+  if (!orgId) redirect("/workspaces");
+  if (!name) redirect(`${errorBase}?error=Client name is required.`);
+  if (email && !EMAIL_RE.test(email))
+    redirect(`${errorBase}?error=Please enter a valid email address.`);
+
+  const status = String(formData.get("status") || "active").toLowerCase();
+  const safeStatus = ["active", "inactive", "lead", "archived"].includes(status)
+    ? status
+    : "active";
+
+  const metadata: Record<string, unknown> = {
+    clientType: String(formData.get("clientType") || "").trim() || null,
+    description: String(formData.get("description") || "").trim() || null,
+    contactName: String(formData.get("contactName") || "").trim() || null,
+    contactEmail: String(formData.get("contactEmail") || "").trim() || null,
+    phone: String(formData.get("phone") || "").trim() || null,
+    jobTitle: String(formData.get("jobTitle") || "").trim() || null,
+    website: String(formData.get("website") || "").trim() || null,
+    industry: String(formData.get("industry") || "").trim() || null,
+    companySize: String(formData.get("companySize") || "").trim() || null,
+    taxId: String(formData.get("taxId") || "").trim() || null,
+    billing: {
+      addressLine1: String(formData.get("addressLine1") || "").trim() || null,
+      addressLine2: String(formData.get("addressLine2") || "").trim() || null,
+      city: String(formData.get("city") || "").trim() || null,
+      state: String(formData.get("state") || "").trim() || null,
+      postalCode: String(formData.get("postalCode") || "").trim() || null,
+      country: String(formData.get("country") || "").trim() || null,
+    },
+    notes: String(formData.get("notes") || "").trim() || null,
+    tags: String(formData.get("tags") || "")
+      .split(",")
+      .map((t) => t.trim())
+      .filter(Boolean),
+    preferredCurrency: String(formData.get("preferredCurrency") || "").trim() || null,
+    paymentTerms: String(formData.get("paymentTerms") || "").trim() || null,
+  };
+
+  const { error } = await supabase.from("clients").insert({
+    org_id: orgId,
+    name,
+    email: email || null,
+    metadata,
+    status: safeStatus,
+  });
+  if (error) redirect(`${errorBase}?error=${encodeURIComponent(error.message)}`);
+
+  const redirectPath = slug ? `/w/${slug}/clients` : "/workspaces";
+  revalidatePath(redirectPath);
+  redirect(redirectPath);
 }
 
 export async function addMilestone(formData: FormData) {
   const supabase = await createClient();
   const orgId = await getActiveOrgId(supabase);
-  if (!orgId) redirect("/onboarding");
+  if (!orgId) redirect("/workspaces");
 
   const projectId = String(formData.get("projectId") || "");
   const title = String(formData.get("title") || "").trim();
@@ -190,7 +335,7 @@ async function recordLedger(
 export async function fundMilestone(formData: FormData) {
   const supabase = await createClient();
   const orgId = await getActiveOrgId(supabase);
-  if (!orgId) redirect("/onboarding");
+  if (!orgId) redirect("/workspaces");
   const id = String(formData.get("milestoneId") || "");
   const { data: m, error } = await supabase
     .from("milestones")
@@ -208,7 +353,7 @@ export async function fundMilestone(formData: FormData) {
 export async function submitMilestone(formData: FormData) {
   const supabase = await createClient();
   const orgId = await getActiveOrgId(supabase);
-  if (!orgId) redirect("/onboarding");
+  if (!orgId) redirect("/workspaces");
   const id = String(formData.get("milestoneId") || "");
   const { data: m, error } = await supabase
     .from("milestones")
@@ -224,7 +369,7 @@ export async function submitMilestone(formData: FormData) {
 export async function releaseMilestone(formData: FormData) {
   const supabase = await createClient();
   const orgId = await getActiveOrgId(supabase);
-  if (!orgId) redirect("/onboarding");
+  if (!orgId) redirect("/workspaces");
   const id = String(formData.get("milestoneId") || "");
   const { data: m, error } = await supabase
     .from("milestones")
@@ -259,7 +404,7 @@ await supabase.from("invoices").insert({
 export async function approveMilestone(formData: FormData) {
   const supabase = await createClient();
   const orgId = await getActiveOrgId(supabase);
-  if (!orgId) redirect("/onboarding");
+  if (!orgId) redirect("/workspaces");
   const id = String(formData.get("milestoneId") || "");
   const { data: m, error } = await supabase
     .from("milestones")
@@ -279,7 +424,7 @@ export async function approveMilestone(formData: FormData) {
 export async function refundMilestone(formData: FormData) {
   const supabase = await createClient();
   const orgId = await getActiveOrgId(supabase);
-  if (!orgId) redirect("/onboarding");
+  if (!orgId) redirect("/workspaces");
   const id = String(formData.get("milestoneId") || "");
   const { data: m, error } = await supabase
     .from("milestones")
@@ -297,7 +442,7 @@ export async function refundMilestone(formData: FormData) {
 export async function openDispute(formData: FormData) {
   const supabase = await createClient();
   const orgId = await getActiveOrgId(supabase);
-  if (!orgId) redirect("/onboarding");
+  if (!orgId) redirect("/workspaces");
   const id = String(formData.get("milestoneId") || "");
   const { data: m, error } = await supabase
     .from("milestones")
@@ -313,7 +458,7 @@ export async function openDispute(formData: FormData) {
 export async function resolveDispute(formData: FormData) {
   const supabase = await createClient();
   const orgId = await getActiveOrgId(supabase);
-  if (!orgId) redirect("/onboarding");
+  if (!orgId) redirect("/workspaces");
   const id = String(formData.get("milestoneId") || "");
   const splitBp = Number(formData.get("splitBp"));
   if (!Number.isFinite(splitBp) || splitBp < 0 || splitBp > 10000)
@@ -346,7 +491,7 @@ type ProposalMilestone = { amount: number; description: string };
 export async function createProposal(formData: FormData) {
   const supabase = await createClient();
   const orgId = await getActiveOrgId(supabase);
-  if (!orgId) redirect("/onboarding");
+  if (!orgId) redirect("/workspaces");
 
   const client_address = String(formData.get("client_address") || "").trim();
   const freelancer_address = String(formData.get("freelancer_address") || "").trim();
@@ -386,7 +531,7 @@ export async function createProposal(formData: FormData) {
 export async function acceptProposal(proposalId: string) {
   const supabase = await createClient();
   const orgId = await getActiveOrgId(supabase);
-  if (!orgId) redirect("/onboarding");
+  if (!orgId) redirect("/workspaces");
 
   const {
     data: { user },
@@ -538,7 +683,7 @@ export async function saveStellarAddress(formData: FormData) {
 export async function freighterApplyTx(formData: FormData) {
   const supabase = await createClient();
   const orgId = await getActiveOrgId(supabase);
-  if (!orgId) redirect("/onboarding");
+  if (!orgId) redirect("/workspaces");
 
   const milestoneId = String(formData.get("milestoneId") || "");
   const eventType = String(formData.get("eventType") || "");
@@ -590,7 +735,7 @@ export async function freighterApplyTx(formData: FormData) {
 export async function inviteMember(formData: FormData) {
   const supabase = await createClient();
   const orgId = await getActiveOrgId(supabase);
-  if (!orgId) redirect("/onboarding");
+  if (!orgId) redirect("/workspaces");
   const email = String(formData.get("email") || "").trim();
   const role = String(formData.get("role") || "member");
   if (!EMAIL_RE.test(email)) redirect(`/dashboard/projects?error=${encodeURIComponent("A valid email is required.")}`);
@@ -599,4 +744,97 @@ export async function inviteMember(formData: FormData) {
     .insert({ org_id: orgId, email, role });
   if (error) redirect(`/dashboard/projects?error=${encodeURIComponent(error.message)}`);
   revalidatePath(`/dashboard/projects`);
+}
+
+export async function updateOrg(formData: FormData) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect("/signup");
+
+  const id = String(formData.get("orgId") || "").trim();
+  if (!id) redirect("/workspaces?error=Missing workspace.");
+
+  const { data: member } = await supabase
+    .from("organization_members")
+    .select("role")
+    .eq("org_id", id)
+    .eq("user_id", user.id)
+    .maybeSingle();
+  if (member?.role !== "owner") {
+    redirect(`/workspaces/${id}/settings?error=Only the owner can edit this workspace.`);
+  }
+
+  const name = String(formData.get("name") || "").trim();
+  if (!name) redirect(`/workspaces/${id}/settings?error=Workspace name is required.`);
+
+  const rawType = String(formData.get("type") || "").trim();
+  const type = ["freelancer", "agency", "studio", "consultancy", "startup"].includes(rawType)
+    ? rawType
+    : null;
+
+  const rawSlug = String(formData.get("slug") || "").trim();
+  const slug =
+    (rawSlug || name)
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "")
+      .slice(0, 60) || undefined;
+
+  const admin = getSupabase();
+  const update: Record<string, unknown> = { name, slug, type };
+  const { error: updErr } = await admin.from("organizations").update(update).eq("id", id);
+  if (updErr) {
+    redirect(`/workspaces/${id}/settings?error=${encodeURIComponent(updErr.message)}`);
+  }
+
+  const logoFile = formData.get("logo");
+  if (logoFile instanceof File && logoFile.size > 0) {
+    const ext = (logoFile.name.split(".").pop() || "png").toLowerCase().replace(/[^a-z0-9]/g, "");
+    const path = `${id}/${crypto.randomUUID()}.${ext}`;
+    const { error: upErr } = await admin.storage
+      .from("workspace-logos")
+      .upload(path, logoFile, { upsert: true, contentType: logoFile.type || "image/png" });
+    if (!upErr) {
+      const { data: urlData } = admin.storage.from("workspace-logos").getPublicUrl(path);
+      await admin.from("organizations").update({ logo_url: urlData.publicUrl }).eq("id", id);
+    }
+  }
+
+  revalidatePath("/workspaces");
+  revalidatePath(`/workspaces/${id}`);
+  revalidatePath(`/workspaces/${id}/settings`);
+  redirect(`/workspaces/${id}/settings?updated=1`);
+}
+
+export async function deleteOrg(formData: FormData) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect("/signup");
+
+  const id = String(formData.get("orgId") || "").trim();
+  if (!id) redirect("/workspaces");
+
+  const { data: member } = await supabase
+    .from("organization_members")
+    .select("role")
+    .eq("org_id", id)
+    .eq("user_id", user.id)
+    .maybeSingle();
+  if (member?.role !== "owner") redirect("/workspaces");
+
+  const admin = getSupabase();
+  const { error } = await admin.from("organizations").delete().eq("id", id);
+  if (error) redirect(`/workspaces/${id}/settings?error=${encodeURIComponent(error.message)}`);
+
+  const cookieStore = await cookies();
+  if (cookieStore.get("orka_active_org")?.value === id) {
+    cookieStore.delete("orka_active_org");
+  }
+
+  revalidatePath("/workspaces");
+  redirect("/workspaces");
 }

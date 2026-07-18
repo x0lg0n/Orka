@@ -1,19 +1,59 @@
-# ORKA code owners
-# These owners are requested for review when someone opens a PR.
-# Order matters: the last matching pattern takes precedence.
+# ORKA — Code Owners
 
-# Default owners for everything in the repo
-*                       @x0lg0n
+Automatic reviewers are requested on every PR that touches the matching paths.
 
-# Money boundary — extra scrutiny
-/contracts/             @x0lg0n
-/services/              @x0lg0n
+## Docs
 
-# App + SDK
-/frontend/              @x0lg0n
-/packages/stellar-sdk/  @x0lg0n
+`https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners`
 
-# Project governance & docs
-/ROADMAP.md             @x0lg0n
-/ARCHITECTURE.md        @x0lg0n
-/SECURITY.md            @x0lg0n
+## Owners
+
+   @x0lg0n           Siddhartha Kunwar
+   @janvi100104      Janvi Singhal
+
+## RULE: The LAST matching pattern wins for a given file. Keep specific paths BELOW broader ones
+
+########################################
+
+### Global
+
+########################################
+
+### Default owners for the entire repository
+
+      @x0lg0n
+      @janvi100104
+
+########################################
+
+### Money boundary — extra scrutiny
+
+########################################
+
+### Contracts and backend services move real value; both owners must review
+
+    /contracts/                             @x0lg0n @janvi100104
+
+    /services/                              @x0lg0n @janvi100104
+
+########################################
+
+### App + SDK
+
+########################################
+
+### Frontend application (Next.js landing page + waitlist)
+
+   /frontend/                              @x0lg0n @janvi100104
+
+### Stellar SDK package
+
+   /packages/stellar-sdk/                  @x0lg0n @janvi100104
+
+### Governance & docs
+
+   /ROADMAP.md                             @x0lg0n @janvi100104
+
+   /ARCHITECTURE.md                        @x0lg0n @janvi100104
+
+   /SECURITY.md                            @x0lg0n@ janvi100104

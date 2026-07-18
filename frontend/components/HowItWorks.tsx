@@ -15,7 +15,7 @@ const actorColor: Record<FlowActor, string> = {
   Client: "bg-violet text-white",
   Freelancer: "bg-teal text-white",
   "ORKA AI": "bg-orange text-white",
-  Stellar: "bg-ink text-white",
+  Stellar: "bg-night text-white",
 };
 
 export default function HowItWorks() {
@@ -28,7 +28,7 @@ export default function HowItWorks() {
         <h2 className="display mt-2 text-4xl uppercase sm:text-5xl md:text-6xl lg:text-7xl">
           Our working method.
         </h2>
-        <p className="mx-auto mt-4 max-w-2xl text-base font-normal leading-7 text-ink/80 sm:text-[18px] md:mx-0">
+        <p className="mx-auto mt-4 max-w-2xl text-base font-normal leading-7 text-night/80 sm:text-[18px] md:mx-0">
           Four steps take a project from a rough brief to paid and reconciled.
           Tap any step to see exactly what happens, who does it, and how ORKA
           compares to doing it the old way.
@@ -40,8 +40,8 @@ export default function HowItWorks() {
             return (
               <div
                 key={step.title}
-                className={`cut-corner overflow-hidden rounded-[20px] border-2 border-ink shadow-hard transition-colors duration-300 ${
-                  isOpen ? "bg-orange text-white" : "bg-white text-ink"
+                className={`cut-corner overflow-hidden rounded-[20px] border-2 border-night shadow-hard transition-colors duration-300 ${
+                  isOpen ? "bg-orange text-white" : "bg-white text-night"
                 }`}>
                 <button
                   type="button"
@@ -51,11 +51,11 @@ export default function HowItWorks() {
                   <span className="display text-4xl sm:text-6xl">{step.number}.</span>
                   <div className="flex-1">
                     <h3 className="display text-2xl uppercase sm:text-3xl">{step.title}</h3>
-                    <p className="mt-1 text-sm font-medium leading-6 text-ink/70 md:hidden">
+                    <p className="mt-1 text-sm font-medium leading-6 text-night/70 md:hidden">
                       {step.summary}
                     </p>
                   </div>
-                  <span className="grid size-11 shrink-0 place-items-center rounded-full bg-ink text-white transition-transform duration-300 hover:scale-110">
+                  <span className="grid size-11 shrink-0 place-items-center rounded-full bg-night text-white transition-transform duration-300 hover:scale-110">
                     <ChevronDown
                       size={18}
                       strokeWidth={3}
@@ -81,7 +81,7 @@ export default function HowItWorks() {
                           {step.phases.map((group, gi) => (
                             <div
                               key={gi}
-                              className="rounded-[12px] bg-white p-4 text-ink">
+                              className="rounded-[12px] bg-white p-4 text-night">
                               <p className="text-xs font-black uppercase opacity-60">
                                 Phase {gi + 1}
                               </p>
@@ -89,7 +89,7 @@ export default function HowItWorks() {
                                 {group.map((tag) => (
                                   <span
                                     key={tag}
-                                    className="rounded-full bg-ink/10 px-3 py-1 text-xs font-bold">
+                                    className="rounded-full bg-night/10 px-3 py-1 text-xs font-bold">
                                     {tag}
                                   </span>
                                 ))}
@@ -109,7 +109,7 @@ export default function HowItWorks() {
                           return (
                             <li
                               key={fi}
-                              className="flex items-start gap-3 rounded-[12px] bg-white p-3 text-ink">
+                              className="flex items-start gap-3 rounded-[12px] bg-white p-3 text-night">
                               <span
                                 className={`grid size-8 shrink-0 place-items-center rounded-full ${actorColor[item.actor]}`}>
                                 <Icon size={16} />
@@ -127,7 +127,7 @@ export default function HowItWorks() {
 
                       {/* Before / After */}
                       <div className="mt-6 grid gap-4 md:grid-cols-2">
-                        <div className="rounded-[12px] bg-ink/15 p-4 text-white">
+                        <div className="rounded-[12px] bg-night/15 p-4 text-white">
                           <div className="flex items-center gap-2 text-sm font-black uppercase">
                             <X size={16} className="text-white/70" /> Before ORKA
                           </div>
@@ -135,7 +135,7 @@ export default function HowItWorks() {
                             {step.traditional}
                           </p>
                         </div>
-                        <div className="rounded-[12px] bg-white p-4 text-ink">
+                        <div className="rounded-[12px] bg-white p-4 text-night">
                           <div className="flex items-center gap-2 text-sm font-black uppercase text-teal">
                             <Check size={16} /> With ORKA
                           </div>
