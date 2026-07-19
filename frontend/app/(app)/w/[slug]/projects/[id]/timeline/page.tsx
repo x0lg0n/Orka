@@ -1,9 +1,9 @@
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getActiveOrgBySlug } from "@/lib/orka";
-import { ProjectOverviewView } from "./components/ProjectOverviewView";
+import { ProjectTimelineView } from "./components/ProjectTimelineView";
 
-export default async function ProjectOverviewPage({
+export default async function ProjectTimelinePage({
   params,
 }: {
   params: Promise<{ slug: string; id: string }>;
@@ -26,18 +26,7 @@ export default async function ProjectOverviewPage({
     .from("milestones")
     .select("*")
     .eq("project_id", id)
-    .order("created_at", { ascending: true });
-
-  let client = null;
-  if (project.client_id) {
-    const { data } = await supabase
-      .from("clients")
-      .select("*")
-      .eq("id", project.client_id)
-      .eq("org_id", org.id)
-      .single();
-    client = data;
-  }
+    .order("position", { ascending: true });
 
   let owner = null;
   if (project.created_by) {
@@ -55,12 +44,41 @@ export default async function ProjectOverviewPage({
     .eq("project_id", id)
     .order("created_at", { ascending: false });
 
+  const { data: contracts } = await supabase
+    .from("contracts")
+    .select("*")
+    .eq("project_id", id)
+    .order("created_at", { ascending: false });
+
+  const { data: payments } = await supabase
+    .from("payments")
+    .select("*")
+    .eq("project_id", id)
+    .order("created_at", { ascending: false });
+
+  const { data: invoices } = await supabase
+    .from("invoices")
+    .select("*")
+    .eq("project_id", id)
+    .order("created_at", { ascending: false });
+
   const { data: activity } = await supabase
     .from("activity")
     .select("id, type, payload, created_at, actor_id")
     .eq("project_id", id)
-    .order("created_at", { ascending: false })
-    .limit(10);
+    .order("created_at", { ascending: false });
+
+  const { data: comments } = await supabase
+    .from("comments")
+    .select("*")
+    .eq("project_id", id)
+    .order("created_at", { ascending: false });
+
+  const { data: escrow } = await supabase
+    .from("escrow")
+    .select("*")
+    .eq("project_id", id)
+    .order("created_at", { ascending: false });
 
   const { count: memberCount } = await supabase
     .from("project_members")
@@ -69,62 +87,71 @@ export default async function ProjectOverviewPage({
 
   const allMilestones = milestones ?? [];
   const allFiles = files ?? [];
+  const allContracts = contracts ?? [];
+  const allPayments = payments ?? [];
+  const allInvoices = invoices ?? [];
   const allActivity = activity ?? [];
+  const allComments = comments ?? [];
+  const allEscrow = escrow ?? [];
 
-  const totalMilestones = allMilestones.length;
-  const releasedMilestones = allMilestones.filter((m) => m.status === "released");
+  const totalBudget = allMilestones.reduce(
+    (sum, m) => sum + Number(m.amount),
+    0
+  );
+  const releasedMilestones = allMilestones.filter(
+    (m) => m.status === "released"
+  );
   const fundedMilestones = allMilestones.filter(
     (m) => m.status === "funded" || m.status === "in_review"
   );
   const pendingMilestones = allMilestones.filter((m) => m.status === "draft");
-  const refundedMilestones = allMilestones.filter((m) => m.status === "refunded");
 
-  const totalBudget = allMilestones.reduce((sum, m) => sum + Number(m.amount), 0);
-  const fundedAmount = fundedMilestones.reduce((sum, m) => sum + Number(m.amount), 0);
-  const releasedAmount = releasedMilestones.reduce((sum, m) => sum + Number(m.amount), 0);
-  const pendingAmount = pendingMilestones.reduce((sum, m) => sum + Number(m.amount), 0);
-  const refundedAmount = refundedMilestones.reduce((sum, m) => sum + Number(m.amount), 0);
+  const releasedAmount = releasedMilestones.reduce(
+    (sum, m) => sum + Number(m.amount),
+    0
+  );
+  const fundedAmount = fundedMilestones.reduce(
+    (sum, m) => sum + Number(m.amount),
+    0
+  );
+  const pendingAmount = pendingMilestones.reduce(
+    (sum, m) => sum + Number(m.amount),
+    0
+  );
 
   const progressPct =
-    totalMilestones > 0
-      ? Math.round((releasedMilestones.length / totalMilestones) * 100)
+    allMilestones.length > 0
+      ? Math.round((releasedMilestones.length / allMilestones.length) * 100)
       : 0;
 
   const milestoneAsset = allMilestones.length > 0 ? allMilestones[0].asset : "XLM";
 
-  const escrowFundedPct =
-    totalBudget > 0
-      ? Math.round(((fundedAmount + releasedAmount) / totalBudget) * 100)
-      : 0;
-
   return (
-    <ProjectOverviewView
+    <ProjectTimelineView
       slug={slug}
       projectId={id}
       project={project}
       milestones={allMilestones}
-      client={client}
       owner={owner}
       files={allFiles}
+      contracts={allContracts}
+      payments={allPayments}
+      invoices={allInvoices}
       activity={allActivity}
+      comments={allComments}
+      escrow={allEscrow}
       memberCount={memberCount ?? 0}
       stats={{
         progressPct,
-        totalMilestones,
+        totalBudget,
+        releasedAmount,
+        fundedAmount,
+        pendingAmount,
+        milestoneAsset,
+        totalMilestones: allMilestones.length,
         releasedCount: releasedMilestones.length,
         fundedCount: fundedMilestones.length,
         pendingCount: pendingMilestones.length,
-        refundedCount: refundedMilestones.length,
-        completedCount: releasedMilestones.length,
-        inProgressCount: fundedMilestones.length,
-        upcomingCount: pendingMilestones.length,
-        totalBudget,
-        fundedAmount,
-        releasedAmount,
-        pendingAmount,
-        refundedAmount,
-        milestoneAsset,
-        escrowFundedPct,
       }}
     />
   );

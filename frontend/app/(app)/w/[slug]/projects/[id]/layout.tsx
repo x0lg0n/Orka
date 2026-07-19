@@ -38,15 +38,19 @@ export default async function ProjectLayout({
   const { project, milestones } = await getProject(slug, id);
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <ProjectHeader
-        slug={slug}
-        projectId={id}
-        title={project.title}
-        status={project.status}
-      />
-      <ProjectTabs slug={slug} projectId={id} />
-      <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">{children}</div>
+    <div className="flex h-dvh flex-col overflow-hidden bg-gray-50">
+      <div className="shrink-0 px-6 pt-6">
+        <ProjectHeader
+          slug={slug}
+          projectId={id}
+          title={project.title}
+          status={project.status}
+        />
+        <ProjectTabs slug={slug} projectId={id} />
+      </div>
+      <div className="flex-1 min-h-0 overflow-y-auto">
+        <div className="mx-auto max-w-7xl px-6 py-6">{children}</div>
+      </div>
     </div>
   );
 }
