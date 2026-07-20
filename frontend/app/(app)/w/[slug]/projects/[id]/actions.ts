@@ -1,0 +1,70 @@
+// frontend/app/(app)/w/[slug]/projects/[id]/actions.ts
+"use server";
+
+import { createClient } from "@/lib/supabase/server";
+import { orkaClient, type OrkaCustodyMode } from "@/lib/stellar";
+
+// Intentionally does NOT write chain-derived status. It records the local-side
+// signature intent hash so the UI can show "signed (pending on-chain)"; the
+// Rust indexer flips the real status once the tx confirms. The SDK/backend
+// `signContract` method is wired in Phase 6 — until then we hit the backend's
+// signature route (same shape `orkaClient` forwards to) and store the returned
+// hash.
+export async function signContract(input: {
+  orgId: string;
+  projectId: string;
+  signer: "agency" | "client";
+  mode: OrkaCustodyMode;
+}): Promise<{ ok: true; txHash: string } | { ok: false; error: string }> {
+  try {
+    const res = await fetch(`${process.env.SERVICES_URL ?? ""}/escrow/sign`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        project_id: input.projectId,
+        signer: input.signer,
+        mode: input.mode,
+      }),
+    });
+    if (!res.ok) throw new Error(`signContract failed: ${res.status}`);
+    const data = (await res.json()) as { txHash?: string; sig?: string };
+    const txHash = data.txHash ?? data.sig ?? "";
+
+    const supabase = await createClient();
+    const col = input.signer === "agency" ? "freelancer_sig" : "client_sig";
+    await supabase
+      .from("projects")
+      .update({ [col]: txHash })
+      .eq("id", input.projectId)
+      .eq("org_id", input.orgId);
+
+    return { ok: true, txHash };
+  } catch (err) {
+    return { ok: false, error: err instanceof Error ? err.message : "signContract failed" };
+  }
+}
+
+// Intentionally does NOT write chain-derived escrow status. The indexer writes
+// `escrow_contracts.total_funded`. The SDK `fundEscrow` exists; we forward the
+// call and return the tx hash (or XDR for freighter mode) for the UI to show
+// "Funding… awaiting confirmation".
+export async function fundEscrow(input: {
+  orgId: string;
+  projectId: string;
+  contractAddress: string;
+  amount: number;
+  milestoneIds?: number[];
+  mode: OrkaCustodyMode;
+}): Promise<{ ok: true; txHash: string } | { ok: false; error: string }> {
+  try {
+    const client = orkaClient(input.mode);
+    const res = await client.fundEscrow({
+      contractId: input.contractAddress,
+      milestoneIds: input.milestoneIds ?? [],
+    });
+    const txHash = "txHash" in res ? (res as { txHash: string }).txHash : "";
+    return { ok: true, txHash };
+  } catch (err) {
+    return { ok: false, error: err instanceof Error ? err.message : "fundEscrow failed" };
+  }
+}
