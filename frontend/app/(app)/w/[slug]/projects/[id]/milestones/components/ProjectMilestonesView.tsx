@@ -45,6 +45,7 @@ type OwnerRow = {
 type EscrowRow = {
   id: string;
   status: string;
+  contract_address: string | null;
   amount: number;
   asset: string;
   created_at: string;
@@ -73,6 +74,9 @@ export function ProjectMilestonesView({
   workflowState,
   role,
   onSubmitMilestone,
+  onApproveMilestone,
+  onRejectMilestone,
+  onReleaseMilestone,
   stats,
 }: {
   slug: string;
@@ -84,6 +88,9 @@ export function ProjectMilestonesView({
   workflowState: WorkflowState;
   role: WorkflowRole;
   onSubmitMilestone: (milestoneId: string) => Promise<void>;
+  onApproveMilestone: (milestoneId: string) => Promise<void>;
+  onRejectMilestone: (milestoneId: string) => Promise<void>;
+  onReleaseMilestone: (milestoneId: string) => Promise<void>;
   stats: MilestoneStats;
 }) {
   const [showModal, setShowModal] = useState(false);
@@ -153,7 +160,15 @@ export function ProjectMilestonesView({
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
         <div className="flex flex-col gap-4 lg:col-span-2">
-          <MilestonePaymentFlow />
+          <MilestonePaymentFlow
+            milestones={milestones}
+            state={workflowState}
+            role={role}
+            contractAddress={escrow?.contract_address ?? ""}
+            onApprove={onApproveMilestone}
+            onReject={onRejectMilestone}
+            onRelease={onReleaseMilestone}
+          />
         </div>
         <div className="flex flex-col gap-4">
           <MilestoneSummaryCard stats={stats} owner={owner} />

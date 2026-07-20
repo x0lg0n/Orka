@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getActiveOrgBySlug } from "@/lib/orka";
 import { deriveWorkflowState } from "@/lib/workflow";
 import { ProjectMilestonesView } from "./components/ProjectMilestonesView";
-import { submitMilestone } from "../actions";
+import { submitMilestone, approveMilestone, rejectMilestone, releaseMilestone } from "../actions";
 
 export default async function ProjectMilestonesPage({
   params,
@@ -120,6 +120,33 @@ export default async function ProjectMilestonesPage({
       role="agency"
       onSubmitMilestone={async (milestoneId: string) => {
         await submitMilestone({
+          orgId: org.id,
+          projectId: id,
+          contractAddress: escrow?.contract_address ?? "",
+          milestoneId,
+          mode: "orka",
+        });
+      }}
+      onApproveMilestone={async (milestoneId: string) => {
+        await approveMilestone({
+          orgId: org.id,
+          projectId: id,
+          contractAddress: escrow?.contract_address ?? "",
+          milestoneId,
+          mode: "orka",
+        });
+      }}
+      onRejectMilestone={async (milestoneId: string) => {
+        await rejectMilestone({
+          orgId: org.id,
+          projectId: id,
+          contractAddress: escrow?.contract_address ?? "",
+          milestoneId,
+          mode: "orka",
+        });
+      }}
+      onReleaseMilestone={async (milestoneId: string) => {
+        await releaseMilestone({
           orgId: org.id,
           projectId: id,
           contractAddress: escrow?.contract_address ?? "",
