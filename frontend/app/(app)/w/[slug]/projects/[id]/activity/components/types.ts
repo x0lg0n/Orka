@@ -56,55 +56,24 @@ export type ActivityGroup = {
 type MilestoneRow = {
   id: string;
   title: string | null;
-  description: string | null;
+  description?: string | null;
   amount: number;
   asset: string;
   status: string;
   created_at: string;
 };
 
-type FileRow = {
+type PaymentRow = {
   id: string;
-  name: string;
-  size: number | null;
+  project_id: string | null;
+  milestone_id: string | null;
+  invoice_id: string | null;
+  payment_type: "escrow" | "milestone" | "invoice" | "refund";
+  amount: number;
+  currency: string | null;
+  status: "completed" | "pending" | "failed" | "released" | "processing" | null;
+  tx_hash: string | null;
   created_at: string;
-  uploaded_by: string | null;
-};
-
-type ContractRow = {
-  id: string;
-  title: string | null;
-  status: string;
-  created_at: string;
-};
-
-type CommentRow = {
-  id: string;
-  content: string;
-  created_at: string;
-  author_id: string | null;
-};
-
-type ActivityRow = {
-  id: string;
-  type: string;
-  payload: Record<string, unknown>;
-  created_at: string;
-  actor_id: string | null;
-};
-
-type NoteRow = {
-  id: string;
-  title: string;
-  description: string | null;
-  created_by: string | null;
-  created_at: string;
-};
-
-type ProfileRow = {
-  id: string;
-  full_name: string | null;
-  avatar_url: string | null;
 };
 
 function formatTime(dateStr: string): string {
@@ -136,34 +105,27 @@ function toDateKey(dateStr: string): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
 
-function getActorName(
-  actorId: string | null,
-  profiles: ProfileRow[]
-): string | null {
-  if (!actorId) return null;
-  return profiles.find((p) => p.id === actorId)?.full_name ?? null;
-}
-
 export function generateActivityItems(
   projectId: string,
   milestones: MilestoneRow[],
-  files: FileRow[],
-  contracts: ContractRow[],
-  comments: CommentRow[],
-  activity: ActivityRow[],
-  notes: NoteRow[],
-  profiles: ProfileRow[]
+  payments: PaymentRow[]
 ): ActivityGroup[] {
   const items: ActivityItem[] = [];
 
   for (const m of milestones) {
     const isCompleted = m.status === "released" || m.status === "approved";
+    const isDisputed = m.status === "disputed";
+    const label = isDisputed
+      ? "disputed"
+      : isCompleted
+        ? "marked as completed"
+        : "status updated";
     items.push({
       id: `milestone-${m.id}`,
       projectId,
       type: "milestone",
-      title: `"${m.title ?? "Untitled Milestone"}" ${isCompleted ? "marked as completed" : "updated"}`,
-      description: `${Number(m.amount).toLocaleString("en-US", { maximumFractionDigits: 0 })} ${m.asset}`,
+      title: `"${m.title ?? "Untitled Milestone"}" ${label}`,
+      description: `${Number(m.amount).toLocaleString("en-US", { maximumFractionDigits: 0 })} ${m.asset} · ${m.status}`,
       createdBy: null,
       createdByName: null,
       createdAt: m.created_at,
@@ -173,145 +135,45 @@ export function generateActivityItems(
     });
   }
 
-  for (const f of files) {
-    items.push({
-      id: `file-${f.id}`,
-      projectId,
-      type: "file",
-      title: `"${f.name}" uploaded`,
-      description: f.size
-        ? `${(f.size / 1024).toFixed(1)} KB`
-        : "File uploaded",
-      createdBy: f.uploaded_by,
-      createdByName: getActorName(f.uploaded_by, profiles),
-      createdAt: f.created_at,
-      time: formatTime(f.created_at),
-      category: "file",
-      badge: "Files",
-    });
-  }
+  for (const p of payments) {
+    const amount = Number(p.amount ?? 0);
+    const currency = p.currency ?? "";
+    let category: ActivityCategory = "payment";
+    let title = "Payment recorded";
+    let badge = "Payments";
 
-  for (const c of contracts) {
-    items.push({
-      id: `contract-${c.id}`,
-      projectId,
-      type: "contract",
-      title:
-        c.status === "signed"
-          ? "Contract signed"
-          : `Contract "${c.title ?? "Untitled"}" ${c.status}`,
-      description:
-        c.status === "signed"
-          ? "Both parties completed signing."
-          : `Contract status: ${c.status}`,
-      createdBy: null,
-      createdByName: null,
-      createdAt: c.created_at,
-      time: formatTime(c.created_at),
-      category: "contract",
-      badge: "Contracts",
-    });
-  }
-
-  for (const act of activity) {
-    const type = act.type;
-    let category: ActivityCategory = "system";
-    let title = "Activity recorded";
-    const description =
-      typeof act.payload?.description === "string"
-        ? act.payload.description
-        : "Event recorded.";
-    let badge = "System";
-
-    if (type === "comment" || type === "client_commented") {
-      category = "comment";
-      title = "Client commented";
-      badge = "Comments";
-    } else if (type === "feedback") {
-      category = "client";
-      title = "Client feedback";
-      badge = "Client";
-    } else if (type === "milestone_completed") {
-      category = "milestone";
-      title = "Milestone completed";
-      badge = "Milestones";
-    } else if (type === "payment_released") {
-      category = "payment";
-      title = "Payment released";
-      badge = "Payments";
-    } else if (type === "proposal_accepted" || type === "proposal_sent") {
-      category = "proposal";
-      title = "Proposal updated";
-      badge = "Proposal";
-    } else if (type === "contract_signed") {
-      category = "contract";
-      title = "Contract signed";
-      badge = "Contracts";
-    } else if (type === "escrow_funded") {
+    if (p.payment_type === "escrow") {
       category = "escrow";
       title = "Escrow funded";
       badge = "Escrow";
-    } else if (type === "files_uploaded") {
-      category = "file";
-      title = "Files uploaded";
-      badge = "Files";
-    } else if (type.startsWith("ai_")) {
-      category = "ai";
-      title = type.replace("ai_", "").replace(/_/g, " ");
-      title = title.charAt(0).toUpperCase() + title.slice(1);
-      badge = "AI";
-    } else if (type.startsWith("client_")) {
-      category = "client";
-      title = type.replace("client_", "").replace(/_/g, " ");
-      title = title.charAt(0).toUpperCase() + title.slice(1);
-      badge = "Client";
+    } else if (p.payment_type === "milestone") {
+      category = "milestone";
+      title = "Milestone payment released";
+      badge = "Milestones";
+    } else if (p.payment_type === "invoice") {
+      category = "payment";
+      title = "Invoice payment";
+      badge = "Payments";
+    } else if (p.payment_type === "refund") {
+      category = "payment";
+      title = "Refund issued";
+      badge = "Payments";
     }
 
+    const statusSuffix =
+      p.status && p.status !== "completed" ? ` · ${p.status}` : "";
     items.push({
-      id: `activity-${act.id}`,
+      id: `payment-${p.id}`,
       projectId,
-      type: act.type,
+      type: p.payment_type,
       title,
-      description,
-      createdBy: act.actor_id,
-      createdByName: getActorName(act.actor_id, profiles),
-      createdAt: act.created_at,
-      time: formatTime(act.created_at),
+      description: `${amount.toLocaleString("en-US", { maximumFractionDigits: 0 })} ${currency}${statusSuffix}`,
+      createdBy: null,
+      createdByName: null,
+      createdAt: p.created_at,
+      time: formatTime(p.created_at),
       category,
       badge,
-    });
-  }
-
-  for (const n of notes) {
-    items.push({
-      id: `note-${n.id}`,
-      projectId,
-      type: "note",
-      title: "Internal Note added",
-      description: n.title,
-      createdBy: n.created_by,
-      createdByName: getActorName(n.created_by, profiles),
-      createdAt: n.created_at,
-      time: formatTime(n.created_at),
-      category: "note",
-      badge: "Notes",
-    });
-  }
-
-  for (const c of comments) {
-    items.push({
-      id: `comment-${c.id}`,
-      projectId,
-      type: "comment",
-      title: "Comment added",
-      description:
-        c.content.length > 120 ? c.content.slice(0, 120) + "..." : c.content,
-      createdBy: c.author_id,
-      createdByName: getActorName(c.author_id, profiles),
-      createdAt: c.created_at,
-      time: formatTime(c.created_at),
-      category: "comment",
-      badge: "Comments",
     });
   }
 
