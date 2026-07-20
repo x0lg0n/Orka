@@ -12,6 +12,13 @@ import { AddMilestoneModal } from "./AddMilestoneModal";
 import { BoardView } from "./BoardView";
 import { MilestoneEmptyState } from "./MilestoneEmptyState";
 import type { WorkflowRole, WorkflowState } from "@/lib/workflow";
+import type { OrkaCustodyMode } from "@/lib/stellar";
+import {
+  submitMilestone,
+  approveMilestone,
+  rejectMilestone,
+  releaseMilestone,
+} from "../../actions";
 
 type ProjectRow = {
   id: string;
@@ -73,10 +80,8 @@ export function ProjectMilestonesView({
   escrow,
   workflowState,
   role,
-  onSubmitMilestone,
-  onApproveMilestone,
-  onRejectMilestone,
-  onReleaseMilestone,
+  orgId,
+  mode,
   stats,
 }: {
   slug: string;
@@ -87,14 +92,51 @@ export function ProjectMilestonesView({
   escrow: EscrowRow;
   workflowState: WorkflowState;
   role: WorkflowRole;
-  onSubmitMilestone: (milestoneId: string) => Promise<void>;
-  onApproveMilestone: (milestoneId: string) => Promise<void>;
-  onRejectMilestone: (milestoneId: string) => Promise<void>;
-  onReleaseMilestone: (milestoneId: string) => Promise<void>;
+  orgId: string;
+  mode: OrkaCustodyMode;
   stats: MilestoneStats;
 }) {
   const [showModal, setShowModal] = useState(false);
   const [view, setView] = useState<"list" | "board">("list");
+
+  const contractAddress = escrow?.contract_address ?? "";
+
+  const handleSubmitMilestone = async (milestoneId: string) => {
+    await submitMilestone({
+      orgId,
+      projectId,
+      contractAddress,
+      milestoneId,
+      mode,
+    });
+  };
+  const handleApproveMilestone = async (milestoneId: string) => {
+    await approveMilestone({
+      orgId,
+      projectId,
+      contractAddress,
+      milestoneId,
+      mode,
+    });
+  };
+  const handleRejectMilestone = async (milestoneId: string) => {
+    await rejectMilestone({
+      orgId,
+      projectId,
+      contractAddress,
+      milestoneId,
+      mode,
+    });
+  };
+  const handleReleaseMilestone = async (milestoneId: string) => {
+    await releaseMilestone({
+      orgId,
+      projectId,
+      contractAddress,
+      milestoneId,
+      mode,
+    });
+  };
 
   return (
     <div className="space-y-4">
@@ -154,7 +196,7 @@ export function ProjectMilestonesView({
           milestones={milestones}
           state={workflowState}
           role={role}
-          onSubmitMilestone={onSubmitMilestone}
+          onSubmitMilestone={handleSubmitMilestone}
         />
       )}
 
@@ -165,9 +207,9 @@ export function ProjectMilestonesView({
             state={workflowState}
             role={role}
             contractAddress={escrow?.contract_address ?? ""}
-            onApprove={onApproveMilestone}
-            onReject={onRejectMilestone}
-            onRelease={onReleaseMilestone}
+            onApprove={handleApproveMilestone}
+            onReject={handleRejectMilestone}
+            onRelease={handleReleaseMilestone}
           />
         </div>
         <div className="flex flex-col gap-4">
