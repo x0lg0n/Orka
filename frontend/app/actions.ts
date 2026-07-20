@@ -277,6 +277,70 @@ export async function createClientAction(formData: FormData) {
   redirect(redirectPath);
 }
 
+// Updates an existing client for an organization. Mirrors createClientAction:
+// all non-core attributes are stored in clients.metadata, scoped to the org.
+export async function updateClientAction(formData: FormData) {
+  const supabase = await createClient();
+
+  const orgId = String(formData.get("orgId") || "").trim();
+  const slug = String(formData.get("slug") || "").trim();
+  const clientId = String(formData.get("clientId") || "").trim();
+  const name = String(formData.get("name") || "").trim();
+  const email = String(formData.get("email") || "").trim();
+  const errorBase = slug ? `/w/${slug}/clients/${clientId}/edit` : "/workspaces";
+
+  if (!orgId) redirect("/workspaces");
+  if (!clientId) redirect(`/w/${slug}/clients`);
+  if (!name) redirect(`${errorBase}?error=Client name is required.`);
+  if (email && !EMAIL_RE.test(email))
+    redirect(`${errorBase}?error=Please enter a valid email address.`);
+
+  const status = String(formData.get("status") || "active").toLowerCase();
+  const safeStatus = ["active", "inactive", "lead", "archived"].includes(status)
+    ? status
+    : "active";
+
+  const metadata: Record<string, unknown> = {
+    clientType: String(formData.get("clientType") || "").trim() || null,
+    description: String(formData.get("description") || "").trim() || null,
+    contactName: String(formData.get("contactName") || "").trim() || null,
+    contactEmail: String(formData.get("contactEmail") || "").trim() || null,
+    phone: String(formData.get("phone") || "").trim() || null,
+    jobTitle: String(formData.get("jobTitle") || "").trim() || null,
+    website: String(formData.get("website") || "").trim() || null,
+    industry: String(formData.get("industry") || "").trim() || null,
+    companySize: String(formData.get("companySize") || "").trim() || null,
+    taxId: String(formData.get("taxId") || "").trim() || null,
+    billing: {
+      addressLine1: String(formData.get("addressLine1") || "").trim() || null,
+      addressLine2: String(formData.get("addressLine2") || "").trim() || null,
+      city: String(formData.get("city") || "").trim() || null,
+      state: String(formData.get("state") || "").trim() || null,
+      postalCode: String(formData.get("postalCode") || "").trim() || null,
+      country: String(formData.get("country") || "").trim() || null,
+    },
+    notes: String(formData.get("notes") || "").trim() || null,
+    tags: String(formData.get("tags") || "")
+      .split(",")
+      .map((t) => t.trim())
+      .filter(Boolean),
+    preferredCurrency: String(formData.get("preferredCurrency") || "").trim() || null,
+    paymentTerms: String(formData.get("paymentTerms") || "").trim() || null,
+  };
+
+  const { error } = await supabase
+    .from("clients")
+    .update({ name, email: email || null, metadata, status: safeStatus })
+    .eq("id", clientId)
+    .eq("org_id", orgId);
+  if (error) redirect(`${errorBase}?error=${encodeURIComponent(error.message)}`);
+
+  const redirectPath = slug ? `/w/${slug}/clients/${clientId}` : "/workspaces";
+  revalidatePath(redirectPath);
+  revalidatePath(`/w/${slug}/clients`);
+  redirect(redirectPath);
+}
+
 export async function addMilestone(formData: FormData) {
   const supabase = await createClient();
   const orgId = await getActiveOrgId(supabase);
