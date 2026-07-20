@@ -32,6 +32,8 @@ export type PortalProject = {
   description: string | null;
   status: string;
   contract_id: string | null;
+  contract_address: string | null;
+  custody_mode: string;
   created_at: string;
   organization: { name: string | null } | null;
   client: { name: string | null } | null;

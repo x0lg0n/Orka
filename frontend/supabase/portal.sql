@@ -66,7 +66,17 @@ begin
         'milestones', pr.milestones
       ) order by pr.created_at)
       from public.proposals pr where pr.project_id = p.id
-    ), '[]'::jsonb)
+    ), '[]'::jsonb),
+    'contract_address', (
+      select ec.contract_address
+      from public.escrow_contracts ec where ec.project_id = p.id
+      limit 1
+    ),
+    'custody_mode', coalesce((
+      select prof.custody_mode::text
+      from public.profiles prof where prof.org_id = p.org_id and prof.custody_mode is not null
+      limit 1
+    ), 'orka')
   )
   into v_result
   from public.projects p

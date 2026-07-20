@@ -2,6 +2,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getPortalProject } from "@/lib/portal";
 import { Tabs, type TabItem } from "@/components/shell/Tabs";
+import { PortalContractActions } from "./components/PortalContractActions";
+import { PortalMilestoneActions } from "./components/PortalMilestoneActions";
 
 const TABS: TabItem[] = [
   { value: "overview", label: "Overview" },
@@ -49,6 +51,24 @@ export default async function PortalPage({
 
   const active = VALID.includes(tab ?? "") ? (tab as string) : "overview";
 
+  // Derived workflow signals for the client-side action buttons. These only
+  // gate which actions the client *can trigger*; the on-chain status is
+  // still written solely by the indexer.
+  const mode = (project.custody_mode === "freighter" ? "freighter" : "orka") as
+    | "orka"
+    | "freighter";
+  const signed =
+    project.proposals.some((pr) => pr.status === "signed") ||
+    !!project.contract_id;
+  const funded = project.milestones.some((m) => m.status !== "draft");
+  const totalAmount = project.milestones.reduce(
+    (sum, m) => sum + (m.amount ?? 0),
+    0,
+  );
+  const milestoneIds = project.milestones
+    .map((m) => (typeof m.chain_index === "number" ? m.chain_index : Number(m.id)))
+    .filter((n) => !Number.isNaN(n));
+
   return (
     <div className="space-y-8">
       <div className="space-y-2">
@@ -86,6 +106,16 @@ export default async function PortalPage({
               <span className="font-mono text-night">{project.contract_id}</span>
             </p>
           ) : null}
+          <PortalContractActions
+            token={projectToken}
+            contractAddress={project.contract_address}
+            contractId={project.contract_id}
+            custodyMode={mode}
+            signed={signed}
+            funded={funded}
+            totalAmount={totalAmount}
+            milestoneIds={milestoneIds}
+          />
         </div>
       )}
 
@@ -97,18 +127,29 @@ export default async function PortalPage({
             project.milestones.map((m) => (
               <div
                 key={m.id}
-                className="flex items-center justify-between rounded-[12px] border border-border bg-panel p-4"
+                className="space-y-3 rounded-[12px] border border-border bg-panel p-4"
               >
-                <div>
-                  <p className="font-extrabold text-night">{m.title}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {m.asset} · {m.chain_index !== null ? `#${m.chain_index} · ` : ""}
-                    <Badge>{m.status}</Badge>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="font-extrabold text-night">{m.title}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {m.asset} · {m.chain_index !== null ? `#${m.chain_index} · ` : ""}
+                      <Badge>{m.status}</Badge>
+                    </p>
+                  </div>
+                  <p className="font-extrabold text-night">
+                    {fmtAmount(m.amount, m.asset)}
                   </p>
                 </div>
-                <p className="font-extrabold text-night">
-                  {fmtAmount(m.amount, m.asset)}
-                </p>
+                {project.contract_address ? (
+                  <PortalMilestoneActions
+                    token={projectToken}
+                    contractAddress={project.contract_address}
+                    milestoneId={m.id}
+                    status={m.status}
+                    mode={mode}
+                  />
+                ) : null}
               </div>
             ))
           )}
