@@ -1,8 +1,10 @@
-export default function ProjectPaymentsPage() {
-  return (
-    <div className="space-y-4">
-      <h2 className="text-lg font-semibold text-gray-900">Payments</h2>
-      <p className="text-sm text-gray-500">Coming soon — ledger events for this project.</p>
-    </div>
-  );
+import { createClient } from "@/lib/supabase/server";
+import { getActiveOrgBySlug } from "@/lib/orka";
+import { ProjectPaymentsView } from "./components/ProjectPaymentsView";
+
+export default async function PaymentsPage({ params }: { params: Promise<{ slug: string; id: string }> }) {
+  const { slug, id } = await params;
+  const supabase = await createClient();
+  const org = await getActiveOrgBySlug(supabase, slug);
+  return <ProjectPaymentsView slug={slug} orgId={org?.id ?? ""} projectId={id} />;
 }
