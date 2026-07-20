@@ -204,3 +204,69 @@ export async function listProjects(
   if (error || !data) return [];
   return data as ProjectSummary[];
 }
+
+export type ProjectPageParams = {
+  status?: ProjectStatus | "all";
+  search?: string;
+  limit?: number;
+  offset?: number;
+};
+
+export type ProjectPage = {
+  items: ProjectSummary[];
+  total: number;
+  hasMore: boolean;
+  counts: Record<ProjectStatus, number>;
+};
+
+// Server-side paginated + filtered project fetch. Fetches only the visible
+// slice so it scales to 100s/1000s of projects (vs. loading everything).
+export async function listProjectsPage(
+  supabase: SupabaseClient,
+  orgId: string,
+  { status = "all", search = "", limit = 10, offset = 0 }: ProjectPageParams = {},
+): Promise<ProjectPage> {
+  const base = supabase
+    .from("projects")
+    .select("id, title, code, client_name, client_email, status, created_at, updated_at", {
+      count: "exact",
+    })
+    .eq("org_id", orgId);
+
+  if (status !== "all") base.eq("status", status);
+  if (search.trim()) base.ilike("title", `%${search.trim()}%`);
+
+  const { data, error, count } = await base
+    .order("created_at", { ascending: false })
+    .range(offset, offset + limit - 1);
+
+  if (error || !data) {
+    return {
+      items: [],
+      total: 0,
+      hasMore: false,
+      counts: { draft: 0, active: 0, completed: 0, archived: 0 },
+    };
+  }
+
+  const { data: all } = await supabase
+    .from("projects")
+    .select("status")
+    .eq("org_id", orgId);
+  const counts: Record<ProjectStatus, number> = {
+    draft: 0,
+    active: 0,
+    completed: 0,
+    archived: 0,
+  };
+  for (const row of (all as { status: ProjectStatus }[]) ?? []) {
+    counts[row.status] = (counts[row.status] ?? 0) + 1;
+  }
+
+  return {
+    items: data as ProjectSummary[],
+    total: count ?? 0,
+    hasMore: (count ?? 0) > offset + limit,
+    counts,
+  };
+}

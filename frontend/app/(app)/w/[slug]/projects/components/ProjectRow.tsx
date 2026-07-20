@@ -4,7 +4,7 @@ import type { ProjectSummary, ProjectStatus } from "@/lib/orka";
 
 export type { ProjectSummary };
 
-export const ITEMS_PER_PAGE = 8;
+export const ITEMS_PER_PAGE = 10;
 
 // Deterministic color from a string (since there is no stored client color yet).
 function colorFromString(s: string): string {

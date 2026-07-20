@@ -14,9 +14,30 @@ export function QuickSummary({ summary }: QuickSummaryProps) {
 
   const periods = ["This Week", "This Month", "This Quarter", "This Year"];
 
+  const rows = [
+    {
+      label: "Revenue in Escrow",
+      value: summary.revenue,
+      trend: summary.revenueTrend,
+      trendUp: summary.revenueUp,
+    },
+    {
+      label: "Completed Projects",
+      value: String(summary.completedProjects),
+      trend: summary.completedTrend,
+      trendUp: summary.completedUp,
+    },
+    {
+      label: "Total Clients",
+      value: String(summary.totalClients),
+      trend: summary.clientsTrend,
+      trendUp: summary.clientsUp,
+    },
+  ];
+
   return (
     <div className="rounded-xl border border-[#e5e8f0] bg-white p-5">
-      <div className="mb-4 flex items-center justify-between">
+      <div className="mb-5 flex items-center justify-between">
         <h2 className="text-base font-bold text-[#11182d]">Quick Summary</h2>
         <div className="relative">
           <button
@@ -45,46 +66,28 @@ export function QuickSummary({ summary }: QuickSummaryProps) {
         </div>
       </div>
 
-      <div className="flex flex-col gap-3">
-        <div className="flex items-center justify-between">
-          <span className="text-sm text-[#5f6b86]">Revenue (XLM)</span>
-          <span className="text-sm text-[#5f6b86]">In Escrow</span>
-          <div className="flex items-center gap-1.5">
-            <span className="text-sm font-bold text-[#11182d]">
-              {summary.revenue}
+      <div className="flex flex-col divide-y divide-[#eef1f6]">
+        {rows.map((row) => (
+          <div
+            key={row.label}
+            className="flex items-center justify-between gap-3 py-3 first:pt-0 last:pb-0"
+          >
+            <span className="text-sm font-medium text-[#5f6b86]">
+              {row.label}
             </span>
-            <span className="flex items-center gap-0.5 text-xs font-semibold text-green-600">
-              <TrendingUp className="h-3 w-3" />
-              {summary.revenueTrend}
-            </span>
+            <div className="flex items-center gap-2">
+              <span className="text-base font-bold text-[#11182d]">
+                {row.value}
+              </span>
+              {row.trend ? (
+                <span className="flex items-center gap-0.5 text-xs font-semibold text-green-600">
+                  <TrendingUp className="h-3 w-3" />
+                  {row.trend}
+                </span>
+              ) : null}
+            </div>
           </div>
-        </div>
-
-        <div className="flex items-center justify-between">
-          <span className="text-sm text-[#5f6b86]">Completed Projects</span>
-          <div className="flex items-center gap-1.5">
-            <span className="text-sm font-bold text-[#11182d]">
-              {summary.completedProjects}
-            </span>
-            <span className="flex items-center gap-0.5 text-xs font-semibold text-green-600">
-              <TrendingUp className="h-3 w-3" />
-              {summary.completedTrend}
-            </span>
-          </div>
-        </div>
-
-        <div className="flex items-center justify-between">
-          <span className="text-sm text-[#5f6b86]">Total Clients</span>
-          <div className="flex items-center gap-1.5">
-            <span className="text-sm font-bold text-[#11182d]">
-              {summary.totalClients}
-            </span>
-            <span className="flex items-center gap-0.5 text-xs font-semibold text-green-600">
-              <TrendingUp className="h-3 w-3" />
-              {summary.clientsTrend}
-            </span>
-          </div>
-        </div>
+        ))}
       </div>
     </div>
   );

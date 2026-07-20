@@ -220,6 +220,25 @@ export async function getActivity(
   });
 }
 
+function trendLabel(current: number, previous: number): {
+  trend: string;
+  trendUp: boolean;
+} {
+  if (previous <= 0 && current <= 0) {
+    return { trend: "no change", trendUp: true };
+  }
+  if (previous <= 0) {
+    return { trend: "new", trendUp: true };
+  }
+  const delta = ((current - previous) / previous) * 100;
+  const rounded = Math.round(delta);
+  const trendUp = delta >= 0;
+  return {
+    trend: `${trendUp ? "↑" : "↓"} ${Math.abs(rounded)}%`,
+    trendUp,
+  };
+}
+
 export async function getSummary(
   supabase: SupabaseClient,
   orgId: string,
@@ -228,35 +247,83 @@ export async function getSummary(
   metrics: MetricData[];
   summary: QuickSummaryData;
 }> {
-  const [{ count: projectCount }, { data: mData }, { count: approvalCount }, { count: paidInvoices }, { count: clientCount }] =
-    await Promise.all([
-      supabase
-        .from("projects")
-        .select("*", { count: "exact", head: true })
-        .eq("org_id", orgId),
-      supabase
-        .from("milestones")
-        .select("amount, asset, status")
-        .eq("org_id", orgId)
-        .in("status", ["funded", "in_review"]),
-      supabase
-        .from("milestones")
-        .select("*", { count: "exact", head: true })
-        .eq("org_id", orgId)
-        .eq("status", "in_review"),
-      supabase
-        .from("invoices")
-        .select("*", { count: "exact", head: true })
-        .eq("org_id", orgId)
-        .eq("status", "paid"),
-      supabase
-        .from("clients")
-        .select("*", { count: "exact", head: true })
-        .eq("org_id", orgId),
-    ]);
+  const now = new Date();
+  const startOfThisMonth = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    1,
+  ).toISOString();
+  const startOfLastMonth = new Date(
+    now.getFullYear(),
+    now.getMonth() - 1,
+    1,
+  ).toISOString();
+
+  const [
+    { count: projectCount },
+    { count: projectCountLastMonth },
+    { data: mData },
+    { data: mDataLastMonth },
+    { count: approvalCount },
+    { count: paidInvoices },
+    { count: paidInvoicesLastMonth },
+    { count: clientCount },
+  ] = await Promise.all([
+    supabase
+      .from("projects")
+      .select("*", { count: "exact", head: true })
+      .eq("org_id", orgId),
+    supabase
+      .from("projects")
+      .select("*", { count: "exact", head: true })
+      .eq("org_id", orgId)
+      .gte("created_at", startOfThisMonth),
+    supabase
+      .from("milestones")
+      .select("amount, asset, status")
+      .eq("org_id", orgId)
+      .in("status", ["funded", "in_review"]),
+    supabase
+      .from("milestones")
+      .select("amount, asset, status")
+      .eq("org_id", orgId)
+      .in("status", ["funded", "in_review"])
+      .gte("created_at", startOfLastMonth)
+      .lt("created_at", startOfThisMonth),
+    supabase
+      .from("milestones")
+      .select("*", { count: "exact", head: true })
+      .eq("org_id", orgId)
+      .eq("status", "in_review"),
+    supabase
+      .from("invoices")
+      .select("*", { count: "exact", head: true })
+      .eq("org_id", orgId)
+      .eq("status", "paid"),
+    supabase
+      .from("invoices")
+      .select("*", { count: "exact", head: true })
+      .eq("org_id", orgId)
+      .eq("status", "paid")
+      .gte("created_at", startOfThisMonth),
+    supabase
+      .from("clients")
+      .select("*", { count: "exact", head: true })
+      .eq("org_id", orgId),
+  ]);
 
   const milestoneRows = (mData as unknown as MilestoneRow[]) ?? [];
   const escrowTotal = milestoneRows.reduce((s, m) => s + (m.amount ?? 0), 0);
+
+  const lastMonthRows = (mDataLastMonth as unknown as MilestoneRow[]) ?? [];
+  const escrowLastMonth = lastMonthRows.reduce(
+    (s, m) => s + (m.amount ?? 0),
+    0,
+  );
+
+  const projectTrend = trendLabel(projectCount ?? 0, projectCountLastMonth ?? 0);
+  const escrowTrend = trendLabel(escrowTotal, escrowLastMonth);
+  const paidTrend = trendLabel(paidInvoices ?? 0, paidInvoicesLastMonth ?? 0);
 
   const metrics: MetricData[] = [
     {
@@ -265,6 +332,8 @@ export async function getSummary(
       value: String(projectCount ?? 0),
       subtitle: "across your workspace",
       href: `/w/${slug}/projects`,
+      trend: projectTrend.trend,
+      trendUp: projectTrend.trendUp,
     },
     {
       title: "In Escrow",
@@ -272,6 +341,8 @@ export async function getSummary(
       value: money(escrowTotal),
       subtitle: "funded & in review",
       href: `/w/${slug}/payments`,
+      trend: escrowTrend.trend,
+      trendUp: escrowTrend.trendUp,
     },
     {
       title: "Pending Approvals",
@@ -286,6 +357,8 @@ export async function getSummary(
       value: String(paidInvoices ?? 0),
       subtitle: "invoices paid",
       href: `/w/${slug}/invoices`,
+      trend: paidTrend.trend,
+      trendUp: paidTrend.trendUp,
     },
   ];
 

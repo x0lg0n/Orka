@@ -5,46 +5,83 @@ import { ITEMS_PER_PAGE, ProjectRow, type ProjectSummary } from "./ProjectRow";
 import { ProjectsHeader } from "./ProjectsHeader";
 import { ProjectStats } from "./ProjectStats";
 import { ProjectsTabs, type Tab } from "./ProjectsTabs";
-import { ProjectFilters } from "./ProjectFilters";
-import { ProjectPagination } from "./ProjectPagination";
+import { fetchProjectsPage } from "../actions";
+import type { ProjectStatus } from "@/lib/orka";
+
+const EMPTY_COUNTS: Record<ProjectStatus, number> = {
+  draft: 0,
+  active: 0,
+  completed: 0,
+  archived: 0,
+};
 
 export function ProjectsList({
   slug,
-  projects,
+  initialItems,
+  initialTotal,
+  initialHasMore,
+  initialCounts,
 }: {
   slug: string;
-  projects: ProjectSummary[];
+  initialItems: ProjectSummary[];
+  initialTotal: number;
+  initialHasMore: boolean;
+  initialCounts: Record<ProjectStatus, number>;
 }) {
   const [activeTab, setActiveTab] = useState<Tab>("all");
   const [search, setSearch] = useState("");
-  const [page, setPage] = useState(1);
+  const [items, setItems] = useState<ProjectSummary[]>(initialItems);
+  const [total, setTotal] = useState(initialTotal);
+  const [hasMore, setHasMore] = useState(initialHasMore);
+  const [counts, setCounts] = useState(initialCounts);
+  const [offset, setOffset] = useState(initialItems.length);
+  const [loading, setLoading] = useState(false);
 
-  const filtered = projects.filter((p) => {
-    const matchesSearch =
-      !search ||
-      p.title.toLowerCase().includes(search.toLowerCase()) ||
-      (p.client_name ?? "").toLowerCase().includes(search.toLowerCase());
-    const matchesTab = activeTab === "all" || p.status === activeTab;
-    return matchesSearch && matchesTab;
-  });
+  async function refetch(reset: boolean) {
+    setLoading(true);
+    const nextOffset = reset ? 0 : offset;
+    const page = await fetchProjectsPage(slug, {
+      status: activeTab,
+      search,
+      limit: ITEMS_PER_PAGE,
+      offset: nextOffset,
+    });
+    if (reset) {
+      setItems(page.items);
+      setOffset(page.items.length);
+    } else {
+      setItems((prev) => [...prev, ...page.items]);
+      setOffset((o) => o + page.items.length);
+    }
+    setTotal(page.total);
+    setHasMore(page.hasMore);
+    setCounts(page.counts);
+    setLoading(false);
+  }
 
-  const totalPages = Math.max(1, Math.ceil(filtered.length / ITEMS_PER_PAGE));
-  const pageItems = filtered.slice(
-    (page - 1) * ITEMS_PER_PAGE,
-    page * ITEMS_PER_PAGE,
-  );
-  const startIdx = (page - 1) * ITEMS_PER_PAGE + 1;
-  const endIdx = Math.min(page * ITEMS_PER_PAGE, filtered.length);
+  function onTabOrSearch(nextTab: Tab, nextSearch: string) {
+    setActiveTab(nextTab);
+    setSearch(nextSearch);
+    setItems([]);
+    setOffset(0);
+    void refetch(true);
+  }
 
   return (
     <div className="min-h-screen">
-      <ProjectsHeader slug={slug} />
+      <ProjectsHeader
+        slug={slug}
+        search={search}
+        setSearch={(s) => onTabOrSearch(activeTab, s)}
+      />
 
-      <ProjectStats projects={projects} />
+      <ProjectStats total={total} counts={counts} />
 
-      <div className="mt-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-        <ProjectsTabs activeTab={activeTab} setActiveTab={setActiveTab} setPage={setPage} />
-        <ProjectFilters search={search} setSearch={setSearch} setPage={setPage} />
+      <div className="mt-6">
+        <ProjectsTabs
+          activeTab={activeTab}
+          setActiveTab={(t) => onTabOrSearch(t, search)}
+        />
       </div>
 
       {/* Table */}
@@ -80,19 +117,19 @@ export function ProjectsList({
             </tr>
           </thead>
           <tbody>
-            {pageItems.length === 0 ? (
+            {items.length === 0 && !loading ? (
               <tr>
                 <td
                   colSpan={9}
                   className="px-4 py-16 text-center text-gray-400"
                 >
-                  {projects.length === 0
+                  {total === 0
                     ? "No projects yet. Create your first one."
                     : "No projects found."}
                 </td>
               </tr>
             ) : (
-              pageItems.map((p) => (
+              items.map((p) => (
                 <ProjectRow key={p.id} project={p} slug={slug} />
               ))
             )}
@@ -100,14 +137,21 @@ export function ProjectsList({
         </table>
       </div>
 
-      <ProjectPagination
-        page={page}
-        setPage={setPage}
-        totalPages={totalPages}
-        filteredCount={filtered.length}
-        startIdx={startIdx}
-        endIdx={endIdx}
-      />
+      <div className="mt-4 flex items-center justify-between">
+        <p className="text-sm text-gray-500">
+          {total > 0 ? `Showing ${items.length} of ${total} projects` : ""}
+        </p>
+        {hasMore ? (
+          <button
+            type="button"
+            onClick={() => void refetch(false)}
+            disabled={loading}
+            className="rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-gray-700 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {loading ? "Loading…" : "Load more"}
+          </button>
+        ) : null}
+      </div>
     </div>
   );
 }

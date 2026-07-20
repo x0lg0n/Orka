@@ -13,21 +13,18 @@ export type Tab = (typeof TABS)[number]["status"];
 export function ProjectsTabs({
   activeTab,
   setActiveTab,
-  setPage,
 }: {
   activeTab: Tab;
   setActiveTab: (t: Tab) => void;
-  setPage: (n: number) => void;
 }) {
   return (
-    <div className="flex gap-1 overflow-x-auto rounded-lg border border-gray-200 bg-white p-1">
+    <div className="flex flex-wrap gap-1 rounded-lg border border-gray-200 bg-white p-1">
       {TABS.map((tab) => (
         <button
           key={tab.status}
           type="button"
           onClick={() => {
             setActiveTab(tab.status);
-            setPage(1);
           }}
           className={`whitespace-nowrap rounded-md px-4 py-1.5 text-sm font-medium transition ${
             activeTab === tab.status

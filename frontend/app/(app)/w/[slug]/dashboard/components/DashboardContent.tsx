@@ -9,6 +9,8 @@ import { UpcomingMilestones } from "./UpcomingMilestones";
 import { ActiveProjectsTable } from "./ActiveProjectsTable";
 import { AICopilot } from "./AICopilot";
 import { QuickSummary } from "./QuickSummary";
+import { WorkspaceHealth } from "./WorkspaceHealth";
+import { GettingStarted } from "./GettingStarted";
 
 export function DashboardContent({
   data,
@@ -17,11 +19,22 @@ export function DashboardContent({
   data: DashboardData;
   slug: string;
 }) {
+  const isEmpty = data.projects.length === 0;
+  const escrowMetric = data.metrics.find((m) => m.metricKey === "escrow");
+
   return (
     <div className="dashboard-light flex flex-col gap-6">
-      <DashboardHeader user={data.user} workspace={data.user.lastName} />
+      <DashboardHeader
+        user={data.user}
+        workspace={data.user.lastName}
+        slug={slug}
+      />
 
       <MetricCards metrics={data.metrics} />
+
+      {isEmpty ? (
+        <GettingStarted slug={slug} />
+      ) : null}
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <div className="flex flex-col gap-6 lg:col-span-2">
@@ -34,6 +47,13 @@ export function DashboardContent({
         </div>
 
         <div className="flex flex-col gap-6">
+          <WorkspaceHealth
+            totalProjects={data.projects.length}
+            completedProjects={data.summary.completedProjects}
+            totalClients={data.summary.totalClients}
+            inEscrow={escrowMetric?.value ?? "—"}
+            slug={slug}
+          />
           <UpcomingMilestones milestones={data.milestones} slug={slug} />
           <AICopilot />
           <QuickSummary summary={data.summary} />

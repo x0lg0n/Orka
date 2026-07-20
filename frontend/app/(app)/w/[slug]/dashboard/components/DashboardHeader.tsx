@@ -1,11 +1,13 @@
 "use client";
 
 import { Search, Bell, Plus } from "lucide-react";
+import Link from "next/link";
 import type { DashboardUser } from "@/types/dashboard";
 
 interface DashboardHeaderProps {
   user: DashboardUser;
   workspace?: string;
+  slug: string;
 }
 
 function getGreeting(): string {
@@ -15,7 +17,7 @@ function getGreeting(): string {
   return "Good evening";
 }
 
-export function DashboardHeader({ user }: DashboardHeaderProps) {
+export function DashboardHeader({ user, slug }: DashboardHeaderProps) {
   return (
     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       <div>
@@ -51,10 +53,13 @@ export function DashboardHeader({ user }: DashboardHeaderProps) {
           </span>
         </button>
 
-        <button className="flex h-10 items-center gap-2 rounded-lg bg-[#7c3aed] px-4 text-sm font-semibold text-white transition-all duration-200 hover:bg-[#6d28d9] hover:shadow-md active:scale-[0.98]">
+        <Link
+          href={`/w/${slug}/projects/new`}
+          className="flex h-10 items-center gap-2 rounded-lg bg-[#7c3aed] px-4 text-sm font-semibold text-white transition-all duration-200 hover:bg-[#6d28d9] hover:shadow-md active:scale-[0.98]"
+        >
           <Plus className="h-4 w-4" />
           <span className="hidden sm:inline">New Project</span>
-        </button>
+        </Link>
       </div>
     </div>
   );
