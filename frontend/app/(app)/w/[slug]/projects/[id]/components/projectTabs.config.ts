@@ -1,5 +1,6 @@
 import {
   Home,
+  Clock,
   FileText,
   FileSignature,
   Lock,
@@ -11,10 +12,11 @@ import {
 
 export const PROJECT_TABS = [
   { label: "Overview", href: "overview", icon: Home },
-  { label: "Proposal", href: "proposal", icon: FileText },
-  { label: "Contract", href: "contract", icon: FileSignature },
-  { label: "Escrow", href: "escrow", icon: Lock },
+  { label: "Timeline", href: "timeline", icon: Clock },
+  { label: "Proposals", href: "proposal", icon: FileText },
+  { label: "Contracts", href: "contract", icon: FileSignature },
   { label: "Milestones", href: "milestones", icon: Flag },
+  { label: "Escrow", href: "escrow", icon: Lock },
   { label: "Payments", href: "payments", icon: CreditCard },
   { label: "Files", href: "files", icon: Folder },
   { label: "Activity", href: "activity", icon: Activity },
