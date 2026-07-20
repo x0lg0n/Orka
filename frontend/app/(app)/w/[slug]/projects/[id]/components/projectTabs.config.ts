@@ -13,7 +13,7 @@ import {
 export const PROJECT_TABS = [
   { label: "Overview", href: "overview", icon: Home },
   { label: "Timeline", href: "timeline", icon: Clock },
-  { label: "Proposals", href: "proposal", icon: FileText },
+  { label: "Proposals", href: "proposals", icon: FileText },
   { label: "Contracts", href: "contract", icon: FileSignature },
   { label: "Milestones", href: "milestones", icon: Flag },
   { label: "Escrow", href: "escrow", icon: Lock },
