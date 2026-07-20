@@ -1,8 +1,10 @@
-export default function ProjectContractPage() {
-  return (
-    <div className="space-y-4">
-      <h2 className="text-lg font-semibold text-gray-900">Contract</h2>
-      <p className="text-sm text-gray-500">Coming soon — contracts for this project.</p>
-    </div>
-  );
+import { createClient } from "@/lib/supabase/server";
+import { getActiveOrgBySlug } from "@/lib/orka";
+import { ContractDetailView } from "./components/ContractDetailView";
+
+export default async function ContractPage({ params }: { params: Promise<{ slug: string; id: string }> }) {
+  const { slug, id } = await params;
+  const supabase = await createClient();
+  const org = await getActiveOrgBySlug(supabase, slug);
+  return <ContractDetailView slug={slug} orgId={org?.id ?? ""} projectId={id} />;
 }
