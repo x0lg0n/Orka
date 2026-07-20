@@ -21,10 +21,10 @@ describe("deriveWorkflowState", () => {
     const escrow = { contract_address: "C123", total_funded: 8000, total_amount: 8000 };
     expect(deriveWorkflowState({ contract, escrow, milestones: [ms("funded")] }).stage).toBe("escrow_funded");
   });
-  it("milestones_active when escrow funded and a milestone is submitted", () => {
+  it("milestones_active when escrow funded and a milestone is in review", () => {
     const contract = { client_sig: "c1", freelancer_sig: "f1", status: "signed" };
     const escrow = { contract_address: "C123", total_funded: 8000, total_amount: 8000 };
-    expect(deriveWorkflowState({ contract, escrow, milestones: [ms("submitted")] }).stage).toBe("milestones_active");
+    expect(deriveWorkflowState({ contract, escrow, milestones: [ms("in_review")] }).stage).toBe("milestones_active");
   });
   it("completed when all milestones released", () => {
     const contract = { client_sig: "c1", freelancer_sig: "f1", status: "signed" };

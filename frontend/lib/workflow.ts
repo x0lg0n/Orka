@@ -13,7 +13,7 @@ export interface WorkflowInput {
   proposal?: { status?: string } | null;
   contract?: { client_sig?: string | null; freelancer_sig?: string | null; status?: string } | null;
   escrow?: { contract_address?: string | null; total_funded?: number; total_amount?: number } | null;
-  milestones: { status: MilestoneStatus | string }[];
+  milestones: { status: MilestoneStatus }[];
 }
 export interface WorkflowState {
   stage: ProjectStage;
@@ -35,7 +35,7 @@ export function deriveWorkflowState(input: WorkflowInput): WorkflowState {
     input.escrow.total_funded! >= (input.escrow.total_amount ?? 0);
 
   const anyFunded = input.milestones.some((m) => m.status !== "draft");
-  const hasSubmitted = input.milestones.some((m) => m.status === "submitted" || m.status === "in_review");
+  const hasSubmitted = input.milestones.some((m) => m.status === "in_review");
   const hasApproved = input.milestones.some((m) => m.status === "approved");
   const anyDisputed = input.milestones.some((m) => m.status === "disputed");
   const fullyReleased =
