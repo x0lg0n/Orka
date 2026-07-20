@@ -2,6 +2,7 @@ import type {
   CustodyMode,
   FundArgs,
   FundResult,
+  MilestoneArgs,
   OrkaClientOptions,
   ReleaseArgs,
 } from './types';
@@ -45,6 +46,37 @@ export function createOrkaClient(opts: OrkaClientOptions) {
     return toFundResult(data);
   }
 
+  async function submitMilestone(args: MilestoneArgs): Promise<FundResult> {
+    const res = await escrowPost('/escrow/submit', {
+      contract_id: args.contractId,
+      milestone_id: args.milestoneId,
+    });
+    if (!res.ok) throw new Error(`submitMilestone failed: ${res.status}`);
+    const data = (await res.json()) as Record<string, unknown>;
+    return toFundResult(data);
+  }
+
+  async function approveMilestone(args: MilestoneArgs): Promise<FundResult> {
+    const res = await escrowPost('/escrow/approve', {
+      contract_id: args.contractId,
+      milestone_id: args.milestoneId,
+    });
+    if (!res.ok) throw new Error(`approveMilestone failed: ${res.status}`);
+    const data = (await res.json()) as Record<string, unknown>;
+    return toFundResult(data);
+  }
+
+  async function rejectMilestone(args: MilestoneArgs): Promise<FundResult> {
+    const res = await escrowPost('/escrow/submit', {
+      contract_id: args.contractId,
+      milestone_id: args.milestoneId,
+      rejected: true,
+    });
+    if (!res.ok) throw new Error(`rejectMilestone failed: ${res.status}`);
+    const data = (await res.json()) as Record<string, unknown>;
+    return toFundResult(data);
+  }
+
   async function releaseMilestone(args: ReleaseArgs): Promise<FundResult> {
     const res = await escrowPost('/escrow/release', {
       contract_id: args.contractId,
@@ -66,7 +98,7 @@ export function createOrkaClient(opts: OrkaClientOptions) {
     return res.json();
   }
 
-  return { fundEscrow, releaseMilestone, getContractState };
+  return { fundEscrow, submitMilestone, approveMilestone, rejectMilestone, releaseMilestone, getContractState };
 }
 
 export type OrkaClient = ReturnType<typeof createOrkaClient>;

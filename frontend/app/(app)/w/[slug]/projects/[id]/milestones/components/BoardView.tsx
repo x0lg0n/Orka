@@ -1,4 +1,6 @@
 import { GripVertical } from "lucide-react";
+import type { WorkflowRole, WorkflowState } from "@/lib/workflow";
+import { MilestoneActionButton } from "./MilestoneActionButton";
 
 type MilestoneRow = {
   id: string;
@@ -26,7 +28,17 @@ function formatDate(dateStr: string | null) {
   });
 }
 
-function BoardCard({ milestone }: { milestone: MilestoneRow }) {
+function BoardCard({
+  milestone,
+  state,
+  role,
+  onSubmit,
+}: {
+  milestone: MilestoneRow;
+  state: WorkflowState;
+  role: WorkflowRole;
+  onSubmit: (milestoneId: string) => Promise<void>;
+}) {
   return (
     <div className="rounded-lg border border-gray-100 bg-white p-3 shadow-sm transition hover:shadow-md">
       <div className="flex items-start justify-between">
@@ -51,14 +63,32 @@ function BoardCard({ milestone }: { milestone: MilestoneRow }) {
           <span className="text-gray-400">{formatDate(milestone.due_date)}</span>
         )}
       </div>
+      {(milestone.status === "draft" || milestone.status === "funded") && (
+        <div className="mt-3">
+          <MilestoneActionButton
+            action="submit_milestone"
+            role={role}
+            state={state}
+            label="Submit for review"
+            milestoneId={milestone.id}
+            onAction={onSubmit}
+          />
+        </div>
+      )}
     </div>
   );
 }
 
 export function BoardView({
   milestones,
+  state,
+  role,
+  onSubmitMilestone,
 }: {
   milestones: MilestoneRow[];
+  state: WorkflowState;
+  role: WorkflowRole;
+  onSubmitMilestone: (milestoneId: string) => Promise<void>;
 }) {
   return (
     <div className="grid grid-cols-4 gap-4">
@@ -79,7 +109,15 @@ export function BoardView({
                   No milestones
                 </div>
               ) : (
-                items.map((m) => <BoardCard key={m.id} milestone={m} />)
+                items.map((m) => (
+                  <BoardCard
+                    key={m.id}
+                    milestone={m}
+                    state={state}
+                    role={role}
+                    onSubmit={onSubmitMilestone}
+                  />
+                ))
               )}
             </div>
           </div>

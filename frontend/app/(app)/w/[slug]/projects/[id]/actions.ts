@@ -68,3 +68,89 @@ export async function fundEscrow(input: {
     return { ok: false, error: err instanceof Error ? err.message : "fundEscrow failed" };
   }
 }
+
+// Intentionally does NOT write chain-derived milestone status. The indexer
+// flips `milestones.status` once the tx confirms. Returns the tx hash (or XDR)
+// so the UI can show "Pending confirmation".
+export async function submitMilestone(input: {
+  orgId: string;
+  projectId: string;
+  contractAddress: string;
+  milestoneId: string;
+  mode: OrkaCustodyMode;
+}): Promise<{ ok: true; txHash: string } | { ok: false; error: string }> {
+  try {
+    const client = orkaClient(input.mode);
+    const res = await client.submitMilestone({
+      contractId: input.contractAddress,
+      milestoneId: Number(input.milestoneId),
+    });
+    const txHash = "txHash" in res ? res.txHash : "";
+    return { ok: true, txHash };
+  } catch (err) {
+    return { ok: false, error: err instanceof Error ? err.message : "submitMilestone failed" };
+  }
+}
+
+export async function approveMilestone(input: {
+  orgId: string;
+  projectId: string;
+  contractAddress: string;
+  milestoneId: string;
+  mode: OrkaCustodyMode;
+}): Promise<{ ok: true; txHash: string } | { ok: false; error: string }> {
+  try {
+    const client = orkaClient(input.mode);
+    const res = await client.approveMilestone({
+      contractId: input.contractAddress,
+      milestoneId: Number(input.milestoneId),
+    });
+    const txHash = "txHash" in res ? res.txHash : "";
+    return { ok: true, txHash };
+  } catch (err) {
+    return { ok: false, error: err instanceof Error ? err.message : "approveMilestone failed" };
+  }
+}
+
+export async function rejectMilestone(input: {
+  orgId: string;
+  projectId: string;
+  contractAddress: string;
+  milestoneId: string;
+  mode: OrkaCustodyMode;
+}): Promise<{ ok: true; txHash: string } | { ok: false; error: string }> {
+  try {
+    const client = orkaClient(input.mode);
+    const res = await client.rejectMilestone({
+      contractId: input.contractAddress,
+      milestoneId: Number(input.milestoneId),
+    });
+    const txHash = "txHash" in res ? res.txHash : "";
+    return { ok: true, txHash };
+  } catch (err) {
+    return { ok: false, error: err instanceof Error ? err.message : "rejectMilestone failed" };
+  }
+}
+
+// Multi-sig release: the backend's /escrow/release requires BOTH the client
+// KMS sig and the operator inner sig (release_funds). This path never weakens
+// that — we only forward the call and return the tx hash for "Pending…".
+export async function releaseMilestone(input: {
+  orgId: string;
+  projectId: string;
+  contractAddress: string;
+  milestoneId: string;
+  mode: OrkaCustodyMode;
+}): Promise<{ ok: true; txHash: string } | { ok: false; error: string }> {
+  try {
+    const client = orkaClient(input.mode);
+    const res = await client.releaseMilestone({
+      contractId: input.contractAddress,
+      milestoneId: Number(input.milestoneId),
+    });
+    const txHash = "txHash" in res ? res.txHash : "";
+    return { ok: true, txHash };
+  } catch (err) {
+    return { ok: false, error: err instanceof Error ? err.message : "releaseMilestone failed" };
+  }
+}

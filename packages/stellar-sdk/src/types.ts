@@ -25,3 +25,8 @@ export interface ReleaseArgs {
   contractId: string;
   milestoneId: number;
 }
+
+export interface MilestoneArgs {
+  contractId: string;
+  milestoneId: number;
+}

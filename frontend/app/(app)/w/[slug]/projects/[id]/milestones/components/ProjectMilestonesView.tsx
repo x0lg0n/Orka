@@ -11,6 +11,7 @@ import { MilestonePaymentFlow } from "./MilestonePaymentFlow";
 import { AddMilestoneModal } from "./AddMilestoneModal";
 import { BoardView } from "./BoardView";
 import { MilestoneEmptyState } from "./MilestoneEmptyState";
+import type { WorkflowRole, WorkflowState } from "@/lib/workflow";
 
 type ProjectRow = {
   id: string;
@@ -69,6 +70,9 @@ export function ProjectMilestonesView({
   milestones,
   owner,
   escrow,
+  workflowState,
+  role,
+  onSubmitMilestone,
   stats,
 }: {
   slug: string;
@@ -77,6 +81,9 @@ export function ProjectMilestonesView({
   milestones: MilestoneRow[];
   owner: OwnerRow;
   escrow: EscrowRow;
+  workflowState: WorkflowState;
+  role: WorkflowRole;
+  onSubmitMilestone: (milestoneId: string) => Promise<void>;
   stats: MilestoneStats;
 }) {
   const [showModal, setShowModal] = useState(false);
@@ -136,7 +143,12 @@ export function ProjectMilestonesView({
       ) : view === "list" ? (
         <MilestoneTable milestones={milestones} onAdd={() => setShowModal(true)} />
       ) : (
-        <BoardView milestones={milestones} />
+        <BoardView
+          milestones={milestones}
+          state={workflowState}
+          role={role}
+          onSubmitMilestone={onSubmitMilestone}
+        />
       )}
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">

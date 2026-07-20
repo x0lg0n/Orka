@@ -1,7 +1,9 @@
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getActiveOrgBySlug } from "@/lib/orka";
+import { deriveWorkflowState } from "@/lib/workflow";
 import { ProjectMilestonesView } from "./components/ProjectMilestonesView";
+import { submitMilestone } from "../actions";
 
 export default async function ProjectMilestonesPage({
   params,
@@ -90,6 +92,22 @@ export default async function ProjectMilestonesPage({
 
   const escrowRow = escrow;
 
+  const workflowState = deriveWorkflowState({
+    contract: {
+      client_sig: project.client_sig,
+      freelancer_sig: project.freelancer_sig,
+      status: project.status,
+    },
+    escrow: escrow
+      ? {
+          contract_address: escrow.contract_address ?? null,
+          total_funded: Number(escrow.total_funded ?? 0),
+          total_amount: Number(escrow.total_amount ?? 0),
+        }
+      : null,
+    milestones: allMilestones.map((m) => ({ status: m.status })),
+  });
+
   return (
     <ProjectMilestonesView
       slug={slug}
@@ -98,6 +116,17 @@ export default async function ProjectMilestonesPage({
       milestones={allMilestones}
       owner={owner}
       escrow={escrowRow}
+      workflowState={workflowState}
+      role="agency"
+      onSubmitMilestone={async (milestoneId: string) => {
+        await submitMilestone({
+          orgId: org.id,
+          projectId: id,
+          contractAddress: escrow?.contract_address ?? "",
+          milestoneId,
+          mode: "orka",
+        });
+      }}
       stats={{
         progressPct,
         totalBudget,
