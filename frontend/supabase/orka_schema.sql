@@ -298,6 +298,20 @@ drop policy if exists "projects_write" on public.projects;
 create policy "projects_write" on public.projects for all using (public.auth_is_org_member(org_id)) with check (public.auth_is_org_member(org_id));
 create trigger projects_touch before update on public.projects execute function public.touch_updated_at();
 
+-- Workflow stage enum + column (drives the 9-tab project detail pipeline).
+do $$ begin
+  create type project_stage as enum (
+    'draft', 'proposal_sent', 'contract_signed', 'escrow_funded', 'milestones_active', 'completed'
+  );
+exception when duplicate_object then null; end $$;
+
+alter table public.projects add column if not exists project_stage project_stage not null default 'draft';
+create index if not exists idx_projects_stage on public.projects (org_id, project_stage);
+
+-- ensure mapping index exists for escrow_contracts
+create index if not exists idx_escrow_contracts_map
+  on public.escrow_contracts (contract_address, (mapping->>'milestone_index'));
+
 -- Project-scoped team (replaces the faked "team" avatars).
 create table if not exists public.project_members (
   project_id uuid not null references public.projects(id) on delete cascade,
