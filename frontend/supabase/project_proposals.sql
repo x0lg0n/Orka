@@ -117,3 +117,9 @@ create policy "proposal_activity_org" on public.proposal_activity
       (select org_id from public.project_proposals pp where pp.id = proposal_id)
     )
   );
+
+-- BlockNote JSON source of truth + generated markdown + agency tags.
+alter table public.project_proposals
+  add column if not exists blocks jsonb,
+  add column if not exists markdown text not null default '',
+  add column if not exists tags text[] not null default '{}';
