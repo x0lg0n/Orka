@@ -9,6 +9,8 @@ import { RecentActivityCard } from "./RecentActivityCard";
 import { QuickActionsCard } from "./QuickActionsCard";
 import { ProjectFilesCard } from "./ProjectFilesCard";
 import { UpcomingMilestonesCard } from "./UpcomingMilestonesCard";
+import { WorkflowStepper } from "../../components/WorkflowStepper";
+import type { ProjectStage } from "@/lib/workflow";
 
 type ProjectRow = {
   id: string;
@@ -93,6 +95,7 @@ export function ProjectOverviewView({
   activity,
   memberCount,
   stats,
+  projectStage,
 }: {
   slug: string;
   projectId: string;
@@ -104,9 +107,11 @@ export function ProjectOverviewView({
   activity: ActivityRow[];
   memberCount: number;
   stats: OverviewStats;
+  projectStage: ProjectStage;
 }) {
   return (
     <div className="space-y-4">
+      <WorkflowStepper stage={projectStage} />
       <ProjectStatsRow stats={stats} asset={stats.milestoneAsset} />
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">

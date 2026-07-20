@@ -1,6 +1,7 @@
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getActiveOrgBySlug } from "@/lib/orka";
+import { deriveWorkflowState, type ProjectStage } from "@/lib/workflow";
 import { ProjectOverviewView } from "./components/ProjectOverviewView";
 
 export default async function ProjectOverviewPage({
@@ -21,6 +22,18 @@ export default async function ProjectOverviewPage({
     .single();
 
   if (!project) notFound();
+
+  const { data: proposal } = await supabase
+    .from("proposals")
+    .select("status")
+    .eq("project_id", id)
+    .maybeSingle();
+
+  const { data: escrow } = await supabase
+    .from("escrow_contracts")
+    .select("contract_address, total_funded, total_amount")
+    .eq("project_id", id)
+    .maybeSingle();
 
   const { data: milestones } = await supabase
     .from("milestones")
@@ -85,6 +98,25 @@ export default async function ProjectOverviewPage({
   const pendingAmount = pendingMilestones.reduce((sum, m) => sum + Number(m.amount), 0);
   const refundedAmount = refundedMilestones.reduce((sum, m) => sum + Number(m.amount), 0);
 
+  const projectStage: ProjectStage = deriveWorkflowState({
+    proposal: proposal ? { status: proposal.status } : null,
+    contract: project
+      ? {
+          client_sig: project.client_sig ?? null,
+          freelancer_sig: project.freelancer_sig ?? null,
+          status: project.status ?? null,
+        }
+      : null,
+    escrow: escrow
+      ? {
+          contract_address: escrow.contract_address ?? null,
+          total_funded: Number(escrow.total_funded ?? 0),
+          total_amount: Number(escrow.total_amount ?? 0),
+        }
+      : null,
+    milestones: allMilestones.map((m) => ({ status: m.status as never })),
+  }).stage;
+
   const progressPct =
     totalMilestones > 0
       ? Math.round((releasedMilestones.length / totalMilestones) * 100)
@@ -108,6 +140,7 @@ export default async function ProjectOverviewPage({
       files={allFiles}
       activity={allActivity}
       memberCount={memberCount ?? 0}
+      projectStage={projectStage}
       stats={{
         progressPct,
         totalMilestones,
