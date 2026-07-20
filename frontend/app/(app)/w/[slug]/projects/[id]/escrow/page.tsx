@@ -1,8 +1,10 @@
-export default function ProjectEscrowPage() {
-  return (
-    <div className="space-y-4">
-      <h2 className="text-lg font-semibold text-gray-900">Escrow</h2>
-      <p className="text-sm text-gray-500">Coming soon — escrow contracts for this project.</p>
-    </div>
-  );
+import { createClient } from "@/lib/supabase/server";
+import { getActiveOrgBySlug } from "@/lib/orka";
+import { ProjectEscrowView } from "./components/ProjectEscrowView";
+
+export default async function EscrowPage({ params }: { params: Promise<{ slug: string; id: string }> }) {
+  const { slug, id } = await params;
+  const supabase = await createClient();
+  const org = await getActiveOrgBySlug(supabase, slug);
+  return <ProjectEscrowView slug={slug} orgId={org?.id ?? ""} projectId={id} />;
 }
