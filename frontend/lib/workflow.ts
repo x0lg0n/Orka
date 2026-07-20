@@ -13,7 +13,7 @@ export interface WorkflowInput {
   proposal?: { status?: string } | null;
   contract?: { client_sig?: string | null; freelancer_sig?: string | null; status?: string } | null;
   escrow?: { contract_address?: string | null; total_funded?: number; total_amount?: number } | null;
-  milestones: { status: MilestoneStatus }[];
+  milestones: { status: MilestoneStatus | string }[];
 }
 export interface WorkflowState {
   stage: ProjectStage;
@@ -26,7 +26,6 @@ export interface WorkflowState {
 
 export function deriveWorkflowState(input: WorkflowInput): WorkflowState {
   const proposalSent = !!input.proposal && input.proposal.status === "sent";
-  const proposalAccepted = !!input.proposal && input.proposal.status === "accepted";
   const contractSigned =
     !!input.contract && !!input.contract.client_sig && !!input.contract.freelancer_sig &&
     input.contract.status === "signed";

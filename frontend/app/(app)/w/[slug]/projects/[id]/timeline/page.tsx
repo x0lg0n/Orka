@@ -75,7 +75,7 @@ export default async function ProjectTimelinePage({
     .order("created_at", { ascending: false });
 
   const { data: escrow } = await supabase
-    .from("escrow")
+    .from("escrow_contracts")
     .select("*")
     .eq("project_id", id)
     .order("created_at", { ascending: false });
