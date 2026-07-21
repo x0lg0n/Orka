@@ -1,13 +1,13 @@
 "use client";
 import { useState } from "react";
-import { Pencil, History, Send } from "lucide-react";
+import { Pencil, History } from "lucide-react";
 import { useCreateBlockNote } from "@blocknote/react";
 import { BlockNoteView } from "@blocknote/mantine";
 import "@blocknote/mantine/style.css";
 import { ProposalTags } from "./ProposalTags";
 import { ProposalEditor } from "./ProposalEditor";
 import { ProposalVersionsPanel } from "./ProposalVersionsPanel";
-import { sendProposal } from "../../actions";
+import { ProposalSigningPanel } from "./ProposalSigningPanel";
 
 type Proposal = {
   id: string;
@@ -16,6 +16,8 @@ type Proposal = {
   tags: string[];
   status: string;
   markdown: string;
+  agency_sig?: string | null;
+  client_sig?: string | null;
 };
 
 const STATUS_LABEL: Record<string, string> = {
@@ -29,15 +31,16 @@ const STATUS_LABEL: Record<string, string> = {
 export function ProposalReader({
   slug,
   projectId,
+  orgId,
   proposal,
 }: {
   slug: string;
   projectId: string;
+  orgId: string;
   proposal: Proposal;
 }) {
   const [editing, setEditing] = useState(false);
   const [showVersions, setShowVersions] = useState(false);
-  const [busy, setBusy] = useState(false);
 
   const editor = useCreateBlockNote({
     initialContent: (proposal.blocks?.length ? proposal.blocks : undefined) as never,
@@ -54,13 +57,6 @@ export function ProposalReader({
         onDone={() => setEditing(false)}
       />
     );
-  }
-
-  async function onSend() {
-    setBusy(true);
-    await sendProposal({ orgId: "", projectId });
-    setBusy(false);
-    location.reload();
   }
 
   return (
@@ -82,11 +78,6 @@ export function ProposalReader({
           <button onClick={() => setEditing(true)} className="inline-flex items-center gap-1.5 rounded-lg bg-violet-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-violet-700">
             <Pencil className="h-4 w-4" /> Edit
           </button>
-          {proposal.status === "draft" && (
-            <button onClick={onSend} disabled={busy} className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-sm hover:bg-gray-50 disabled:opacity-50">
-              <Send className="h-4 w-4" /> Send to client
-            </button>
-          )}
         </div>
       </div>
 
@@ -97,6 +88,15 @@ export function ProposalReader({
           theme="light"
         />
       </div>
+
+      <ProposalSigningPanel
+        projectId={projectId}
+        orgId={orgId}
+        agencySig={proposal.agency_sig ?? null}
+        clientSig={proposal.client_sig ?? null}
+        status={proposal.status}
+        onSigned={() => { location.reload(); }}
+      />
 
       {showVersions && (
         <ProposalVersionsPanel
