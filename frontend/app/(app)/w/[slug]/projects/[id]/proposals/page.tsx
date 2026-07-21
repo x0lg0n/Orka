@@ -24,7 +24,7 @@ export default async function ProjectProposalsPage({
 
   const { data: proposal } = await supabase
     .from("project_proposals")
-    .select("id, title, blocks, tags, status, markdown, updated_at")
+    .select("id, title, blocks, tags, status, markdown, updated_at, agency_sig, client_sig")
     .eq("org_id", org.id)
     .eq("project_id", id)
     .order("updated_at", { ascending: false })
@@ -40,6 +40,7 @@ export default async function ProjectProposalsPage({
       key={String(proposal.updated_at)}
       slug={slug}
       projectId={id}
+      orgId={org.id}
       proposal={{
         id: proposal.id as string,
         title: (proposal.title as string) ?? "Untitled proposal",
@@ -47,6 +48,8 @@ export default async function ProjectProposalsPage({
         tags: (proposal.tags as string[]) ?? [],
         status: (proposal.status as string) ?? "draft",
         markdown: (proposal.markdown as string) ?? "",
+        agency_sig: (proposal.agency_sig as string | null) ?? null,
+        client_sig: (proposal.client_sig as string | null) ?? null,
       }}
     />
   );

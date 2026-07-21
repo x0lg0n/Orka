@@ -287,6 +287,36 @@ export async function createProposal(input: {
   }
 }
 
+export async function signProposalAgency(input: {
+  projectId: string;
+  orgId: string;
+}): Promise<{ ok: true } | { ok: false; error: string }> {
+  try {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    const sig = user?.id ?? "signed";
+
+    const { error } = await supabase
+      .from("project_proposals")
+      .update({
+        agency_sig: sig,
+        agency_signed_at: new Date().toISOString(),
+        status: "sent",
+      })
+      .eq("project_id", input.projectId)
+      .eq("org_id", input.orgId)
+      .eq("status", "draft");
+    if (error) throw new Error(error.message);
+
+    return { ok: true };
+  } catch (err) {
+    return {
+      ok: false,
+      error: err instanceof Error ? err.message : "signProposalAgency failed",
+    };
+  }
+}
+
 export async function sendProposal(input: {
   orgId: string;
   projectId: string;
