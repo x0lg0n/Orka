@@ -1,6 +1,5 @@
 "use client";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { FileText } from "lucide-react";
 import { generateContract } from "../../actions";
 
@@ -13,7 +12,6 @@ export function ContractEmpty({
   projectId: string;
   orgId: string;
 }) {
-  const router = useRouter();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -26,7 +24,7 @@ export function ContractEmpty({
       setError(res.error);
       return;
     }
-    router.refresh();
+    window.location.reload();
   }
 
   return (
