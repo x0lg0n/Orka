@@ -4,6 +4,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { orkaClient, type OrkaCustodyMode } from "@/lib/stellar";
 import { blocksToMarkdown } from "@/lib/proposalBlocks";
+import { buildContractTemplate } from "@/lib/contractTemplates";
 
 // Intentionally does NOT write chain-derived status. It records the local-side
 // signature intent hash so the UI can show "signed (pending on-chain)"; the
@@ -318,6 +319,148 @@ export async function restoreProposalVersion(input: {
     return {
       ok: false,
       error: err instanceof Error ? err.message : "restoreProposalVersion failed",
+    };
+  }
+}
+
+export async function generateContract(input: {
+  projectId: string;
+}): Promise<{ ok: true } | { ok: false; error: string }> {
+  try {
+    const supabase = await createClient();
+    const orgId = await resolveOrgId(supabase, input.projectId);
+    if (!orgId) throw new Error("Project org not found");
+
+    const { data: project } = await supabase
+      .from("projects")
+      .select("name, asset, client_name, contract_data")
+      .eq("id", input.projectId)
+      .single();
+    if (!project) throw new Error("Project not found");
+
+    const { data: org } = await supabase
+      .from("organizations")
+      .select("name")
+      .eq("id", orgId)
+      .single();
+
+    const { data: proposal } = await supabase
+      .from("project_proposals")
+      .select("title, blocks, tags, markdown")
+      .eq("org_id", orgId)
+      .eq("project_id", input.projectId)
+      .order("updated_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    const contractData = (project.contract_data ?? {}) as {
+      amount?: string | number;
+      deliverables?: string[];
+    };
+
+    const deliverables: string[] =
+      contractData.deliverables ??
+      (proposal?.tags ?? []).filter((t: string) => !t.includes(":")) ??
+      [];
+
+    const templateData = {
+      projectName: (project.name as string) ?? "Project",
+      orgName: (org?.name as string) ?? "Agency",
+      clientName: (project.client_name as string) ?? "Client",
+      amount: String(contractData.amount ?? ""),
+      asset: (project.asset as string) ?? "XLM",
+      deliverables,
+      milestoneCount: 0,
+      today: new Date().toISOString().split("T")[0],
+    };
+
+    const blocks = buildContractTemplate(templateData);
+    const markdown = blocksToMarkdown(blocks as unknown[]);
+
+    const { data: existing } = await supabase
+      .from("project_contracts")
+      .select("id")
+      .eq("project_id", input.projectId)
+      .eq("org_id", orgId)
+      .maybeSingle();
+
+    if (existing) {
+      return { ok: true };
+    }
+
+    const { error } = await supabase.from("project_contracts").insert({
+      project_id: input.projectId,
+      org_id: orgId,
+      blocks,
+      markdown,
+      status: "draft",
+    });
+    if (error) throw new Error(error.message);
+
+    return { ok: true };
+  } catch (err) {
+    return {
+      ok: false,
+      error: err instanceof Error ? err.message : "generateContract failed",
+    };
+  }
+}
+
+export async function saveContract(input: {
+  projectId: string;
+  blocks: unknown[];
+}): Promise<{ ok: true } | { ok: false; error: string }> {
+  try {
+    const supabase = await createClient();
+    const orgId = await resolveOrgId(supabase, input.projectId);
+    if (!orgId) throw new Error("Project org not found");
+
+    const markdown = blocksToMarkdown(input.blocks);
+
+    const { error } = await supabase
+      .from("project_contracts")
+      .update({ blocks: input.blocks, markdown, updated_at: new Date().toISOString() })
+      .eq("project_id", input.projectId)
+      .eq("org_id", orgId);
+    if (error) throw new Error(error.message);
+
+    return { ok: true };
+  } catch (err) {
+    return {
+      ok: false,
+      error: err instanceof Error ? err.message : "saveContract failed",
+    };
+  }
+}
+
+export async function signContractAgency(input: {
+  projectId: string;
+}): Promise<{ ok: true } | { ok: false; error: string }> {
+  try {
+    const supabase = await createClient();
+    const orgId = await resolveOrgId(supabase, input.projectId);
+    if (!orgId) throw new Error("Project org not found");
+
+    const { data: { user } } = await supabase.auth.getUser();
+    const sig = user?.id ?? "signed";
+
+    const { error } = await supabase
+      .from("project_contracts")
+      .update({
+        agency_sig: sig,
+        agency_signed_at: new Date().toISOString(),
+        status: "agency_signed",
+        updated_at: new Date().toISOString(),
+      })
+      .eq("project_id", input.projectId)
+      .eq("org_id", orgId);
+    if (error) throw new Error(error.message);
+
+    return { ok: true };
+  } catch (err) {
+    return {
+      ok: false,
+      error: err instanceof Error ? err.message : "signContractAgency failed",
     };
   }
 }
