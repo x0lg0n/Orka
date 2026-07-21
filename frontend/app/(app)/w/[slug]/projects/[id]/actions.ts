@@ -330,12 +330,13 @@ export async function generateContract(input: {
   try {
     const supabase = await createClient();
 
-    const { data: project } = await supabase
+    const { data: project, error: projErr } = await supabase
       .from("projects")
       .select("name, asset, client_name, contract_data")
       .eq("id", input.projectId)
       .eq("org_id", input.orgId)
-      .single();
+      .maybeSingle();
+    if (projErr) throw new Error(`project query: ${projErr.message}`);
     if (!project) throw new Error("Project not found");
 
     const { data: org } = await supabase
