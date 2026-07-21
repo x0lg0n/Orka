@@ -16,7 +16,8 @@ const desktopGroups: NavGroup[] = [
   { id: "company", label: "Company", links: companyLinks },
 ];
 
-export default function Navbar() {
+export default function 
+Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [open, setOpen] = useState<string | null>(null);
   const [mobileOpen, setMobileOpen] = useState<string | null>(null);
@@ -88,7 +89,7 @@ export default function Navbar() {
               </button>
 
               {open === group.id && (
-                <div className="dropdown-panel absolute left-0 top-full mt-2 min-w-[180px] rounded-2xl border border-white/10 bg-night p-2 shadow-hard">
+                <div className="dropdown-panel absolute left-0 top-full mt-2 min-w-45 rounded-2xl border border-white/10 bg-night p-2 shadow-hard">
                   {group.links.map((link) => (
                     <Link
                       key={link.href}
