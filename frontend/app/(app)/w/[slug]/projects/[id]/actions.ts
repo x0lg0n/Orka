@@ -332,7 +332,7 @@ export async function generateContract(input: {
 
     const { data: project, error: projErr } = await supabase
       .from("projects")
-      .select("name, asset, client_name, contract_data")
+      .select("title, asset, client_name, contract_data")
       .eq("id", input.projectId)
       .eq("org_id", input.orgId)
       .maybeSingle();
@@ -365,7 +365,7 @@ export async function generateContract(input: {
       [];
 
     const templateData = {
-      projectName: (project.name as string) ?? "Project",
+      projectName: (project.title as string) ?? "Project",
       orgName: (org?.name as string) ?? "Agency",
       clientName: (project.client_name as string) ?? "Client",
       amount: String(contractData.amount ?? ""),
