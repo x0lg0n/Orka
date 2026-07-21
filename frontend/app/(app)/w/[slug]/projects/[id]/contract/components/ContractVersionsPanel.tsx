@@ -1,8 +1,9 @@
 "use client";
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { X, RotateCcw } from "lucide-react";
+import { X, RotateCcw, GitCompare } from "lucide-react";
 import { restoreContractVersion } from "../../actions";
+import { ProposalDiff } from "../../proposals/components/ProposalDiff";
 
 type Version = {
   id: string;
@@ -24,6 +25,7 @@ export function ContractVersionsPanel({
   onClose: () => void;
 }) {
   const [versions, setVersions] = useState<Version[]>([]);
+  const [selected, setSelected] = useState<[string, string] | null>(null);
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
@@ -38,12 +40,22 @@ export function ContractVersionsPanel({
     })();
   }, [contractId]);
 
+  function toggleSelect(id: string) {
+    setSelected((cur) => {
+      if (!cur) return [id, id];
+      if (cur[0] === id) return null;
+      return [cur[0], id];
+    });
+  }
+
   async function onRestore(id: string) {
     setBusy(true);
     await restoreContractVersion({ projectId, orgId, versionId: id });
     setBusy(false);
     location.reload();
   }
+
+  const mdOf = (id: string) => versions.find((v) => v.id === id)?.markdown ?? "";
 
   return (
     <div className="fixed inset-0 z-50 flex justify-end bg-black/30" onClick={onClose}>
@@ -58,18 +70,23 @@ export function ContractVersionsPanel({
           </button>
         </div>
 
-        <ul className="space-y-2">
+        {selected && selected[0] !== selected[1] && (
+          <ProposalDiff before={mdOf(selected[0])} after={mdOf(selected[1])} />
+        )}
+
+        <ul className="mt-3 space-y-2">
           {versions.map((v) => (
             <li key={v.id} className="rounded-lg border border-gray-200 p-3">
               <div className="flex items-center justify-between">
                 <span className="text-sm font-medium text-gray-900">v{v.version_no}</span>
-                <button
-                  onClick={() => onRestore(v.id)}
-                  disabled={busy}
-                  className="text-xs text-gray-600 hover:underline disabled:opacity-50"
-                >
-                  <RotateCcw className="inline h-3 w-3" /> Restore
-                </button>
+                <div className="flex items-center gap-2">
+                  <button onClick={() => toggleSelect(v.id)} className="text-xs text-violet-600 hover:underline">
+                    <GitCompare className="inline h-3 w-3" /> Compare
+                  </button>
+                  <button onClick={() => onRestore(v.id)} disabled={busy} className="text-xs text-gray-600 hover:underline disabled:opacity-50">
+                    <RotateCcw className="inline h-3 w-3" /> Restore
+                  </button>
+                </div>
               </div>
               <p className="mt-1 text-xs text-gray-400">
                 {new Date(v.created_at).toLocaleString()}
