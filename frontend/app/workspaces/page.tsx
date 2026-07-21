@@ -1,9 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "../../lib/supabase/server";
-import { verifySession } from "@/lib/auth-v2/session";
 import { WorkspaceNav } from "../../components/shell/WorkspaceNav";
 import { WorkspaceGrid, type Workspace } from "./components/WorkspaceGrid";
-import { cookies } from "next/headers";
 
 export const metadata = { title: "Choose a Workspace · ORKA" };
 
@@ -27,33 +25,7 @@ export default async function WorkspacesPage({
     data: { user },
   } = await supabase.auth.getUser();
 
-  // Allow auth-v2 session (separate from Supabase auth)
-  if (!user) {
-    const cookieStore = await cookies();
-    const v2Token = cookieStore.get("orka_v2_session")?.value;
-    const v2Session = v2Token ? verifySession(v2Token) : null;
-
-    if (!v2Session) redirect("/signup");
-
-    // Auth-v2 user — show workspaces with wallet identity
-    const name = v2Session.email.split("@")[0];
-    const initials = name.slice(0, 2).toUpperCase();
-
-    return (
-      <main className="product-ui dashboard-light min-h-screen bg-shell font-product">
-        <WorkspaceNav name={name} initials={initials} />
-        <div className="mx-auto w-full max-w-7xl px-5 py-10 sm:px-8">
-          <div className="flex flex-col gap-2">
-            <h1 className="text-[32px] font-extrabold tracking-[-0.035em] text-foreground sm:text-[38px]">Choose a Workspace</h1>
-            <p className="text-[15px] font-bold text-muted-foreground sm:text-[16px]">
-              Select a workspace to continue or create a new one.
-            </p>
-          </div>
-          <WorkspaceGrid workspaces={[]} />
-        </div>
-      </main>
-    );
-  }
+  if (!user) redirect("/signup");
 
   const { error } = await searchParams;
 
