@@ -20,10 +20,9 @@ export type PortalInvoice = {
 
 export type PortalProposal = {
   id: string;
+  title: string | null;
   status: string;
-  asset: string;
-  contract_id: string | null;
-  milestones: Array<{ amount: number; description: string }> | null;
+  markdown: string | null;
 };
 
 export type PortalProject = {

@@ -59,13 +59,12 @@ begin
     ), '[]'::jsonb),
     'proposals', coalesce((
       select jsonb_agg(jsonb_build_object(
-        'id', pr.id,
-        'status', pr.status,
-        'asset', pr.asset,
-        'contract_id', pr.contract_id,
-        'milestones', pr.milestones
-      ) order by pr.created_at)
-      from public.proposals pr where pr.project_id = p.id
+        'id', pp.id,
+        'title', pp.title,
+        'status', pp.status,
+        'markdown', pp.markdown
+      ) order by pp.updated_at desc)
+      from public.project_proposals pp where pp.project_id = p.id
     ), '[]'::jsonb),
     'contract_address', (
       select ec.contract_address

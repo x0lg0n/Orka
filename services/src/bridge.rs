@@ -98,6 +98,11 @@ pub trait LedgerSink: Send + Sync {
         milestone_id: &str,
         status: &str,
     ) -> Result<(), BridgeError>;
+    /// Returns `true` iff the project's escrow is fully funded
+    /// (`total_funded >= total_amount`). Used as a defense-in-depth guard so a
+    /// milestone `released` event can never be written before the escrow pool
+    /// is funded. A missing/unreadable escrow row is treated as not funded.
+    async fn is_escrow_funded(&self, project_id: &str) -> bool;
 }
 
 /// Supabase-backed sink. Uses the service-role key (bypasses RLS) and performs
@@ -193,12 +198,52 @@ impl LedgerSink for SupabaseSink {
         }
         Ok(())
     }
+
+    async fn is_escrow_funded(&self, project_id: &str) -> bool {
+        let (bearer, apikey) = self.auth_headers();
+        let url = format!(
+            "{}/escrow_contracts?project_id=eq.{}&select=total_funded,total_amount",
+            self.supabase.base_url, project_id
+        );
+        let resp = self
+            .supabase
+            .client
+            .get(&url)
+            .header("apikey", apikey)
+            .header("Authorization", bearer)
+            .send()
+            .await;
+        let resp = match resp {
+            Ok(r) => r,
+            Err(err) => {
+                eprintln!("[bridge] is_escrow_funded request failed: {err}");
+                return false;
+            }
+        };
+        let rows: serde_json::Value = match resp.json().await {
+            Ok(j) => j,
+            Err(err) => {
+                eprintln!("[bridge] is_escrow_funded decode failed: {err}");
+                return false;
+            }
+        };
+        let row = match rows.as_array().and_then(|a| a.first().cloned()) {
+            Some(r) => r,
+            None => return false,
+        };
+        let total_funded = row.get("total_funded").and_then(|v| v.as_f64()).unwrap_or(0.0);
+        let total_amount = row.get("total_amount").and_then(|v| v.as_f64()).unwrap_or(0.0);
+        total_amount > 0.0 && total_funded >= total_amount
+    }
 }
 
 /// In-memory sink for tests — records calls and enforces idempotency.
 pub struct MockSink {
     pub events: Mutex<Vec<ChainEvent>>,
     pub statuses: Mutex<HashMap<String, String>>,
+    /// When `false`, `is_escrow_funded` returns false (simulates an unfunded
+    /// escrow so the release guard can be exercised).
+    pub escrow_funded: Mutex<bool>,
 }
 
 impl MockSink {
@@ -206,6 +251,7 @@ impl MockSink {
         Self {
             events: Mutex::new(Vec::new()),
             statuses: Mutex::new(HashMap::new()),
+            escrow_funded: Mutex::new(true),
         }
     }
 }
@@ -232,6 +278,10 @@ impl LedgerSink for MockSink {
             .unwrap()
             .insert(milestone_id.to_string(), status.to_string());
         Ok(())
+    }
+
+    async fn is_escrow_funded(&self, _project_id: &str) -> bool {
+        *self.escrow_funded.lock().unwrap()
     }
 }
 
@@ -268,12 +318,28 @@ pub fn map_status(s: MilestoneStatus) -> &'static str {
 /// THE single reconciler: upserts the ledger_events row and updates the
 /// milestone status. This is the only code path in `services/` that writes
 /// `milestones.status`.
+///
+/// Defense-in-depth guard: a milestone `released` event is only written when the
+/// project's escrow pool is fully funded. If `escrow_contracts.total_funded <
+/// total_amount`, the release is skipped (the ledger event is still recorded for
+/// audit) and a warning is logged — no milestone status is flipped without money
+/// backing it. This mirrors the UI gate in `nextActionsForRole` and the contract
+/// requirement that release_funds needs the funded pool.
 pub async fn apply_chain_event(
     sink: &dyn LedgerSink,
     e: &ChainEvent,
 ) -> Result<(), BridgeError> {
     sink.upsert_event(e).await?;
     if let Some(id) = &e.milestone_id {
+        if e.onchain_status == MilestoneStatus::Released
+            && !sink.is_escrow_funded(&e.project_id).await
+        {
+            eprintln!(
+                "[bridge] skipping milestone release for {}: escrow not fully funded (project {})",
+                id, e.project_id
+            );
+            return Ok(());
+        }
         sink.update_milestone_status(id, map_status(e.onchain_status))
             .await?;
     }
@@ -408,6 +474,36 @@ mod tests {
         apply_chain_event(&sink, &e).await.unwrap();
         assert_eq!(sink.events.lock().unwrap().len(), 1);
         assert!(sink.statuses.lock().unwrap().is_empty());
+    }
+
+    #[tokio::test]
+    async fn release_skipped_when_escrow_unfunded() {
+        let sink = MockSink::new();
+        // Simulate an escrow that is NOT fully funded.
+        *sink.escrow_funded.lock().unwrap() = false;
+        let mut e = sample_event();
+        e.onchain_status = MilestoneStatus::Released;
+        apply_chain_event(&sink, &e).await.unwrap();
+        // Ledger event recorded for audit…
+        assert_eq!(sink.events.lock().unwrap().len(), 1);
+        // …but the milestone status must NOT be flipped to "released".
+        assert!(
+            sink.statuses.lock().unwrap().get("m_1").is_none(),
+            "release must be skipped before escrow is funded"
+        );
+    }
+
+    #[tokio::test]
+    async fn release_written_when_escrow_funded() {
+        let sink = MockSink::new();
+        *sink.escrow_funded.lock().unwrap() = true;
+        let mut e = sample_event();
+        e.onchain_status = MilestoneStatus::Released;
+        apply_chain_event(&sink, &e).await.unwrap();
+        assert_eq!(
+            sink.statuses.lock().unwrap().get("m_1").map(String::as_str),
+            Some("released")
+        );
     }
 
     // Test-only router that injects a MockSink so the route can be exercised
