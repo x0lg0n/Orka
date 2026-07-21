@@ -68,22 +68,22 @@ export function ContractReader({
             {STATUS_LABEL[status] ?? status}
           </span>
         </div>
-        {status === "draft" && (
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setShowVersions(true)}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-sm hover:bg-gray-50"
-            >
-              <History className="h-4 w-4" /> Versions
-            </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setShowVersions(true)}
+            className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-sm hover:bg-gray-50"
+          >
+            <History className="h-4 w-4" /> Versions
+          </button>
+          {status === "draft" && (
             <button
               onClick={() => setEditing(true)}
               className="inline-flex items-center gap-1.5 rounded-lg bg-violet-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-violet-700"
             >
               <Pencil className="h-4 w-4" /> Edit
             </button>
-          </div>
-        )}
+          )}
+        </div>
       </div>
 
       <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">

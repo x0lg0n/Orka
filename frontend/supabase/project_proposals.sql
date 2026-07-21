@@ -26,6 +26,7 @@ drop policy if exists "project_proposals_org" on public.project_proposals;
 create policy "project_proposals_org" on public.project_proposals
   for all using (public.auth_is_org_member(org_id))
   with check (public.auth_is_org_member(org_id));
+drop trigger if exists project_proposals_touch on public.project_proposals;
 create trigger project_proposals_touch before update on public.project_proposals
   execute function public.touch_updated_at();
 

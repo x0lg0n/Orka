@@ -494,6 +494,7 @@ export async function saveContract(input: {
     const versionNo = await nextContractVersionNo(supabase, contract.id);
     const { error: ve } = await supabase.from("contract_versions").insert({
       contract_id: contract.id,
+      org_id: input.orgId,
       version_no: versionNo,
       blocks: input.blocks,
       markdown,
