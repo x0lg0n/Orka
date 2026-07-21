@@ -185,6 +185,20 @@ async function nextVersionNo(
   return (data[0].version_no as number) + 1;
 }
 
+async function nextContractVersionNo(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  contractId: string
+): Promise<number> {
+  const { data } = await supabase
+    .from("contract_versions")
+    .select("version_no")
+    .eq("contract_id", contractId)
+    .order("version_no", { ascending: false })
+    .limit(1);
+  if (!data || data.length === 0) return 1;
+  return (data[0].version_no as number) + 1;
+}
+
 // Proposals are NOT chain-derived, so writing proposal status from this action
 // is allowed. It never writes milestone/escrow/contract chain status.
 export async function saveProposal(input: {
@@ -476,9 +490,54 @@ export async function saveContract(input: {
 
     const markdown = blocksToMarkdown(input.blocks);
 
-    const { error } = await supabase
+    const { data: contract } = await supabase
       .from("project_contracts")
       .update({ blocks: input.blocks, markdown, updated_at: new Date().toISOString() })
+      .eq("project_id", input.projectId)
+      .eq("org_id", input.orgId)
+      .select("id")
+      .single();
+    if (!contract) throw new Error("Contract not found");
+
+    const versionNo = await nextContractVersionNo(supabase, contract.id);
+    const { error: ve } = await supabase.from("contract_versions").insert({
+      contract_id: contract.id,
+      version_no: versionNo,
+      blocks: input.blocks,
+      markdown,
+    });
+    if (ve) throw new Error(ve.message);
+
+    return { ok: true };
+  } catch (err) {
+    return {
+      ok: false,
+      error: err instanceof Error ? err.message : "saveContract failed",
+    };
+  }
+}
+
+export async function restoreContractVersion(input: {
+  projectId: string;
+  orgId: string;
+  versionId: string;
+}): Promise<{ ok: true } | { ok: false; error: string }> {
+  try {
+    const supabase = await createClient();
+    const { data: version, error: vErr } = await supabase
+      .from("contract_versions")
+      .select("blocks, markdown")
+      .eq("id", input.versionId)
+      .single();
+    if (vErr || !version) throw new Error("Version not found");
+
+    const { error } = await supabase
+      .from("project_contracts")
+      .update({
+        blocks: version.blocks,
+        markdown: version.markdown,
+        updated_at: new Date().toISOString(),
+      })
       .eq("project_id", input.projectId)
       .eq("org_id", input.orgId);
     if (error) throw new Error(error.message);
@@ -487,7 +546,7 @@ export async function saveContract(input: {
   } catch (err) {
     return {
       ok: false,
-      error: err instanceof Error ? err.message : "saveContract failed",
+      error: err instanceof Error ? err.message : "restoreContractVersion failed",
     };
   }
 }

@@ -16,7 +16,7 @@ export default async function ContractPage({
 
   const { data: contract } = await supabase
     .from("project_contracts")
-    .select("id, blocks, markdown, status, agency_sig, client_sig")
+    .select("id, blocks, markdown, status, agency_sig, client_sig, updated_at")
     .eq("project_id", id)
     .eq("org_id", org.id)
     .maybeSingle();
@@ -27,6 +27,7 @@ export default async function ContractPage({
 
   return (
     <ContractReaderClient
+      key={String(contract.updated_at)}
       slug={slug}
       projectId={id}
       orgId={org.id}
@@ -34,6 +35,7 @@ export default async function ContractPage({
       agencySig={(contract.agency_sig as string | null) ?? null}
       clientSig={(contract.client_sig as string | null) ?? null}
       status={(contract.status as string) ?? "draft"}
+      contractId={contract.id as string}
     />
   );
 }

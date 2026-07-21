@@ -4,9 +4,10 @@ import { useRouter } from "next/navigation";
 import { useCreateBlockNote } from "@blocknote/react";
 import { BlockNoteView } from "@blocknote/mantine";
 import "@blocknote/mantine/style.css";
-import { Pencil } from "lucide-react";
+import { Pencil, History } from "lucide-react";
 import { ContractEditorClient } from "./ContractEditorClient";
 import { ContractSigningPanel } from "./ContractSigningPanel";
+import { ContractVersionsPanel } from "./ContractVersionsPanel";
 
 type Props = {
   slug: string;
@@ -16,6 +17,7 @@ type Props = {
   agencySig: string | null;
   clientSig: string | null;
   status: string;
+  contractId: string;
 };
 
 const STATUS_LABEL: Record<string, string> = {
@@ -33,9 +35,11 @@ export function ContractReader({
   agencySig,
   clientSig,
   status,
+  contractId,
 }: Props) {
   const router = useRouter();
   const [editing, setEditing] = useState(false);
+  const [showVersions, setShowVersions] = useState(false);
   const editor = useCreateBlockNote({
     initialContent: (blocks?.length ? blocks : undefined) as never,
   });
@@ -65,12 +69,20 @@ export function ContractReader({
           </span>
         </div>
         {status === "draft" && (
-          <button
-            onClick={() => setEditing(true)}
-            className="inline-flex items-center gap-1.5 rounded-lg bg-violet-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-violet-700"
-          >
-            <Pencil className="h-4 w-4" /> Edit
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setShowVersions(true)}
+              className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-sm hover:bg-gray-50"
+            >
+              <History className="h-4 w-4" /> Versions
+            </button>
+            <button
+              onClick={() => setEditing(true)}
+              className="inline-flex items-center gap-1.5 rounded-lg bg-violet-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-violet-700"
+            >
+              <Pencil className="h-4 w-4" /> Edit
+            </button>
+          </div>
         )}
       </div>
 
@@ -86,6 +98,15 @@ export function ContractReader({
         status={status}
         onSigned={() => router.refresh()}
       />
+
+      {showVersions && (
+        <ContractVersionsPanel
+          projectId={projectId}
+          orgId={orgId}
+          contractId={contractId}
+          onClose={() => setShowVersions(false)}
+        />
+      )}
     </div>
   );
 }
