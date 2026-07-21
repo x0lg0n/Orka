@@ -335,6 +335,7 @@ export async function generateContract(input: {
       .from("projects")
       .select("name, asset, client_name, contract_data")
       .eq("id", input.projectId)
+      .eq("org_id", orgId)
       .single();
     if (!project) throw new Error("Project not found");
 
