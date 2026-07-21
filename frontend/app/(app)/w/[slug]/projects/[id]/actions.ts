@@ -4,7 +4,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { orkaClient, type OrkaCustodyMode } from "@/lib/stellar";
 import { blocksToMarkdown } from "@/lib/proposalBlocks";
-import { buildContractTemplate } from "@/lib/contractTemplates";
+import { buildContractTemplate, PROPOSAL_TEMPLATE } from "@/lib/contractTemplates";
 
 // Intentionally does NOT write chain-derived status. It records the local-side
 // signature intent hash so the UI can show "signed (pending on-chain)"; the
@@ -255,6 +255,35 @@ export async function saveProposal(input: {
     return { ok: true };
   } catch (err) {
     return { ok: false, error: err instanceof Error ? err.message : "saveProposal failed" };
+  }
+}
+
+export async function createProposal(input: {
+  projectId: string;
+  orgId: string;
+}): Promise<{ ok: true } | { ok: false; error: string }> {
+  try {
+    const supabase = await createClient();
+    const blocks = PROPOSAL_TEMPLATE as unknown[];
+    const markdown = blocksToMarkdown(blocks);
+
+    const { error } = await supabase.from("project_proposals").insert({
+      org_id: input.orgId,
+      project_id: input.projectId,
+      title: "Untitled proposal",
+      blocks,
+      markdown,
+      tags: [],
+      status: "draft",
+    });
+    if (error) throw new Error(error.message);
+
+    return { ok: true };
+  } catch (err) {
+    return {
+      ok: false,
+      error: err instanceof Error ? err.message : "createProposal failed",
+    };
   }
 }
 
