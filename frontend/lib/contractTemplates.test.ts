@@ -2,6 +2,13 @@
 import { describe, it, expect } from "vitest";
 import { PROPOSAL_TEMPLATE, buildContractTemplate } from "./contractTemplates";
 
+function extractText(block: { content?: string | Array<{ text?: string }> }): string {
+  if (typeof block.content === "string") return block.content;
+  if (Array.isArray(block.content))
+    return block.content.map((c) => c.text ?? "").join("");
+  return "";
+}
+
 describe("PROPOSAL_TEMPLATE", () => {
   it("has 8 top-level sections", () => {
     const headings = PROPOSAL_TEMPLATE.filter((b) => b.type === "heading");
@@ -10,8 +17,7 @@ describe("PROPOSAL_TEMPLATE", () => {
 
   it("first heading is Executive Summary", () => {
     const first = PROPOSAL_TEMPLATE.find((b) => b.type === "heading");
-    const text = (first?.content as Array<{ text: string }>)?.[0]?.text ?? "";
-    expect(text).toBe("Executive Summary");
+    expect(extractText(first!)).toBe("Executive Summary");
   });
 });
 
@@ -35,38 +41,21 @@ describe("buildContractTemplate", () => {
 
   it("includes project name in heading text", () => {
     const blocks = buildContractTemplate(data);
-    const allText = blocks
-      .map((b) =>
-        (b.content as Array<{ text?: string }>)
-          ?.map((c) => c.text ?? "")
-          .join("") ?? ""
-      )
-      .join(" ");
+    const allText = blocks.map(extractText).join(" ");
     expect(allText).toContain("ACME Website");
   });
 
   it("includes each deliverable as a bullet block", () => {
     const blocks = buildContractTemplate(data);
     const bullets = blocks.filter((b) => b.type === "bulletListItem");
-    const texts = bullets.map(
-      (b) =>
-        (b.content as Array<{ text?: string }>)
-          ?.map((c) => c.text ?? "")
-          .join("") ?? ""
-    );
+    const texts = bullets.map(extractText);
     expect(texts).toContain("Landing page");
     expect(texts).toContain("Admin dashboard");
   });
 
   it("includes amount and asset in a paragraph", () => {
     const blocks = buildContractTemplate(data);
-    const allText = blocks
-      .map((b) =>
-        (b.content as Array<{ text?: string }>)
-          ?.map((c) => c.text ?? "")
-          .join("") ?? ""
-      )
-      .join(" ");
+    const allText = blocks.map(extractText).join(" ");
     expect(allText).toContain("5000");
     expect(allText).toContain("USDC");
   });

@@ -1,3 +1,6 @@
+"use client";
+import { useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { FileText } from "lucide-react";
 import { generateContract } from "../../actions";
 
@@ -8,9 +11,14 @@ export function ContractEmpty({
   slug: string;
   projectId: string;
 }) {
-  async function generate() {
-    "use server";
-    await generateContract({ projectId });
+  const router = useRouter();
+  const [pending, startTransition] = useTransition();
+
+  function handleGenerate() {
+    startTransition(async () => {
+      await generateContract({ projectId });
+      router.refresh();
+    });
   }
 
   return (
@@ -25,15 +33,14 @@ export function ContractEmpty({
         Generate a professional contract pre-filled with your project and
         proposal details. You can edit every clause before signing.
       </p>
-      <form action={generate}>
-        <button
-          type="submit"
-          className="inline-flex items-center gap-2 rounded-lg bg-violet-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-violet-700"
-        >
-          <FileText className="h-4 w-4" />
-          Generate contract
-        </button>
-      </form>
+      <button
+        onClick={handleGenerate}
+        disabled={pending}
+        className="inline-flex items-center gap-2 rounded-lg bg-violet-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-violet-700 disabled:opacity-50"
+      >
+        <FileText className="h-4 w-4" />
+        {pending ? "Generating…" : "Generate contract"}
+      </button>
     </div>
   );
 }

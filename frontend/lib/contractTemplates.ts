@@ -5,7 +5,9 @@
 export type PartialBlock = {
   type: string;
   props?: Record<string, unknown>;
-  content?: Array<{ type: string; text: string; styles?: Record<string, unknown> }>;
+  content?:
+    | string
+    | Array<{ type: string; text: string; styles?: Record<string, unknown> }>;
 };
 
 export type ContractTemplateData = {
@@ -42,7 +44,7 @@ function bullet(text: string): PartialBlock {
 }
 
 function emptyPara(): PartialBlock {
-  return { type: "paragraph", content: [] };
+  return { type: "paragraph", content: "" };
 }
 
 // Static proposal template — 8 sections, all empty for user to fill.

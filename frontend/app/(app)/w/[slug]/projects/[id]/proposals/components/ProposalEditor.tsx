@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useCreateBlockNote } from "@blocknote/react";
 import { BlockNoteView } from "@blocknote/mantine";
 import "@blocknote/mantine/style.css";
@@ -21,6 +22,7 @@ export function ProposalEditor({
   initialTags: string[];
   onDone: () => void;
 }) {
+  const router = useRouter();
   const editor = useCreateBlockNote({
     initialContent: (initialBlocks?.length ? initialBlocks : undefined) as never,
   });
@@ -45,6 +47,7 @@ export function ProposalEditor({
       return;
     }
     onDone();
+    router.refresh();
   }
 
   return (
