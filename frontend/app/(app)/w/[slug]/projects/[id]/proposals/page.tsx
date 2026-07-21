@@ -1,8 +1,8 @@
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getActiveOrgBySlug } from "@/lib/orka";
-import { ProposalReader } from "./components/ProposalReader";
 import { ProposalCreate } from "./components/ProposalCreate";
+import { ProposalReaderClient as ProposalReader } from "./components/ProposalReaderClient";
 
 export default async function ProjectProposalsPage({
   params,
@@ -32,7 +32,7 @@ export default async function ProjectProposalsPage({
     .maybeSingle();
 
   if (!proposal) {
-    return <ProposalCreate slug={slug} projectId={id} onDone={() => location.reload()} />;
+    return <ProposalCreate projectId={id} />;
   }
 
   return (
