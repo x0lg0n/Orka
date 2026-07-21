@@ -1,6 +1,7 @@
 // frontend/app/p/[projectToken]/actions.ts
 "use server";
 
+import { createClient } from "@/lib/supabase/server";
 import { getPortalProject } from "@/lib/portal";
 import { orkaClient, type OrkaCustodyMode } from "@/lib/stellar";
 
@@ -113,5 +114,46 @@ export async function portalReleaseMilestone(input: {
     return { ok: true, txHash: txHashOf(res) };
   } catch (err) {
     return { ok: false, error: err instanceof Error ? err.message : "portalReleaseMilestone failed" };
+  }
+}
+
+// Proposals are NOT chain-derived, so writing proposal status from this action
+// is allowed. Accepting the proposal advances the workflow to Contract stage
+// (deriveWorkflowState gates on proposal acceptance); requesting changes is a
+// soft state the agency picks up and re-sends.
+export async function portalAcceptProposal(input: {
+  token: string;
+}): Promise<ActionResult> {
+  try {
+    const project = await getPortalProject(input.token);
+    if (!project) return { ok: false, error: "Project not found" };
+    const supabase = await createClient();
+    const { error } = await supabase
+      .from("project_proposals")
+      .update({ status: "accepted", accepted_at: new Date().toISOString() })
+      .eq("project_id", project.id);
+    if (error) throw new Error(error.message);
+    return { ok: true, txHash: "" };
+  } catch (err) {
+    return { ok: false, error: err instanceof Error ? err.message : "portalAcceptProposal failed" };
+  }
+}
+
+export async function portalRequestChanges(input: {
+  token: string;
+  note: string;
+}): Promise<ActionResult> {
+  try {
+    const project = await getPortalProject(input.token);
+    if (!project) return { ok: false, error: "Project not found" };
+    const supabase = await createClient();
+    const { error } = await supabase
+      .from("project_proposals")
+      .update({ status: "changes_requested" })
+      .eq("project_id", project.id);
+    if (error) throw new Error(error.message);
+    return { ok: true, txHash: "" };
+  } catch (err) {
+    return { ok: false, error: err instanceof Error ? err.message : "portalRequestChanges failed" };
   }
 }

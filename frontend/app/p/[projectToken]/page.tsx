@@ -4,6 +4,7 @@ import { getPortalProject } from "@/lib/portal";
 import { Tabs, type TabItem } from "@/components/shell/Tabs";
 import { PortalContractActions } from "./components/PortalContractActions";
 import { PortalMilestoneActions } from "./components/PortalMilestoneActions";
+import { PortalProposalView } from "./components/PortalProposalView";
 
 const TABS: TabItem[] = [
   { value: "overview", label: "Overview" },
@@ -161,36 +162,7 @@ export default async function PortalPage({
           {project.proposals.length === 0 ? (
             <p className="text-sm text-muted-foreground">No proposal attached.</p>
           ) : (
-            project.proposals.map((pr) => (
-              <div
-                key={pr.id}
-                className="rounded-[12px] border border-border bg-panel p-4"
-              >
-                <div className="mb-3 flex items-center justify-between">
-                  <Badge>{pr.status}</Badge>
-                  <span className="text-xs text-muted-foreground">{pr.asset}</span>
-                </div>
-                {Array.isArray(pr.milestones) ? (
-                  <ul className="space-y-2">
-                    {pr.milestones.map((ms, i) => (
-                      <li
-                        key={i}
-                        className="flex items-center justify-between text-sm"
-                      >
-                        <span className="text-night">{ms.description}</span>
-                        <span className="font-extrabold text-night">
-                          {fmtAmount(ms.amount, pr.asset)}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p className="text-xs text-muted-foreground">
-                    Milestone details unavailable.
-                  </p>
-                )}
-              </div>
-            ))
+            <PortalProposalView token={projectToken} proposal={project.proposals[0]} />
           )}
         </div>
       )}

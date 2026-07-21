@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useCreateBlockNote } from "@blocknote/react";
 import { BlockNoteView } from "@blocknote/mantine";
 import "@blocknote/mantine/style.css";
@@ -7,14 +8,11 @@ import { saveProposal } from "../../actions";
 import { ProposalTags } from "./ProposalTags";
 
 export function ProposalCreate({
-  slug,
   projectId,
-  onDone,
 }: {
-  slug: string;
   projectId: string;
-  onDone: () => void;
 }) {
+  const router = useRouter();
   const editor = useCreateBlockNote();
   const [title, setTitle] = useState("");
   const [tags, setTags] = useState<string[]>([]);
@@ -36,7 +34,7 @@ export function ProposalCreate({
       setError(res.error);
       return;
     }
-    onDone();
+    router.refresh();
   }
 
   return (
