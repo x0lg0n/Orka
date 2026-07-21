@@ -130,7 +130,12 @@ export async function portalAcceptProposal(input: {
     const supabase = await createClient();
     const { error } = await supabase
       .from("project_proposals")
-      .update({ status: "accepted", accepted_at: new Date().toISOString() })
+      .update({
+        status: "accepted",
+        client_sig: "portal_accept",
+        client_signed_at: new Date().toISOString(),
+        accepted_at: new Date().toISOString(),
+      })
       .eq("project_id", project.id);
     if (error) throw new Error(error.message);
     return { ok: true, txHash: "" };
