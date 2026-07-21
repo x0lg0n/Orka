@@ -1,10 +1,38 @@
+import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getActiveOrgBySlug } from "@/lib/orka";
-import { ContractDetailView } from "./components/ContractDetailView";
+import { ContractEmpty } from "./components/ContractEmpty";
+import { ContractReaderClient } from "./components/ContractReaderClient";
 
-export default async function ContractPage({ params }: { params: Promise<{ slug: string; id: string }> }) {
+export default async function ContractPage({
+  params,
+}: {
+  params: Promise<{ slug: string; id: string }>;
+}) {
   const { slug, id } = await params;
   const supabase = await createClient();
   const org = await getActiveOrgBySlug(supabase, slug);
-  return <ContractDetailView slug={slug} orgId={org?.id ?? ""} projectId={id} />;
+  if (!org) redirect("/workspaces");
+
+  const { data: contract } = await supabase
+    .from("project_contracts")
+    .select("id, blocks, markdown, status, agency_sig, client_sig")
+    .eq("project_id", id)
+    .eq("org_id", org.id)
+    .maybeSingle();
+
+  if (!contract) {
+    return <ContractEmpty slug={slug} projectId={id} />;
+  }
+
+  return (
+    <ContractReaderClient
+      slug={slug}
+      projectId={id}
+      blocks={(contract.blocks as unknown[]) ?? []}
+      agencySig={(contract.agency_sig as string | null) ?? null}
+      clientSig={(contract.client_sig as string | null) ?? null}
+      status={(contract.status as string) ?? "draft"}
+    />
+  );
 }
