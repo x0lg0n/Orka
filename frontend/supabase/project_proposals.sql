@@ -123,3 +123,9 @@ alter table public.project_proposals
   add column if not exists blocks jsonb,
   add column if not exists markdown text not null default '',
   add column if not exists tags text[] not null default '{}';
+
+-- Signature columns (mirrors project_contracts).
+alter table public.project_proposals add column if not exists agency_sig text;
+alter table public.project_proposals add column if not exists client_sig text;
+alter table public.project_proposals add column if not exists agency_signed_at timestamptz;
+alter table public.project_proposals add column if not exists client_signed_at timestamptz;
