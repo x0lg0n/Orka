@@ -6,14 +6,13 @@ import { BlockNoteView } from "@blocknote/mantine";
 import "@blocknote/mantine/style.css";
 import { saveProposal } from "../../actions";
 import { ProposalTags } from "./ProposalTags";
+import { PROPOSAL_TEMPLATE } from "@/lib/contractTemplates";
 
-export function ProposalCreate({
-  projectId,
-}: {
-  projectId: string;
-}) {
+export function ProposalCreate({ projectId }: { projectId: string }) {
   const router = useRouter();
-  const editor = useCreateBlockNote();
+  const editor = useCreateBlockNote({
+    initialContent: PROPOSAL_TEMPLATE as never,
+  });
   const [title, setTitle] = useState("");
   const [tags, setTags] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
