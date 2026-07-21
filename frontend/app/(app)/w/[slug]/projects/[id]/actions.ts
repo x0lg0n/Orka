@@ -332,7 +332,7 @@ export async function generateContract(input: {
 
     const { data: project, error: projErr } = await supabase
       .from("projects")
-      .select("title, asset, client_name, contract_data")
+      .select("title, client_name")
       .eq("id", input.projectId)
       .eq("org_id", input.orgId)
       .maybeSingle();
