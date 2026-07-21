@@ -325,30 +325,29 @@ export async function restoreProposalVersion(input: {
 
 export async function generateContract(input: {
   projectId: string;
+  orgId: string;
 }): Promise<{ ok: true } | { ok: false; error: string }> {
   try {
     const supabase = await createClient();
-    const orgId = await resolveOrgId(supabase, input.projectId);
-    if (!orgId) throw new Error("Project org not found");
 
     const { data: project } = await supabase
       .from("projects")
       .select("name, asset, client_name, contract_data")
       .eq("id", input.projectId)
-      .eq("org_id", orgId)
+      .eq("org_id", input.orgId)
       .single();
     if (!project) throw new Error("Project not found");
 
     const { data: org } = await supabase
       .from("organizations")
       .select("name")
-      .eq("id", orgId)
+      .eq("id", input.orgId)
       .single();
 
     const { data: proposal } = await supabase
       .from("project_proposals")
       .select("title, blocks, tags, markdown")
-      .eq("org_id", orgId)
+      .eq("org_id", input.orgId)
       .eq("project_id", input.projectId)
       .order("updated_at", { ascending: false })
       .limit(1)
@@ -382,7 +381,7 @@ export async function generateContract(input: {
       .from("project_contracts")
       .select("id")
       .eq("project_id", input.projectId)
-      .eq("org_id", orgId)
+      .eq("org_id", input.orgId)
       .maybeSingle();
 
     if (existing) {
@@ -391,7 +390,7 @@ export async function generateContract(input: {
 
     const { error } = await supabase.from("project_contracts").insert({
       project_id: input.projectId,
-      org_id: orgId,
+      org_id: input.orgId,
       blocks,
       markdown,
       status: "draft",
@@ -409,12 +408,11 @@ export async function generateContract(input: {
 
 export async function saveContract(input: {
   projectId: string;
+  orgId: string;
   blocks: unknown[];
 }): Promise<{ ok: true } | { ok: false; error: string }> {
   try {
     const supabase = await createClient();
-    const orgId = await resolveOrgId(supabase, input.projectId);
-    if (!orgId) throw new Error("Project org not found");
 
     const markdown = blocksToMarkdown(input.blocks);
 
@@ -422,7 +420,7 @@ export async function saveContract(input: {
       .from("project_contracts")
       .update({ blocks: input.blocks, markdown, updated_at: new Date().toISOString() })
       .eq("project_id", input.projectId)
-      .eq("org_id", orgId);
+      .eq("org_id", input.orgId);
     if (error) throw new Error(error.message);
 
     return { ok: true };
@@ -436,11 +434,10 @@ export async function saveContract(input: {
 
 export async function signContractAgency(input: {
   projectId: string;
+  orgId: string;
 }): Promise<{ ok: true } | { ok: false; error: string }> {
   try {
     const supabase = await createClient();
-    const orgId = await resolveOrgId(supabase, input.projectId);
-    if (!orgId) throw new Error("Project org not found");
 
     const { data: { user } } = await supabase.auth.getUser();
     const sig = user?.id ?? "signed";
@@ -454,7 +451,7 @@ export async function signContractAgency(input: {
         updated_at: new Date().toISOString(),
       })
       .eq("project_id", input.projectId)
-      .eq("org_id", orgId);
+      .eq("org_id", input.orgId);
     if (error) throw new Error(error.message);
 
     return { ok: true };

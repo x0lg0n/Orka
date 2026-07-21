@@ -5,6 +5,7 @@ import { signContractAgency } from "../../actions";
 
 type Props = {
   projectId: string;
+  orgId: string;
   agencySig: string | null;
   clientSig: string | null;
   status: string;
@@ -49,6 +50,7 @@ function SigRow({
 
 export function ContractSigningPanel({
   projectId,
+  orgId,
   agencySig,
   clientSig,
   status,
@@ -60,7 +62,7 @@ export function ContractSigningPanel({
   async function handleSign() {
     setBusy(true);
     setError(null);
-    const res = await signContractAgency({ projectId });
+    const res = await signContractAgency({ projectId, orgId });
     setBusy(false);
     if (!res.ok) {
       setError(res.error);

@@ -7,9 +7,11 @@ import { generateContract } from "../../actions";
 export function ContractEmpty({
   slug,
   projectId,
+  orgId,
 }: {
   slug: string;
   projectId: string;
+  orgId: string;
 }) {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
@@ -18,7 +20,7 @@ export function ContractEmpty({
   async function handleGenerate() {
     setBusy(true);
     setError(null);
-    const res = await generateContract({ projectId });
+    const res = await generateContract({ projectId, orgId });
     setBusy(false);
     if (!res.ok) {
       setError(res.error);

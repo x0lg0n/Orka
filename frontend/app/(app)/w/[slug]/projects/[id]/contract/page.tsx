@@ -22,13 +22,14 @@ export default async function ContractPage({
     .maybeSingle();
 
   if (!contract) {
-    return <ContractEmpty slug={slug} projectId={id} />;
+    return <ContractEmpty slug={slug} projectId={id} orgId={org.id} />;
   }
 
   return (
     <ContractReaderClient
       slug={slug}
       projectId={id}
+      orgId={org.id}
       blocks={(contract.blocks as unknown[]) ?? []}
       agencySig={(contract.agency_sig as string | null) ?? null}
       clientSig={(contract.client_sig as string | null) ?? null}

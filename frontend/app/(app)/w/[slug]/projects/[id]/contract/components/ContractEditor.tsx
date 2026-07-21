@@ -10,6 +10,7 @@ import { ContractSigningPanel } from "./ContractSigningPanel";
 type Props = {
   slug: string;
   projectId: string;
+  orgId: string;
   initialBlocks: unknown[];
   agencySig: string | null;
   clientSig: string | null;
@@ -20,6 +21,7 @@ type Props = {
 export function ContractEditor({
   slug,
   projectId,
+  orgId,
   initialBlocks,
   agencySig,
   clientSig,
@@ -38,6 +40,7 @@ export function ContractEditor({
     setError(null);
     const res = await saveContract({
       projectId,
+      orgId,
       blocks: editor.document as unknown[],
     });
     setBusy(false);

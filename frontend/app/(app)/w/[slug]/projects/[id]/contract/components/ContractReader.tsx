@@ -11,6 +11,7 @@ import { ContractSigningPanel } from "./ContractSigningPanel";
 type Props = {
   slug: string;
   projectId: string;
+  orgId: string;
   blocks: unknown[];
   agencySig: string | null;
   clientSig: string | null;
@@ -27,6 +28,7 @@ const STATUS_LABEL: Record<string, string> = {
 export function ContractReader({
   slug,
   projectId,
+  orgId,
   blocks,
   agencySig,
   clientSig,
@@ -43,6 +45,7 @@ export function ContractReader({
       <ContractEditorClient
         slug={slug}
         projectId={projectId}
+        orgId={orgId}
         initialBlocks={blocks}
         agencySig={agencySig}
         clientSig={clientSig}
@@ -77,6 +80,7 @@ export function ContractReader({
 
       <ContractSigningPanel
         projectId={projectId}
+        orgId={orgId}
         agencySig={agencySig}
         clientSig={clientSig}
         status={status}
