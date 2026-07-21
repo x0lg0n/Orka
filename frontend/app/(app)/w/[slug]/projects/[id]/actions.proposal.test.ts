@@ -21,7 +21,7 @@ import { saveProposal } from "./actions";
 
 describe("saveProposal", () => {
   it("inserts a proposal row + version 1 on first save", async () => {
-    const from = vi.fn(() => ({
+    const proposalsChain = () => ({
       select: vi.fn(() => ({
         eq: vi.fn(() => ({
           maybeSingle: vi.fn(() =>
@@ -48,7 +48,21 @@ describe("saveProposal", () => {
         })),
       })),
       order: vi.fn(() => ({ limit: vi.fn(() => Promise.resolve({ data: [], error: null })) })),
-    }));
+    });
+    const from = vi.fn((table: string) => {
+      if (table === "projects") {
+        return {
+          select: vi.fn(() => ({
+            eq: vi.fn(() => ({
+              maybeSingle: vi.fn(() =>
+                Promise.resolve({ data: { org_id: "org1" }, error: null })
+              ),
+            })),
+          })),
+        };
+      }
+      return proposalsChain();
+    });
     const client = { from };
     mockCreateClient.mockResolvedValue(client);
     mockGetActiveOrgId.mockResolvedValue("org1");

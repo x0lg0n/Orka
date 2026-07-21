@@ -156,6 +156,20 @@ export async function releaseMilestone(input: {
   }
 }
 
+async function resolveOrgId(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  projectId: string
+): Promise<string | null> {
+  // The client passes orgId: "" by design; the authenticated server client
+  // re-derives the org from the project via RLS rather than trusting input.
+  const { data } = await supabase
+    .from("projects")
+    .select("org_id")
+    .eq("id", projectId)
+    .maybeSingle();
+  return (data?.org_id as string | undefined) ?? null;
+}
+
 async function nextVersionNo(
   supabase: Awaited<ReturnType<typeof createClient>>,
   proposalId: string
@@ -183,11 +197,13 @@ export async function saveProposal(input: {
   try {
     const supabase = await createClient();
     const markdown = blocksToMarkdown(input.blocks);
+    const orgId = await resolveOrgId(supabase, input.projectId);
+    if (!orgId) throw new Error("Project org not found");
 
     const { data: existing } = await supabase
       .from("project_proposals")
       .select("id")
-      .eq("org_id", input.orgId)
+      .eq("org_id", orgId)
       .eq("project_id", input.projectId)
       .maybeSingle();
 
@@ -196,7 +212,7 @@ export async function saveProposal(input: {
       const { data: created, error } = await supabase
         .from("project_proposals")
         .insert({
-          org_id: input.orgId,
+          org_id: orgId,
           project_id: input.projectId,
           title: input.title,
           blocks: input.blocks,
@@ -219,14 +235,14 @@ export async function saveProposal(input: {
           tags: input.tags,
         })
         .eq("id", proposalId)
-        .eq("org_id", input.orgId);
+        .eq("org_id", orgId);
       if (error) throw new Error(error.message);
     }
 
     const versionNo = await nextVersionNo(supabase, proposalId);
     const { error: vErr } = await supabase.from("proposal_versions").insert({
       proposal_id: proposalId,
-      org_id: input.orgId,
+      org_id: orgId,
       version_no: versionNo,
       title: input.title,
       blocks: input.blocks,
@@ -247,10 +263,12 @@ export async function sendProposal(input: {
 }): Promise<{ ok: true } | { ok: false; error: string }> {
   try {
     const supabase = await createClient();
+    const orgId = await resolveOrgId(supabase, input.projectId);
+    if (!orgId) throw new Error("Project org not found");
     const { error } = await supabase
       .from("project_proposals")
       .update({ status: "sent" })
-      .eq("org_id", input.orgId)
+      .eq("org_id", orgId)
       .eq("project_id", input.projectId)
       .eq("status", "draft");
     if (error) throw new Error(error.message);
@@ -267,6 +285,8 @@ export async function restoreProposalVersion(input: {
 }): Promise<{ ok: true } | { ok: false; error: string }> {
   try {
     const supabase = await createClient();
+    const orgId = await resolveOrgId(supabase, input.projectId);
+    if (!orgId) throw new Error("Project org not found");
     const { data: ver, error: vErr } = await supabase
       .from("proposal_versions")
       .select("proposal_id, title, blocks, markdown")
@@ -278,13 +298,13 @@ export async function restoreProposalVersion(input: {
       .from("project_proposals")
       .update({ title: ver.title, blocks: ver.blocks, markdown: ver.markdown })
       .eq("id", ver.proposal_id)
-      .eq("org_id", input.orgId);
+      .eq("org_id", orgId);
     if (uErr) throw new Error(uErr.message);
 
     const versionNo = await nextVersionNo(supabase, ver.proposal_id as string);
     const { error: iErr } = await supabase.from("proposal_versions").insert({
       proposal_id: ver.proposal_id,
-      org_id: input.orgId,
+      org_id: orgId,
       version_no: versionNo,
       title: ver.title as string,
       blocks: ver.blocks,
