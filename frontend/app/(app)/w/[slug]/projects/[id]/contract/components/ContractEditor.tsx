@@ -80,6 +80,7 @@ export function ContractEditor({
 
       <ContractSigningPanel
         projectId={projectId}
+        orgId={orgId}
         agencySig={agencySig}
         clientSig={clientSig}
         status={status}

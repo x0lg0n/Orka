@@ -427,22 +427,14 @@ export async function generateContract(input: {
       .limit(1)
       .maybeSingle();
 
-    const contractData = (project.contract_data ?? {}) as {
-      amount?: string | number;
-      deliverables?: string[];
-    };
-
-    const deliverables: string[] =
-      contractData.deliverables ??
-      (proposal?.tags ?? []).filter((t: string) => !t.includes(":")) ??
-      [];
+    const deliverables: string[] = (proposal?.tags ?? []).filter((t: string) => !t.includes(":"));
 
     const templateData = {
       projectName: (project.title as string) ?? "Project",
       orgName: (org?.name as string) ?? "Agency",
       clientName: (project.client_name as string) ?? "Client",
-      amount: String(contractData.amount ?? ""),
-      asset: (project.asset as string) ?? "XLM",
+      amount: "",
+      asset: "XLM",
       deliverables,
       milestoneCount: 0,
       today: new Date().toISOString().split("T")[0],
