@@ -1,5 +1,5 @@
 "use client";
-import { useTransition } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { FileText } from "lucide-react";
 import { generateContract } from "../../actions";
@@ -12,13 +12,19 @@ export function ContractEmpty({
   projectId: string;
 }) {
   const router = useRouter();
-  const [pending, startTransition] = useTransition();
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  function handleGenerate() {
-    startTransition(async () => {
-      await generateContract({ projectId });
-      router.refresh();
-    });
+  async function handleGenerate() {
+    setBusy(true);
+    setError(null);
+    const res = await generateContract({ projectId });
+    setBusy(false);
+    if (!res.ok) {
+      setError(res.error);
+      return;
+    }
+    router.refresh();
   }
 
   return (
@@ -35,12 +41,15 @@ export function ContractEmpty({
       </p>
       <button
         onClick={handleGenerate}
-        disabled={pending}
+        disabled={busy}
         className="inline-flex items-center gap-2 rounded-lg bg-violet-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-violet-700 disabled:opacity-50"
       >
         <FileText className="h-4 w-4" />
-        {pending ? "Generating…" : "Generate contract"}
+        {busy ? "Generating…" : "Generate contract"}
       </button>
+      {error && (
+        <p className="mt-3 max-w-sm text-sm text-red-600">{error}</p>
+      )}
     </div>
   );
 }
