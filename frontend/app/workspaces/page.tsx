@@ -93,7 +93,7 @@ export default async function WorkspacesPage({
       />
 
       <div className="mx-auto w-full max-w-7xl px-5 py-10 sm:px-8 sm:py-12">
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2 pb-6">
           <h1 className="text-[32px] font-extrabold tracking-[-0.035em] text-foreground sm:text-[38px]">
             {workspaces.length === 0 ? "Create your first workspace" : "Choose a Workspace"}
           </h1>

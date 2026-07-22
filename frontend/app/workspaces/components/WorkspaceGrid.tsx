@@ -70,7 +70,7 @@ export function WorkspaceGrid({ workspaces }: { workspaces: Workspace[] }) {
   return (
     <div className="mt-8 flex flex-col gap-6">
       {workspaces.length > 0 ? (
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+        <div className="flex flex-col gap-4 rounded-[14px] bg-muted/40 px-0 py-0 sm:flex-row sm:items-center sm:px-5 sm:py-3">
           <div className="relative w-full sm:max-w-[460px]">
             <Search className="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-muted-foreground" aria-hidden />
             <Input
@@ -89,7 +89,9 @@ export function WorkspaceGrid({ workspaces }: { workspaces: Workspace[] }) {
       ) : null}
 
       {workspaces.length === 0 ? (
-        <div className="max-w-2xl rounded-[16px] border border-border bg-card p-7 sm:p-10">
+        <div className="relative max-w-2xl overflow-hidden rounded-[16px] border border-border bg-card p-7 sm:p-10">
+          <div className="pointer-events-none absolute -bottom-12 -right-12 size-48 rounded-full bg-primary/[0.03]" aria-hidden />
+          <div className="pointer-events-none absolute -right-4 -top-4 size-24 rounded-full bg-primary/[0.02]" aria-hidden />
           <div className="grid size-12 place-items-center rounded-[10px] bg-primary/15 text-primary">
             <Building2 className="size-6" aria-hidden />
           </div>
@@ -114,13 +116,13 @@ export function WorkspaceGrid({ workspaces }: { workspaces: Workspace[] }) {
           </p>
         </div>
       ) : (
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {filtered.map((w) => (
             <WorkspaceCard key={w.id} workspace={w} />
           ))}
            <Link
             href="/workspaces/new"
-            className="group flex min-h-[280px] flex-col items-center justify-center rounded-[16px] border border-dashed border-border bg-card p-7 text-center transition-colors hover:border-primary hover:bg-primary/[0.04]"
+            className="group flex flex-col items-center justify-center rounded-[16px] border border-dashed border-border bg-card p-7 text-center transition-all duration-200 hover:-translate-y-0.5 hover:border-primary hover:bg-primary/[0.04] hover:shadow-md"
           >
             <span className="grid size-14 place-items-center rounded-full border border-primary text-primary transition group-hover:bg-primary group-hover:text-white">
               <Plus className="size-7" aria-hidden />
@@ -136,7 +138,7 @@ export function WorkspaceGrid({ workspaces }: { workspaces: Workspace[] }) {
       {workspaces.length > 0 ? (
         <p className="flex items-center justify-center gap-2 pt-2 text-sm font-bold text-muted-foreground">
           Can&apos;t find your workspace?{" "}
-          <Link href="/workspaces/new" className="text-primary hover:underline">
+          <Link href="/workspaces/new" className="whitespace-nowrap text-primary underline-offset-2 hover:underline">
             Create New Workspace
           </Link>
         </p>
@@ -146,8 +148,11 @@ export function WorkspaceGrid({ workspaces }: { workspaces: Workspace[] }) {
 }
 
 function WorkspaceCard({ workspace: w }: { workspace: Workspace }) {
+  const lastActive = formatLastActive(w.lastActive);
+  const lastActiveLabel = lastActive === "Today" ? "Active today" : `Last active ${lastActive}`;
+
   return (
-    <Card className="flex min-h-[280px] flex-col rounded-[16px] border-border p-5 transition-colors duration-150 hover:border-primary hover:bg-primary/[0.02]">
+    <Card className="flex flex-col rounded-[16px] border-border p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-primary hover:shadow-md">
       <div className="flex items-start justify-between">
         <Avatar className="size-12 rounded-[10px]">
           {w.logoUrl ? <AvatarImage src={w.logoUrl} alt={w.name} /> : null}
@@ -164,9 +169,9 @@ function WorkspaceCard({ workspace: w }: { workspace: Workspace }) {
       </div>
 
       <h2 className="mt-4 text-[19px] font-extrabold tracking-[-0.02em] text-foreground">{w.name}</h2>
-      <p className="mt-1.5 text-sm font-bold text-muted-foreground">Last active {formatLastActive(w.lastActive)}</p>
+      <p className="mt-1.5 text-sm font-bold text-muted-foreground">{lastActiveLabel}</p>
 
-      <div className="mt-4 grid grid-cols-3 gap-3 border-t border-border pt-4">
+      <div className="mt-4 grid grid-cols-3 items-start gap-3 border-t border-border pt-4">
         <Stat icon={BriefcaseBusiness} label="Projects" value={String(w.projects)} />
         <Stat icon={Users} label="Clients" value={String(w.clients)} />
         <Stat icon={UsersRound} label="Members" value={String(w.members)} />
