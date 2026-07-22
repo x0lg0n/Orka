@@ -1,0 +1,33 @@
+---
+title: API Examples
+description: Example API requests and responses.
+---
+
+# API Examples
+
+See ORKA API in action.
+
+## Create Project
+
+```bash
+curl -X POST https://api.orka.co/v1/projects \
+  -H "Authorization: Bearer your-token" \
+  -d '{"name": "New Project", "client_id": "123"}'
+```
+
+## Get Invoices
+
+```bash
+curl https://api.orka.co/v1/invoices \
+  -H "Authorization: Bearer your-token"
+```
+
+## Webhook Handler
+
+```javascript
+app.post('/webhooks/orka', (req, res) => {
+  const event = req.body;
+  // Handle event
+  res.sendStatus(200);
+});
+```

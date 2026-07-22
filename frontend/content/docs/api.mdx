@@ -1,0 +1,86 @@
+---
+title: "API"
+description: "Developer resources and API reference for ORKA integration."
+category: "Developers"
+order: 12
+icon: "code"
+---
+
+ORKA provides a REST API for developers who want to integrate with the platform programmatically.
+
+## Authentication
+
+All API requests require an API key. Generate one from your workspace settings.
+
+```bash
+curl -H "Authorization: Bearer YOUR_API_KEY" \
+  https://api.orka.app/v1/projects
+```
+
+## Endpoints
+
+### Projects
+
+```bash
+# List all projects
+GET /v1/projects
+
+# Get a specific project
+GET /v1/projects/:id
+
+# Create a project
+POST /v1/projects
+```
+
+### Milestones
+
+```bash
+# List milestones for a project
+GET /v1/projects/:id/milestones
+
+# Update milestone status
+PATCH /v1/milestones/:id
+```
+
+### Payments
+
+```bash
+# List payments
+GET /v1/projects/:id/payments
+
+# Get payment details
+GET /v1/payments/:id
+```
+
+<Callout type="info">
+The API is rate-limited to 1000 requests per minute per API key.
+</Callout>
+
+## Webhooks
+
+Subscribe to events to get notified when things happen:
+
+- `project.created`
+- `milestone.submitted`
+- `milestone.approved`
+- `payment.released`
+
+```json
+{
+  "event": "payment.released",
+  "data": {
+    "projectId": "proj_123",
+    "milestoneId": "ms_456",
+    "amount": 5000,
+    "currency": "USD"
+  }
+}
+```
+
+## SDKs
+
+Official SDKs are available for:
+
+- **JavaScript/TypeScript**: `npm install @orka/sdk`
+- **Python**: `pip install orka-sdk`
+- **Go**: `go get github.com/orka/sdk-go`

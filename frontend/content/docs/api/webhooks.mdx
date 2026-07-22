@@ -1,0 +1,40 @@
+---
+title: Webhooks
+description: Receive real-time notifications.
+---
+
+# Webhooks
+
+Get notified of events in real-time.
+
+## Webhook Events
+
+- Project created/updated
+- Invoice paid
+- Proposal accepted
+- Contract signed
+- Payment received
+
+## Setting Up Webhooks
+
+1. Go to API settings
+2. Click **Add Webhook**
+3. Enter endpoint URL
+4. Select events to subscribe
+5. Save configuration
+
+## Webhook Payload
+
+```json
+{
+  "event": "invoice.paid",
+  "data": {},
+  "timestamp": "2024-01-01T00:00:00Z"
+}
+```
+
+## Security
+
+- Verify webhook signatures
+- Use HTTPS endpoints
+- Validate event data
