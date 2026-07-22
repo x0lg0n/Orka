@@ -34,7 +34,7 @@ export default function DocsNavbar() {
       <SearchModal open={searchOpen} onClose={() => setSearchOpen(false)} />
 
       <nav className="sticky top-0 z-40 h-[72px] w-full border-b border-white/10 bg-[#071426]">
-        <div className="mx-auto flex h-full max-w-7xl items-center justify-between px-4 md:px-8 lg:px-12">
+        <div className="mx-auto flex h-full w-full items-center justify-between px-4 md:px-6 lg:px-8">
           <div className="flex items-center gap-4">
             <button
               onClick={() => setMobileOpen(!mobileOpen)}
@@ -52,7 +52,7 @@ export default function DocsNavbar() {
             </Link>
           </div>
 
-          <div className="hidden items-center gap-1 lg:flex">
+          <div className="scrollbar-hide hidden items-center gap-0.5 overflow-x-auto lg:flex">
             {allItems.map((item) => (
               <DocsNavItem key={item.slug} item={item} />
             ))}

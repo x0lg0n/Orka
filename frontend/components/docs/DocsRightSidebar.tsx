@@ -8,7 +8,7 @@ interface DocsRightSidebarProps {
 
 export default function DocsRightSidebar({ headings }: DocsRightSidebarProps) {
   return (
-    <div className="hidden w-[320px] shrink-0 self-start lg:block">
+    <div className="hidden w-[300px] shrink-0 self-stretch lg:block">
       <div className="sticky top-[96px]">
         <DocsToc headings={headings} />
       </div>

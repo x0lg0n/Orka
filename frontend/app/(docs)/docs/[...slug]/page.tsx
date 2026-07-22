@@ -63,9 +63,9 @@ export default async function DocPage({ params }: Props) {
   const mdxContent = await renderMDX(content);
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 md:px-8 lg:px-12">
-      <div className="grid gap-12" style={{ gridTemplateColumns: "minmax(0, 1fr) 320px" }}>
-        <article className="min-w-0 max-w-[920px]">
+    <div className="mx-auto max-w-7xl overflow-x-hidden px-4 py-8 md:px-8 lg:px-12">
+      <div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_300px]">
+        <article className="min-w-0">
           <DocsBreadcrumbs slug={slugPath} />
 
           <h1 className="display text-4xl uppercase sm:text-5xl text-night">
