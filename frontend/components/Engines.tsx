@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { engines } from "../lib/content";
 
@@ -15,17 +14,16 @@ export default function Engines() {
         </div>
         <div className="mt-8 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
           {engines.map((engine) => (
-            <Link
+            <div
               key={engine.title}
-              href="/services"
-              className={`cut-corner group relative min-h-[220px] rounded-[14px] border-2 border-night p-6 text-center text-white shadow-hard transition-transform duration-300 hover:-translate-y-1.5 md:text-left ${engine.color}`}
+              className={`cut-corner group relative min-h-[220px] rounded-[14px] border-2 border-night p-6 text-center text-white shadow-hard md:text-left ${engine.color}`}
             >
               <h3 className="display text-6xl uppercase sm:text-7xl lg:text-[80px]">{engine.title}</h3>
               <p className="mx-auto mt-4 max-w-[80%] text-sm font-bold leading-6 md:mx-0">{engine.copy}</p>
-               <span className="absolute bottom-5 right-5 grid size-11 place-items-center rounded-full bg-white text-xl font-black text-night transition-transform duration-300 group-hover:scale-110">
-                <ArrowUpRight size={18} strokeWidth={3} className="transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+               <span className="absolute bottom-5 right-5 grid size-11 place-items-center rounded-full bg-white text-xl font-black text-night">
+                <ArrowUpRight size={18} strokeWidth={3} />
               </span>
-            </Link>
+            </div>
           ))}
         </div>
       </div>

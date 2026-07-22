@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Terms of Service · ORKA",
@@ -266,19 +265,6 @@ export default function TermsPage() {
                   </div>
                 </section>
               ))}
-
-              <div className="mt-8 border-2 border-night bg-white p-6 sm:flex sm:items-center sm:justify-between sm:gap-6">
-                <div>
-                  <p className="font-bold text-night">Want to see how ORKA works in practice?</p>
-                  <p className="mt-1 text-sm leading-6 text-night/70">Explore the services built around a client project.</p>
-                </div>
-                <Link
-                  href="/services"
-                  className="mt-4 inline-flex min-h-11 items-center gap-2 bg-violet px-4 text-sm font-black uppercase text-white transition-colors hover:bg-night focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-violet sm:mt-0"
-                >
-                  Explore services <ArrowRight size={16} aria-hidden="true" />
-                </Link>
-              </div>
             </article>
           </div>
         </div>

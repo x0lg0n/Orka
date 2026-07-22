@@ -175,7 +175,6 @@ export const faqs: Faq[] = [
 ];
 
 export const productLinks = [
-  { label: "Services", href: "/services" },
   { label: "Engines", href: "/#engines" },
   { label: "Method", href: "/#method" },
   { label: "FAQ", href: "/#faq" },

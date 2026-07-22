@@ -56,12 +56,11 @@ export default function Footer() {
         <div className="flex flex-col items-start gap-3">
           <div className="grid grid-flow-col grid-rows-2 place-items-start gap-x-8 gap-y-3 md:flex md:flex-col md:gap-3">
             {[
-              ["Services", "/services"],
               ["Engines", "/#engines"],
               ["Method", "/#method"],
               ["FAQ", "/#faq"],
               ["Terms", "/terms"],
-              ["Waitlist", "/#waitlist"],
+              ["Sign up", "/signup"],
             ].map(([label, href]) => (
               <Link
                 key={label}
