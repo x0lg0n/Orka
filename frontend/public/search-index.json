@@ -1,0 +1,666 @@
+[
+  {
+    "id": "api/authentication",
+    "title": "Authentication",
+    "category": "api",
+    "description": "Secure your API requests.",
+    "content": "Authentication Authenticate your API requests securely.  Authentication Methods - API Key - Simple authentication - OAuth 2.0 - User-delegated access - JWT tokens - Stateless authentication  API Key Authentication 1. Generate key in settings 2. Include in request header 3. Use HTTPS only 4. Rotate k",
+    "url": "/docs/api/authentication"
+  },
+  {
+    "id": "api/endpoints",
+    "title": "Endpoints",
+    "category": "api",
+    "description": "Available API endpoints.",
+    "content": "Endpoints Explore ORKA's API endpoints.  Core Resources - /projects - Project management - /clients - Client data - /invoices - Invoice operations - /proposals - Proposal management - /contracts - Contract handling  Common Operations - GET - Retrieve data - POST - Create new resources - PUT - Update",
+    "url": "/docs/api/endpoints"
+  },
+  {
+    "id": "api/examples",
+    "title": "API Examples",
+    "category": "api",
+    "description": "Example API requests and responses.",
+    "content": "API Examples See ORKA API in action.  Create Project  Get Invoices  Webhook Handler",
+    "url": "/docs/api/examples"
+  },
+  {
+    "id": "api/overview",
+    "title": "API Overview",
+    "category": "api",
+    "description": "Integrate with ORKA's powerful API.",
+    "content": "API ORKA provides a RESTful API for custom integrations.  API Features - RESTful design - JSON responses - OAuth authentication - Rate limiting - Comprehensive documentation  Getting Started 1. Create API key 2. Review authentication 3. Explore endpoints 4. Make test requests 5. Build your integrati",
+    "url": "/docs/api/overview"
+  },
+  {
+    "id": "api/sdk",
+    "title": "SDK",
+    "category": "api",
+    "description": "Use ORKA's SDK for faster integration.",
+    "content": "SDK ORKA provides SDKs for popular programming languages.  Available SDKs - JavaScript/TypeScript - Python - Ruby - PHP  Installation  Quick Start  Documentation - Reference documentation - Code examples - Tutorials - Best practices",
+    "url": "/docs/api/sdk"
+  },
+  {
+    "id": "api/webhooks",
+    "title": "Webhooks",
+    "category": "api",
+    "description": "Receive real-time notifications.",
+    "content": "Webhooks Get notified of events in real-time.  Webhook Events - Project created/updated - Invoice paid - Proposal accepted - Contract signed - Payment received  Setting Up Webhooks 1. Go to API settings 2. Click Add Webhook 3. Enter endpoint URL 4. Select events to subscribe 5. Save configuration  W",
+    "url": "/docs/api/webhooks"
+  },
+  {
+    "id": "api",
+    "title": "API",
+    "category": "Developers",
+    "description": "Developer resources and API reference for ORKA integration.",
+    "content": "ORKA provides a REST API for developers who want to integrate with the platform programmatically.  Authentication All API requests require an API key. Generate one from your workspace settings.  Endpoints  Projects  Milestones  Payments The API is rate-limited to 1000 requests per minute per API key",
+    "url": "/docs/api"
+  },
+  {
+    "id": "clients/communication",
+    "title": "Communication",
+    "category": "clients",
+    "description": "Communicate with clients through ORKA.",
+    "content": "Communication Keep all client communication in one place.  Communication Channels - In-app messaging - Real-time chat - Comments - Project-specific discussions - Notifications - Email alerts - Activity feed - Project updates  Best Practices - Keep communication professional - Respond promptly - Docu",
+    "url": "/docs/clients/communication"
+  },
+  {
+    "id": "clients/invite",
+    "title": "Invite Clients",
+    "category": "clients",
+    "description": "Add clients to your ORKA workspace.",
+    "content": "Invite Clients Bring clients into your ORKA workspace.  Invitation Process 1. Go to Clients 2. Click Invite Client 3. Enter client email 4. Add company details 5. Send invitation  Client Roles - Primary contact - Main decision maker - Team member - Additional access - Viewer - Read-only access  Afte",
+    "url": "/docs/clients/invite"
+  },
+  {
+    "id": "clients/overview",
+    "title": "Clients Overview",
+    "category": "clients",
+    "description": "Manage your client relationships.",
+    "content": "Clients Build and maintain strong client relationships with ORKA.  Client Features - Client profiles - Centralized information - Portal access - Shared project views - Communication - Direct messaging - File sharing - Secure document exchange  Client Management 1. Add client profiles 2. Invite to pr",
+    "url": "/docs/clients/overview"
+  },
+  {
+    "id": "clients/portal",
+    "title": "Client Portal",
+    "category": "clients",
+    "description": "Give clients access to project information.",
+    "content": "Client Portal Provide clients with a branded portal to view project progress.  Portal Features - Project timeline view - Milestone progress - Shared files access - Invoice and payment status - Activity feed  Setting Up Portal 1. Go to client settings 2. Enable portal access 3. Customize branding 4. ",
+    "url": "/docs/clients/portal"
+  },
+  {
+    "id": "clients/shared-files",
+    "title": "Shared Files",
+    "category": "clients",
+    "description": "Share documents securely with clients.",
+    "content": "Shared Files Exchange documents securely through ORKA.  Sharing Methods - Project files - Attach to projects - Direct upload - Share specific files - Portal access - Client downloads - Email delivery - Send via email  File Security - Encrypted storage - Access controls - Audit trail - Version histor",
+    "url": "/docs/clients/shared-files"
+  },
+  {
+    "id": "clients",
+    "title": "Clients",
+    "category": "Product Guide",
+    "description": "Manage clients and client portal access.",
+    "content": "Clients are the companies or individuals you work with. ORKA makes it easy to manage client relationships and give them visibility into projects.  Adding Clients 1. Go to your workspace's Clients section 2. Click Add Client 3. Enter their name and email 4. Send an invitation  Client Portal Each clie",
+    "url": "/docs/clients"
+  },
+  {
+    "id": "contracts/generate",
+    "title": "Generate Contracts",
+    "category": "contracts",
+    "description": "Use AI to create professional contracts.",
+    "content": "Generate Contracts AI-powered contract generation saves time and ensures completeness.  What You Need - Project scope and details - Payment terms - Timeline and milestones - Legal requirements  Generation Process 1. Enter project information 2. Select contract type 3. AI creates draft contract 4. Re",
+    "url": "/docs/contracts/generate"
+  },
+  {
+    "id": "contracts/overview",
+    "title": "Contracts Overview",
+    "category": "contracts",
+    "description": "Create and manage contracts for your projects.",
+    "content": "Contracts Generate professional contracts and get them signed digitally.  Contract Features - AI Generation - Create contracts with AI - Templates - Reusable contract templates - E-signatures - Digital approval workflow - Status tracking - Monitor contract progress  Contract Lifecycle 1. Draft - Cre",
+    "url": "/docs/contracts/overview"
+  },
+  {
+    "id": "contracts/signatures",
+    "title": "Signatures",
+    "category": "contracts",
+    "description": "Get contracts signed digitally.",
+    "content": "Signatures Digital signatures streamline the approval process.  Signature Process 1. Send contract to client 2. Client reviews contract 3. Client adds digital signature 4. Both parties receive copies 5. Contract is marked as executed  Legal Validity - Compliant with e-signature laws - Timestamped si",
+    "url": "/docs/contracts/signatures"
+  },
+  {
+    "id": "contracts/status",
+    "title": "Contract Status",
+    "category": "contracts",
+    "description": "Track contract progress and execution.",
+    "content": "Contract Status Monitor contracts through their lifecycle.  Status Types - Draft - Being created - Pending - Sent for approval - Signed - Executed by all parties - Active - Currently in effect - Expired - Past end date - Terminated - Ended early  Status Tracking - Real-time status updates - Email no",
+    "url": "/docs/contracts/status"
+  },
+  {
+    "id": "contracts/template",
+    "title": "Contract Templates",
+    "category": "contracts",
+    "description": "Save and reuse contract templates.",
+    "content": "Contract Templates Create templates to streamline contract creation.  Creating Templates 1. Create a contract 2. Click Save as Template 3. Name your template 4. Add template variables 5. Save for future use  Template Variables - {{clientname}} - {{projectname}} - {{startdate}} - {{totalamount}} - {{",
+    "url": "/docs/contracts/template"
+  },
+  {
+    "id": "contracts",
+    "title": "Contracts",
+    "category": "Product Guide",
+    "description": "AI-powered contracts, digital signatures, and version management.",
+    "content": "Contracts formalize the agreement between you and your client. ORKA generates contracts automatically and manages digital signatures.  Generating a Contract 1. After a proposal is accepted, ORKA auto-generates a contract 2. Review the terms and conditions 3. Send for signatures  AI Contract Generati",
+    "url": "/docs/contracts"
+  },
+  {
+    "id": "escrow/fund",
+    "title": "Fund Escrow",
+    "category": "escrow",
+    "description": "Add funds to escrow for project milestones.",
+    "content": "Fund Escrow Fund escrow to secure milestone payments.  Funding Process 1. Go to project milestones 2. Select milestone to fund 3. Click Fund Escrow 4. Choose funding amount 5. Confirm transaction in Freighter  Funding Options - Full amount - Fund entire milestone - Partial - Fund portion now - Multi",
+    "url": "/docs/escrow/fund"
+  },
+  {
+    "id": "escrow/overview",
+    "title": "Escrow Overview",
+    "category": "escrow",
+    "description": "Secure milestone-based payments on Stellar.",
+    "content": "Escrow ORKA uses Stellar blockchain for secure milestone-based escrow payments.  How Escrow Works 1. Client funds escrow for milestone 2. Funds held securely on Stellar 3. Freelancer completes work 4. Client approves milestone 5. Funds released to freelancer  Benefits - Security - Funds protected on",
+    "url": "/docs/escrow/overview"
+  },
+  {
+    "id": "escrow/partial-release",
+    "title": "Partial Release",
+    "category": "escrow",
+    "description": "Release a portion of escrow funds.",
+    "content": "Partial Release Release funds in stages as work progresses.  When to Use Partial Release - Long-running milestones - Phased deliverables - Progress-based payments - Risk mitigation  Partial Release Process 1. Specify release amount 2. Document progress made 3. Client approves partial release 4. Fund",
+    "url": "/docs/escrow/partial-release"
+  },
+  {
+    "id": "escrow/refund",
+    "title": "Refund",
+    "category": "escrow",
+    "description": "Get refunds from escrow when needed.",
+    "content": "Refund Request refunds when projects don't proceed as planned.  Refund Scenarios - Project cancelled - Scope changed significantly - Mutual agreement to terminate - Dispute resolution  Refund Process 1. Initiate refund request 2. Provide reason for refund 3. Other party reviews request 4. Agreement ",
+    "url": "/docs/escrow/refund"
+  },
+  {
+    "id": "escrow/release",
+    "title": "Release Funds",
+    "category": "escrow",
+    "description": "Release escrow funds upon milestone completion.",
+    "content": "Release Funds Release funds to freelancer when work is approved.  Release Conditions - Milestone marked as complete - Client approves deliverables - No pending disputes - Sufficient balance in escrow  Release Process 1. Client clicks Approve Milestone 2. Funds released from escrow 3. Transferred to ",
+    "url": "/docs/escrow/release"
+  },
+  {
+    "id": "escrow/security",
+    "title": "Escrow Security",
+    "category": "escrow",
+    "description": "How ORKA keeps your escrow funds safe.",
+    "content": "Escrow Security ORKA uses Stellar blockchain for secure, transparent escrow.  Security Features - Blockchain storage - Funds on Stellar network - Smart contracts - Automated enforcement - Multi-signature - Required approvals - Audit trail - Complete transaction history  Stellar Security - Decentrali",
+    "url": "/docs/escrow/security"
+  },
+  {
+    "id": "escrow",
+    "title": "Escrow",
+    "category": "Product Guide",
+    "description": "Secure payments with automated escrow and milestone-based releases.",
+    "content": "Escrow secures payments by holding funds until work is delivered and approved. No one can access the money until both parties agree.  How Escrow Works 1. Client funds the escrow with a card or bank transfer 2. Funds are locked in a smart contract on Stellar 3. When milestones are approved, funds are",
+    "url": "/docs/escrow"
+  },
+  {
+    "id": "faq/billing",
+    "title": "Billing FAQ",
+    "category": "faq",
+    "description": "Questions about billing and payments.",
+    "content": "Billing FAQ Questions about ORKA billing.  Payment Methods - Credit card - Debit card - Bank transfer - Cryptocurrency  Billing Cycle - Monthly or annual billing - Automatic renewal - Proration for changes - Cancellation anytime  Invoices - Automatic invoice generation - Download from account - Tax ",
+    "url": "/docs/faq/billing"
+  },
+  {
+    "id": "faq/escrow",
+    "title": "Escrow FAQ",
+    "category": "faq",
+    "description": "Questions about escrow payments.",
+    "content": "Escrow FAQ Common questions about ORKA escrow.  How does escrow work? Funds are held on Stellar blockchain until milestones are approved. This protects both clients and freelancers.  What fees are charged? ORKA charges minimal fees for escrow services. View our pricing page for details.  What if the",
+    "url": "/docs/faq/escrow"
+  },
+  {
+    "id": "faq/general",
+    "title": "General FAQ",
+    "category": "faq",
+    "description": "Frequently asked questions about ORKA.",
+    "content": "General FAQ Common questions about ORKA.  What is ORKA? ORKA is a complete business management platform for freelancers and agencies. It handles proposals, contracts, milestones, escrow payments, invoicing, and client management.  Who is ORKA for? - Freelancers - Design agencies - Development agenci",
+    "url": "/docs/faq/general"
+  },
+  {
+    "id": "faq/payments",
+    "title": "Payments FAQ",
+    "category": "faq",
+    "description": "Questions about payments and transactions.",
+    "content": "Payments FAQ Common payment questions.  What currencies are supported? ORKA supports XLM and multiple fiat currencies through Stellar anchors.  How fast are payments? Stellar transactions confirm in 3-5 seconds.  What are the fees? Stellar network fees are minimal (fractions of a cent). ORKA fees ar",
+    "url": "/docs/faq/payments"
+  },
+  {
+    "id": "faq/wallet",
+    "title": "Wallet FAQ",
+    "category": "faq",
+    "description": "Questions about Freighter wallet.",
+    "content": "Wallet FAQ Common wallet-related questions.  What is Freighter? Freighter is a Stellar wallet browser extension that manages your XLM and Stellar assets.  Is Freighter safe? Yes, Freighter is open-source and widely used in the Stellar community. Private keys never leave the extension.  Can I use mul",
+    "url": "/docs/faq/wallet"
+  },
+  {
+    "id": "faq",
+    "title": "FAQ",
+    "category": "Resources",
+    "description": "Frequently asked questions about ORKA.",
+    "content": "General  What is ORKA? ORKA is the financial operating system for service work. It handles proposals, escrow, verifying delivery, payouts, invoices, and records — so agencies and freelancers can focus on the actual work.  Do I need a crypto wallet? No. Managed mode uses email or Google login. Stella",
+    "url": "/docs/faq"
+  },
+  {
+    "id": "freighter/connect",
+    "title": "Connect to ORKA",
+    "category": "freighter",
+    "description": "Link your Freighter wallet with ORKA.",
+    "content": "Connect to ORKA Connect your wallet to start using ORKA's payment features.  Connection Process 1. Open ORKA settings 2. Navigate to Wallets 3. Click Connect Freighter 4. Approve connection in popup 5. Wallet address displayed  What ORKA Can Do - Request transaction signatures - View wallet balance ",
+    "url": "/docs/freighter/connect"
+  },
+  {
+    "id": "freighter/install",
+    "title": "Install Freighter",
+    "category": "freighter",
+    "description": "Install the Freighter browser extension.",
+    "content": "Install Freighter Get started with Freighter in minutes.  Installation Steps 1. Visit freighter.app(https://freighter.app) 2. Click \"Install for Chrome\" 3. Add extension to browser 4. Pin to toolbar for easy access  First-Time Setup 1. Click Freighter icon 2. Create new wallet or import existing 3. ",
+    "url": "/docs/freighter/install"
+  },
+  {
+    "id": "freighter/overview",
+    "title": "Freighter Overview",
+    "category": "freighter",
+    "description": "Connect your Stellar wallet to ORKA.",
+    "content": "Freighter Freighter is a Stellar wallet browser extension for managing payments.  What is Freighter? - Browser extension for Chrome/Firefox - Manages Stellar wallet - Signs transactions - Stores private keys securely  ORKA Integration - Connect wallet for escrow - Sign payment transactions - View tr",
+    "url": "/docs/freighter/overview"
+  },
+  {
+    "id": "freighter/sign-transaction",
+    "title": "Sign Transactions",
+    "category": "freighter",
+    "description": "Approve transactions in Freighter.",
+    "content": "Sign Transactions Approve payments and other transactions securely.  Transaction Flow 1. ORKA initiates transaction 2. Freighter popup appears 3. Review transaction details 4. Approve or reject 5. Transaction submitted to Stellar  Security Checks - Verify recipient address - Check transaction amount",
+    "url": "/docs/freighter/sign-transaction"
+  },
+  {
+    "id": "freighter/troubleshooting",
+    "title": "Troubleshooting",
+    "category": "freighter",
+    "description": "Resolve common Freighter issues.",
+    "content": "Troubleshooting Solve common Freighter problems.  Common Issues - Extension not showing - Check installation - Connection failed - Refresh and retry - Transaction timeout - Check network status - Balance not showing - Sync wallet  Solutions 1. Refresh browser 2. Reinstall extension 3. Clear browser ",
+    "url": "/docs/freighter/troubleshooting"
+  },
+  {
+    "id": "freighter",
+    "title": "Freighter",
+    "category": "Product Guide",
+    "description": "Connect your Stellar wallet for self-custody mode.",
+    "content": "Freighter is a Stellar wallet browser extension that lets you connect your own wallet to ORKA for self-custody mode.  What is Self-Custody? In self-custody mode, you hold your own keys. ORKA never has access to your wallet. You sign transactions directly in your browser.  Connecting Freighter 1. Ins",
+    "url": "/docs/freighter"
+  },
+  {
+    "id": "getting-started/connect-freighter",
+    "title": "Connect Freighter",
+    "category": "getting-started",
+    "description": "Connect your Stellar wallet to ORKA.",
+    "content": "Connect Freighter Freighter is a Stellar wallet browser extension. Connect it to ORKA for escrow and payments.  Installation 1. Visit freighter.app(https://freighter.app) 2. Click \"Install for Chrome\" 3. Add the extension to your browser 4. Create or import a Stellar wallet  Connecting to ORKA 1. Go",
+    "url": "/docs/getting-started/connect-freighter"
+  },
+  {
+    "id": "getting-started/create-account",
+    "title": "Create Account",
+    "category": "getting-started",
+    "description": "How to create your ORKA account and get started.",
+    "content": "Create Account Follow these steps to create your ORKA account.  Step 1: Visit the Signup Page Go to orka.co/signup(https://orka.co/signup) and click \"Join Waitlist\".  Step 2: Fill in Your Details Enter your: - Full name - Email address - Password  Step 3: Verify Your Email Check your inbox for a ver",
+    "url": "/docs/getting-started/create-account"
+  },
+  {
+    "id": "getting-started/create-workspace",
+    "title": "Create Workspace",
+    "category": "getting-started",
+    "description": "Set up your first workspace to start managing projects.",
+    "content": "Create Workspace Workspaces are where you manage projects, team members, and clients.  Creating a Workspace 1. Click \"Workspaces\" in the sidebar 2. Click \"New Workspace\" 3. Enter your workspace name 4. Choose your plan 5. Click \"Create\"  Workspace Settings After creation, configure: - Team members -",
+    "url": "/docs/getting-started/create-workspace"
+  },
+  {
+    "id": "getting-started/invite-members",
+    "title": "Invite Members",
+    "category": "getting-started",
+    "description": "Add team members to your workspace.",
+    "content": "Invite Members Collaborate with your team by inviting them to your workspace.  How to Invite 1. Go to Workspace Settings 2. Click Team Members 3. Click Invite Member 4. Enter their email address 5. Choose their role 6. Click Send Invite  Roles - Owner - Full access, billing management - Admin - Mana",
+    "url": "/docs/getting-started/invite-members"
+  },
+  {
+    "id": "getting-started/overview",
+    "title": "Getting Started with ORKA",
+    "category": "getting-started",
+    "description": "Learn the basics of ORKA and get up and running in minutes.",
+    "content": "Getting Started Welcome to ORKA! This guide will help you get started with our platform.  What is ORKA? ORKA is a complete business management platform for freelancers and agencies. It handles proposals, contracts, milestones, escrow payments, invoicing, and client management.  Quick Start 1. Create",
+    "url": "/docs/getting-started/overview"
+  },
+  {
+    "id": "getting-started",
+    "title": "Getting Started",
+    "category": "Getting Started",
+    "description": "Learn ORKA from scratch — create an account, set up your workspace, and run your first project.",
+    "content": "Welcome to ORKA! This guide walks you through creating your first workspace and running a project end-to-end.  Creating an Account Sign up with your email or Google account. No wallet or seed phrase needed — ORKA handles the blockchain infrastructure for you.  Creating Your First Workspace A workspa",
+    "url": "/docs/getting-started"
+  },
+  {
+    "id": "invoices/create",
+    "title": "Create Invoices",
+    "category": "invoices",
+    "description": "Generate professional invoices for your work.",
+    "content": "Create Invoices Create invoices manually or from milestones.  Manual Creation 1. Go to Invoices 2. Click New Invoice 3. Add line items 4. Set payment terms 5. Send to client  From Milestones 1. Complete milestone 2. Click Create Invoice 3. Auto-populated details 4. Review and send  Invoice Details -",
+    "url": "/docs/invoices/create"
+  },
+  {
+    "id": "invoices/export",
+    "title": "Export Invoices",
+    "category": "invoices",
+    "description": "Download invoices in various formats.",
+    "content": "Export Invoices Export invoices for accounting and record-keeping.  Export Formats - PDF - Professional invoice format - CSV - Spreadsheet data - JSON - API integration - Excel - Microsoft Excel format  Export Options - Single invoice export - Batch export by date range - Export by client - Export b",
+    "url": "/docs/invoices/export"
+  },
+  {
+    "id": "invoices/overview",
+    "title": "Invoices Overview",
+    "category": "invoices",
+    "description": "Create and manage professional invoices.",
+    "content": "Invoices Generate professional invoices and track payments seamlessly.  Invoice Features - Auto-generation - Create from milestones - Custom templates - Brand your invoices - Payment tracking - Monitor payment status - Export options - PDF and CSV formats  Invoice Lifecycle 1. Create - Generate invo",
+    "url": "/docs/invoices/overview"
+  },
+  {
+    "id": "invoices/payment-tracking",
+    "title": "Payment Tracking",
+    "category": "invoices",
+    "description": "Track invoice payments and reconciliation.",
+    "content": "Payment Tracking Keep track of all invoice payments.  Payment Methods - Stellar wallet transfer - Bank transfer - Credit card - Other methods  Tracking Process 1. Client makes payment 2. ORKA detects transaction 3. Invoice marked as paid 4. Record updated automatically 5. Receipt generated  Reconcil",
+    "url": "/docs/invoices/payment-tracking"
+  },
+  {
+    "id": "invoices/status",
+    "title": "Invoice Status",
+    "category": "invoices",
+    "description": "Track invoice payment status.",
+    "content": "Invoice Status Monitor your invoices throughout their lifecycle.  Status Types - Draft - Not yet sent - Sent - Delivered to client - Viewed - Client has opened - Paid - Payment received - Overdue - Past due date - Cancelled - Invoice voided  Status Tracking - Real-time status updates - Email notific",
+    "url": "/docs/invoices/status"
+  },
+  {
+    "id": "invoices",
+    "title": "Invoices",
+    "category": "Product Guide",
+    "description": "Generate invoices automatically and track payment status.",
+    "content": "Invoices are generated automatically when milestones are released. No manual invoicing required.  Auto-Generated Invoices When a milestone is approved and released, ORKA creates an invoice with: - Project and milestone details - Amount and currency - Payment date and method - Transaction reference  ",
+    "url": "/docs/invoices"
+  },
+  {
+    "id": "milestones/approval",
+    "title": "Milestone Approval",
+    "category": "milestones",
+    "description": "Get client approval for completed milestones.",
+    "content": "Milestone Approval The approval process ensures both parties agree on completion.  Approval Workflow 1. Mark milestone as complete 2. Submit for client review 3. Client reviews deliverables 4. Client approves or requests changes 5. Payment released on approval  Client Review - View deliverables - Le",
+    "url": "/docs/milestones/approval"
+  },
+  {
+    "id": "milestones/create",
+    "title": "Create Milestones",
+    "category": "milestones",
+    "description": "Set up project milestones with clear deliverables.",
+    "content": "Create Milestones Well-defined milestones keep projects on track.  Milestone Components - Title - Clear, descriptive name - Description - Detailed deliverables - Deadline - Due date - Amount - Payment for completion - Dependencies - Required prior milestones  Best Practices - Keep milestones small a",
+    "url": "/docs/milestones/create"
+  },
+  {
+    "id": "milestones/edit",
+    "title": "Edit Milestones",
+    "category": "milestones",
+    "description": "Modify milestones as project needs change.",
+    "content": "Edit Milestones Update milestones when project requirements evolve.  What You Can Edit - Title and description - Deadline and timeline - Payment amount - Deliverable details - Dependencies  Editing Process 1. Go to project milestones 2. Click on milestone to edit 3. Make changes 4. Save updates 5. N",
+    "url": "/docs/milestones/edit"
+  },
+  {
+    "id": "milestones/overview",
+    "title": "Milestones Overview",
+    "category": "milestones",
+    "description": "Break projects into manageable deliverables.",
+    "content": "Milestones Divide projects into clear milestones for better tracking and payments.  Milestone Features - Clear deliverables - Define specific outputs - Timeline tracking - Set and monitor deadlines - Payment gates - Link payments to completion - Approval workflow - Client sign-off process  Creating ",
+    "url": "/docs/milestones/overview"
+  },
+  {
+    "id": "milestones/release-payment",
+    "title": "Release Payment",
+    "category": "milestones",
+    "description": "Release escrow funds when milestones are completed.",
+    "content": "Release Payment Release funds from escrow upon milestone completion.  Release Process 1. Milestone approved by client 2. Payment release initiated 3. Funds transferred to freelancer 4. Transaction recorded 5. Both parties notified  Payment Details - Automatic calculation of fees - Transaction histor",
+    "url": "/docs/milestones/release-payment"
+  },
+  {
+    "id": "milestones",
+    "title": "Milestones",
+    "category": "Product Guide",
+    "description": "Create milestones, track progress, and manage deliverables.",
+    "content": "Milestones break your project into manageable chunks with clear deliverables and pricing.  Creating Milestones 1. Open your project 2. Click Add Milestone 3. Enter the milestone name, description, and price 4. Set the deadline and deliverables  Milestone Structure Each milestone includes: - Name: Br",
+    "url": "/docs/milestones"
+  },
+  {
+    "id": "payments/currency-conversion",
+    "title": "Currency Conversion",
+    "category": "payments",
+    "description": "Convert between different currencies.",
+    "content": "Currency Conversion ORKA supports multi-currency transactions with automatic conversion.  Supported Currencies - XLM (Stellar Lumens) - USD (US Dollar) - EUR (Euro) - GBP (British Pound) - And more  How Conversion Works 1. Select payment currency 2. ORKA shows conversion rate 3. Confirm transaction ",
+    "url": "/docs/payments/currency-conversion"
+  },
+  {
+    "id": "payments/failed-payments",
+    "title": "Failed Payments",
+    "category": "payments",
+    "description": "Handle and resolve payment failures.",
+    "content": "Failed Payments ORKA helps you resolve payment issues quickly.  Common Failure Reasons - Insufficient funds - Network congestion - Invalid wallet address - Transaction timeout  Resolution Process 1. ORKA detects failure 2. Notification sent to user 3. Error details provided 4. Retry option available",
+    "url": "/docs/payments/failed-payments"
+  },
+  {
+    "id": "payments/overview",
+    "title": "Payments Overview",
+    "category": "payments",
+    "description": "Manage payments and transactions on Stellar.",
+    "content": "Payments ORKA handles all payments through Stellar blockchain for security and transparency.  Payment Features - Stellar transactions - Fast, low-cost transfers - Currency conversion - Multi-currency support - Transaction history - Complete payment records - Failed payment handling - Automatic retry",
+    "url": "/docs/payments/overview"
+  },
+  {
+    "id": "payments/stellar",
+    "title": "Stellar Payments",
+    "category": "payments",
+    "description": "How payments work on the Stellar network.",
+    "content": "Stellar Payments ORKA uses Stellar for fast, secure, low-cost transactions.  Why Stellar? - Speed - 3-5 second confirmation - Cost - Fractions of a cent per transaction - Security - Decentralized network - Scalability - Handles thousands of transactions  Stellar Basics - Native currency: XLM (lumens",
+    "url": "/docs/payments/stellar"
+  },
+  {
+    "id": "payments/transaction-history",
+    "title": "Transaction History",
+    "category": "payments",
+    "description": "View all your payment transactions.",
+    "content": "Transaction History Track all your financial activity in ORKA.  Transaction Details - Date and time - Amount and currency - Sender and receiver - Transaction status - Stellar transaction ID  Filtering Transactions - By date range - By project - By transaction type - By status  Exporting Data - Downl",
+    "url": "/docs/payments/transaction-history"
+  },
+  {
+    "id": "payments",
+    "title": "Payments",
+    "category": "Product Guide",
+    "description": "Track payments, releases, and transaction history.",
+    "content": "Payments in ORKA are tied to milestone releases. When a milestone is approved, funds are automatically released to the freelancer.  Payment Flow 1. Client funds escrow 2. Freelancer delivers work 3. Client approves the milestone 4. ORKA verifies the release conditions 5. Funds are released to the fr",
+    "url": "/docs/payments"
+  },
+  {
+    "id": "projects/client-portal",
+    "title": "Client Portal",
+    "category": "projects",
+    "description": "Give clients a shared view of project progress.",
+    "content": "Client Portal The Client Portal gives your clients a read-only view of project progress.  What Clients See - Project timeline and milestones - Shared files and documents - Invoice and payment status - Activity feed  Enabling Client Portal 1. Go to Project Settings 2. Click Client Portal 3. Toggle En",
+    "url": "/docs/projects/client-portal"
+  },
+  {
+    "id": "projects/creating",
+    "title": "Creating Projects",
+    "category": "projects",
+    "description": "How to create and configure new projects.",
+    "content": "Creating Projects Learn how to create and configure projects in ORKA.  Project Types - Fixed Price - Set total budget upfront - Time & Materials - Track hours and expenses - Retainer - Recurring monthly projects  Project Setup 1. Name - Clear, descriptive project name 2. Client - Select existing or ",
+    "url": "/docs/projects/creating"
+  },
+  {
+    "id": "projects/files",
+    "title": "Files",
+    "category": "projects",
+    "description": "Share files and documents with your team and clients.",
+    "content": "Files The Files section lets you manage project documents.  File Features - Upload - Drag and drop or browse - Preview - View files in-browser - Share - Control access permissions - Versioning - Track file changes  Uploading Files 1. Go to Project > Files 2. Click Upload or drag files 3. Choose visi",
+    "url": "/docs/projects/files"
+  },
+  {
+    "id": "projects/overview",
+    "title": "Projects Overview",
+    "category": "projects",
+    "description": "Manage projects, timeline, files and activity.",
+    "content": "Projects Projects are the core of ORKA. Each project tracks proposals, contracts, milestones, payments, and files.  Project Features - Timeline - Track project progress - Milestones - Break work into deliverables - Escrow - Secure milestone-based payments - Files - Share documents with clients - Act",
+    "url": "/docs/projects/overview"
+  },
+  {
+    "id": "projects/settings",
+    "title": "Project Settings",
+    "category": "projects",
+    "description": "Configure project options and permissions.",
+    "content": "Project Settings Configure your project's settings and permissions.  General Settings - Project name - Edit project title - Description - Project summary - Budget - Total project budget - Timeline - Start and end dates  Team Permissions - Owner - Full access - Admin - Edit settings, manage team - Me",
+    "url": "/docs/projects/settings"
+  },
+  {
+    "id": "projects/timeline",
+    "title": "Timeline",
+    "category": "projects",
+    "description": "Track project progress and milestones.",
+    "content": "Timeline The timeline view shows your project's progress over time.  Timeline Features - Milestone markers - See key deliverables - Progress bar - Visual completion status - Activity feed - Recent project events - Deadline alerts - Upcoming due dates  Using the Timeline 1. Navigate to your project 2",
+    "url": "/docs/projects/timeline"
+  },
+  {
+    "id": "projects",
+    "title": "Projects",
+    "category": "Product Guide",
+    "description": "Manage projects, timelines, milestones, and client deliverables.",
+    "content": "Projects organize your client work. Each project contains milestones, files, activity feeds, and a timeline.  Creating a Project 1. Navigate to your workspace dashboard 2. Click New Project 3. Enter the project name, client details, and description 4. Set the project currency and timezone  Project O",
+    "url": "/docs/projects"
+  },
+  {
+    "id": "proposals/ai-generator",
+    "title": "AI Generator",
+    "category": "proposals",
+    "description": "Use AI to create professional proposals quickly.",
+    "content": "AI Generator ORKA's AI helps you create compelling proposals in minutes.  How It Works 1. Enter project details 2. Describe your services 3. AI generates proposal content 4. Review and customize 5. Send to client  Tips for Best Results - Be specific about project scope - Include budget expectations ",
+    "url": "/docs/proposals/ai-generator"
+  },
+  {
+    "id": "proposals/edit",
+    "title": "Edit Proposals",
+    "category": "proposals",
+    "description": "Customize your proposals before sending.",
+    "content": "Edit Proposals Fine-tune your proposals to match your needs.  Editing Tools - Rich text editor - Format text easily - Drag-and-drop - Rearrange sections - Media support - Add images and videos - Custom fields - Add specific details  Sections to Include 1. Cover letter - Personal introduction 2. Scop",
+    "url": "/docs/proposals/edit"
+  },
+  {
+    "id": "proposals/overview",
+    "title": "Proposals Overview",
+    "category": "proposals",
+    "description": "Create and manage professional proposals for clients.",
+    "content": "Proposals Create professional proposals to win new business. ORKA helps you craft compelling proposals with AI assistance.  Proposal Features - AI Generator - Create proposals with AI - Templates - Save and reuse proposal formats - E-signatures - Get approvals digitally - Tracking - Know when client",
+    "url": "/docs/proposals/overview"
+  },
+  {
+    "id": "proposals/send",
+    "title": "Send Proposals",
+    "category": "proposals",
+    "description": "Send proposals to clients for review.",
+    "content": "Send Proposals Share your proposals with clients professionally.  Sending Options - Email - Send directly from ORKA - Link - Generate shareable link - Export - Download as PDF  Client Experience - Clean, professional presentation - Easy approval workflow - Digital signature support - Mobile-friendly",
+    "url": "/docs/proposals/send"
+  },
+  {
+    "id": "proposals/status",
+    "title": "Proposal Status",
+    "category": "proposals",
+    "description": "Track proposal status and engagement.",
+    "content": "Proposal Status Monitor your proposals throughout their lifecycle.  Status Types - Draft - Not yet sent - Sent - Delivered to client - Viewed - Client has opened - Accepted - Client approved - Rejected - Client declined - Expired - Past deadline  Tracking Features - View history of changes - See whe",
+    "url": "/docs/proposals/status"
+  },
+  {
+    "id": "proposals/versions",
+    "title": "Proposal Versions",
+    "category": "proposals",
+    "description": "Manage proposal revisions and history.",
+    "content": "Proposal Versions Track changes and maintain proposal history.  Version Control - Automatic versioning on edits - Compare different versions - Restore previous versions - View change history  When to Create Versions - Major content changes - Pricing adjustments - Scope modifications - Client feedbac",
+    "url": "/docs/proposals/versions"
+  },
+  {
+    "id": "proposals",
+    "title": "Proposals",
+    "category": "Product Guide",
+    "description": "Create, send, and track proposals with AI-powered generation.",
+    "content": "Proposals let you scope work, present pricing, and get client approval before starting a project.  Creating a Proposal 1. Go to your project and click New Proposal 2. Use the AI generator to draft from a brief 3. Edit milestones, pricing, and terms 4. Send to the client for review  AI Proposal Gener",
+    "url": "/docs/proposals"
+  },
+  {
+    "id": "security/best-practices",
+    "title": "Best Practices",
+    "category": "security",
+    "description": "Security best practices for ORKA users.",
+    "content": "Best Practices Follow these practices to keep your account secure.  Account Security - Use strong, unique passwords - Enable two-factor authentication - Review account activity regularly - Update recovery information  Team Security - Assign appropriate roles - Review team access regularly - Remove i",
+    "url": "/docs/security/best-practices"
+  },
+  {
+    "id": "security/encryption",
+    "title": "Encryption",
+    "category": "security",
+    "description": "How ORKA encrypts your data.",
+    "content": "Encryption Your data is protected with industry-standard encryption.  Encryption Methods - At rest - AES-256 encryption - In transit - TLS 1.3 - Database - Encrypted storage - Backups - Encrypted backups  Key Management - Hardware security modules - Regular key rotation - Secure key storage - Access",
+    "url": "/docs/security/encryption"
+  },
+  {
+    "id": "security/overview",
+    "title": "Security Overview",
+    "category": "security",
+    "description": "How ORKA keeps your data safe.",
+    "content": "Security ORKA takes security seriously with industry-leading practices.  Security Features - Encryption - Data encrypted at rest and in transit - Authentication - Secure login methods - Authorization - Role-based access control - Audit logging - Track all actions  Data Protection - GDPR compliant - ",
+    "url": "/docs/security/overview"
+  },
+  {
+    "id": "security/permissions",
+    "title": "Permissions",
+    "category": "security",
+    "description": "Control who can access what.",
+    "content": "Permissions ORKA uses role-based access control.  Permission Levels - Owner - Full access, billing - Admin - Manage team and projects - Member - Edit assigned work - Viewer - Read-only access  Setting Permissions 1. Go to workspace settings 2. Click Team Members 3. Edit member role 4. Save changes  ",
+    "url": "/docs/security/permissions"
+  },
+  {
+    "id": "security/wallet-security",
+    "title": "Wallet Security",
+    "category": "security",
+    "description": "Keep your Stellar wallet secure.",
+    "content": "Wallet Security Protect your Stellar wallet and funds.  Security Best Practices - Use strong, unique password - Enable two-factor authentication - Keep recovery phrase offline - Never share private keys  Freighter Security - Private keys never leave extension - Encrypted storage - Auto-lock feature ",
+    "url": "/docs/security/wallet-security"
+  },
+  {
+    "id": "security",
+    "title": "Security",
+    "category": "Developers",
+    "description": "Encryption, permissions, and security best practices.",
+    "content": "ORKA takes security seriously. Your data and funds are protected by multiple layers of security.  Data Encryption All data is encrypted: - At rest: AES-256 encryption for stored data - In transit: TLS 1.3 for all communications - Database: Encrypted backups with key rotation  Authentication ORKA sup",
+    "url": "/docs/security"
+  },
+  {
+    "id": "workspaces",
+    "title": "Workspaces",
+    "category": "Getting Started",
+    "description": "Set up and manage your workspace — team members, billing, and settings.",
+    "content": "A workspace is your agency's home on ORKA. It contains all your projects, team members, and billing settings in one place.  Creating a Workspace 1. Click Create Workspace from the dashboard 2. Enter a name for your workspace 3. Set your default currency and timezone 4. Invite team members by email  ",
+    "url": "/docs/workspaces"
+  }
+]
