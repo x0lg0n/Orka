@@ -1,392 +1,363 @@
-import type { Metadata } from "next";
-import WaitlistCta from "@/components/WaitlistCta";
+"use client";
 
-export const metadata: Metadata = {
-  title: "Docs — ORKA",
-  description:
-    "A plain-language guide to how ORKA works: escrow, milestones, custody modes, verification, payouts, and disputes — no crypto knowledge required.",
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import {
+  Rocket,
+  Folder,
+  Receipt,
+  Shield,
+  Wallet,
+  FileText,
+  Code,
+  Users,
+  HelpCircle,
+  Milestone,
+  FileCheck,
+  ArrowRight,
+  Search,
+  MessageSquare,
+  BarChart3,
+  Activity,
+  LayoutGrid,
+  Headphones,
+  BookOpen,
+} from "lucide-react";
+import SearchModal from "@/components/docs/SearchModal";
+import DocsLandingRightSidebar from "@/components/docs/DocsLandingRightSidebar";
+import { docsNavigation } from "@/lib/docs/config";
+
+const popularGuides = [
+  {
+    title: "Generate Your First Proposal",
+    description: "Create and send a professional proposal in minutes using AI.",
+    icon: FileText,
+    href: "/docs/proposals",
+    color: "text-[#9474ff]",
+  },
+  {
+    title: "Create Your First Contract",
+    description: "Generate contracts with AI and get them signed.",
+    icon: FileCheck,
+    href: "/docs/contracts",
+    color: "text-[#22bd93]",
+  },
+  {
+    title: "Fund Escrow & Get Paid",
+    description: "Secure payments with escrow and release on milestones.",
+    icon: Shield,
+    href: "/docs/escrow",
+    color: "text-[#ff8a22]",
+  },
+  {
+    title: "Connect Freighter Wallet",
+    description: "Connect your Stellar wallet to send and receive payments.",
+    icon: Wallet,
+    href: "/docs/freighter",
+    color: "text-[#3b82f6]",
+  },
+];
+
+const features = [
+  {
+    title: "AI Proposal Generator",
+    description: "Create proposals in seconds with AI.",
+    icon: FileText,
+    color: "bg-[#9474ff]/10 text-[#9474ff]",
+  },
+  {
+    title: "Escrow Payments",
+    description: "Secure milestone-based escrow on Stellar.",
+    icon: Shield,
+    color: "bg-[#ff8a22]/10 text-[#ff8a22]",
+  },
+  {
+    title: "Milestone Tracking",
+    description: "Track progress and approve deliverables.",
+    icon: Milestone,
+    color: "bg-[#22bd93]/10 text-[#22bd93]",
+  },
+  {
+    title: "Client Portal",
+    description: "Shared view for clients to track projects.",
+    icon: Users,
+    color: "bg-[#3b82f6]/10 text-[#3b82f6]",
+  },
+  {
+    title: "Invoices",
+    description: "Auto-generated invoices on milestone release.",
+    icon: Receipt,
+    color: "bg-[#ff4f42]/10 text-[#ff4f42]",
+  },
+  {
+    title: "Payments",
+    description: "Track releases and client payments.",
+    icon: Wallet,
+    color: "bg-[#ff8a22]/10 text-[#ff8a22]",
+  },
+  {
+    title: "Analytics",
+    description: "Real-time dashboards for project health.",
+    icon: BarChart3,
+    color: "bg-[#9474ff]/10 text-[#9474ff]",
+  },
+  {
+    title: "Activity Feed",
+    description: "Complete audit trail of all project activity.",
+    icon: Activity,
+    color: "bg-[#22bd93]/10 text-[#22bd93]",
+  },
+];
+
+const categoryIcons: Record<string, typeof Folder> = {
+  projects: Folder,
+  clients: Users,
+  proposals: FileText,
+  contracts: FileCheck,
+  milestones: Milestone,
+  escrow: Shield,
+  invoices: Receipt,
+  payments: Wallet,
+  freighter: Wallet,
+  api: Code,
+  security: Shield,
+  faq: HelpCircle,
+  "getting-started": Rocket,
+  workspaces: LayoutGrid,
 };
 
-const toc: [string, string][] = [
-  ["what-is-orka", "What is ORKA?"],
-  ["key-terms", "Key terms"],
-  ["who-is-who", "Who's who"],
-  ["getting-started", "Getting started"],
-  ["how-it-works", "How a project works"],
-  ["when-things-go-wrong", "When things go wrong"],
-  ["your-money-is-safe", "Why your money is safe"],
-  ["where-things-live", "Where everything lives"],
-  ["faq", "FAQ"],
-];
-
-const terms: [string, string][] = [
-  [
-    "Escrow",
-    "A secure holding account. The client's money is locked here before work starts, and can only be released when the agreed rules are met.",
-  ],
-  [
-    "Milestone",
-    "A chunk of a project with its own price — e.g. “Design $2,000”. Each milestone is funded, delivered, and paid out independently.",
-  ],
-  [
-    "Managed mode (Mode A)",
-    "The easy default. You sign in with email or Google. ORKA safely holds the keys for you — no wallet, no seed phrase, nothing to lose.",
-  ],
-  [
-    "Self-custody (Mode B)",
-    "For crypto-native users. You connect your own Freighter wallet and sign in your browser. Same product, you hold your own keys.",
-  ],
-  [
-    "Sponsored transaction",
-    "ORKA pays the network fees for you. You never buy or hold “gas” — payments feel like any normal web app.",
-  ],
-  [
-    "Multi-sig release",
-    "Money only leaves escrow when both the client and ORKA approve. No single person — not even ORKA alone — can move your funds.",
-  ],
-  [
-    "Verification",
-    "Before a client approves, ORKA's AI can check the delivery (GitHub, Figma, content) and give a confidence score with source links.",
-  ],
-  [
-    "Arbiter",
-    "A neutral human who steps in if there's a dispute, reviews the evidence, and decides a fair split of the escrowed funds.",
-  ],
-];
-
-const roles: [string, string][] = [
-  ["The Agency", "Owns the ORKA workspace and runs client projects (in our examples, “Oreenza”)."],
-  ["The Client", "The company paying for the work. They fund escrow and approve milestones."],
-  ["The Freelancer", "The person delivering the work and getting paid per milestone."],
-  ["ORKA", "The invisible operator — signs transactions, pays the gas, and co-signs every release."],
-];
-
-const startSteps: [string, string][] = [
-  ["Sign up", "Create an account with email or Google. No wallet or seed phrase needed."],
-  ["Create a project", "Add the client and freelancer, set the scope, and break it into priced milestones."],
-  ["Invite the client", "Your client joins by email — no crypto onboarding, ever."],
-];
-
-const flow: [string, string][] = [
-  [
-    "The project is created",
-    "The agency sets up the project and its milestones (e.g. Discovery $2k, Design $2k, Dev $3k, Launch $1k). Nothing is charged yet.",
-  ],
-  [
-    "Everyone agrees",
-    "The client and agency accept the scope and contract with a click. It's a binding, recorded agreement.",
-  ],
-  [
-    "The client funds escrow",
-    "The client pays in normal currency by card or bank. ORKA converts it and locks the full amount safely in escrow — the client pays $0 in network fees.",
-  ],
-  [
-    "The freelancer delivers",
-    "Work happens in the freelancer's own tools. When a milestone is done, they submit it and attach evidence (GitHub, Figma links).",
-  ],
-  [
-    "The work is verified",
-    "ORKA's AI reviews the delivery and shows the client a “verified — approve?” summary with source links. The client always makes the final call.",
-  ],
-  [
-    "The client approves & the freelancer is paid",
-    "One click releases that milestone's funds to the freelancer, an invoice is emailed automatically, and the payout can be sent to their bank.",
-  ],
-  [
-    "Repeat, then wrap up",
-    "Every milestone repeats the same loop independently. At year-end, ORKA compiles a tax report from the full record.",
-  ],
-];
-
-const trouble: [string, string][] = [
-  [
-    "The client goes silent",
-    "If the client never approves, the funds simply stay locked — the freelancer isn't paid and the client can't pull the money back. ORKA sends reminders, and after a set time it escalates to mediation.",
-  ],
-  [
-    "The client rejects the work",
-    "The client can reject a milestone with a reason. The funds stay in escrow. The freelancer can revise and resubmit, or either party can open a dispute.",
-  ],
-  [
-    "A formal dispute",
-    "Both release and refund pause. A neutral human arbiter reviews the agreement, the deliverables, the rejection reason, and the AI evidence — then decides a fair split (e.g. 70% to the freelancer, 30% refunded).",
-  ],
-];
-
-const guarantees: string[] = [
-  "The client cannot secretly pull escrowed funds back once a milestone is in dispute.",
-  "The client cannot force the money to themselves — releases need client + ORKA multi-sig.",
-  "The freelancer cannot pay themselves — the same multi-sig rule applies.",
-  "Funds move only by the agreed rules or an arbiter's decision — never by one party alone.",
-];
-
-const artifacts: [string, string, string][] = [
-  ["Legal agreement (scope & terms)", "ORKA database", "Both parties click Accept"],
-  ["Escrow rules (the money program)", "Stellar/Soroban contract", "Deployed & enforced by ORKA"],
-  ["Fund / approve / release", "Stellar transactions", "Signed by the right party each time"],
-  ["Audit trail", "ORKA database", "Mirrored from the blockchain automatically"],
-  ["Invoice", "Emailed + stored", "Auto-generated when a milestone releases"],
-];
-
-const faqs: [string, string][] = [
-  ["Do I need a crypto wallet?", "No. Managed mode uses email or Google login. Stellar runs silently underneath. Crypto-native users can optionally connect Freighter."],
-  ["Who pays the network fees?", "ORKA does. Every transaction is sponsored, so it costs you nothing extra."],
-  ["Can ORKA run off with my money?", "No. Releasing escrow requires both the client and ORKA to approve. A single leaked key can never drain your funds."],
-  ["What if I lose access to my account?", "In managed mode, reset your password to regain access. In self-custody mode, your seed phrase is yours to protect."],
-  ["What currencies can I use?", "Clients can pay in normal currency by card or bank; ORKA handles the conversion to USDC and payout back to fiat."],
-];
+const categoryDescriptions: Record<string, string> = {
+  projects: "Manage projects, timeline, files and activity.",
+  clients: "Manage clients and client portal access.",
+  proposals: "Create, send and track proposals.",
+  contracts: "AI contracts, signatures and versions.",
+  milestones: "Create milestones and track progress.",
+  escrow: "Secure payments with automated releases.",
+  invoices: "Generate invoices and get paid faster.",
+  payments: "Track payments and transaction history.",
+  freighter: "Connect wallets and manage transactions.",
+  api: "Developer resources and API reference.",
+  security: "Encryption, permissions and best practices.",
+  faq: "Frequently asked questions.",
+  "getting-started": "Learn ORKA from scratch.",
+  workspaces: "Set up and manage your workspace.",
+};
 
 export default function DocsPage() {
+  const [searchOpen, setSearchOpen] = useState(false);
+
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        setSearchOpen(true);
+      }
+    }
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
+  const allItems = docsNavigation.flatMap((s) => s.items);
+
   return (
-    <div className="overflow-hidden">
-      {/* ── Header ── */}
+    <div className="flex gap-8">
+      <SearchModal open={searchOpen} onClose={() => setSearchOpen(false)} />
+
+      {/* Main Content */}
+      <div className="flex-1 min-w-0 overflow-hidden">
+
+      {/* ── Hero ── */}
       <section className="relative overflow-hidden rounded-b-[42px] bg-night px-4 pb-16 pt-5 text-white md:rounded-b-[72px] md:px-8 lg:px-12">
         <div className="relative z-10 mx-auto max-w-5xl pt-16 pb-4 text-center">
           <span className="text-[15px] font-medium text-white sm:text-[18px]">
-            📘 Documentation
+            Documentation
           </span>
           <h1 className="display mx-auto mt-6 max-w-4xl text-[2.6rem] uppercase leading-[1.05] text-white sm:text-[4.4rem] md:text-[6rem]">
-            How <span className="text-orange">ORKA</span> works
+            Documentation
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-base font-normal leading-7 text-white/78 sm:text-lg sm:leading-8">
-            A plain-language guide to escrow, milestones, payouts, and disputes.
-            No crypto knowledge required — if you can use a normal web app, you
-            can use ORKA.
+            Everything you need to run your service business with ORKA.
           </p>
+
+          {/* Search bar */}
+          <button
+            onClick={() => setSearchOpen(true)}
+            className="mx-auto mt-8 flex w-full max-w-lg items-center gap-3 rounded-2xl bg-white px-5 py-4 text-left transition-all hover:shadow-[0_0_40px_rgba(255,255,255,0.15)]"
+          >
+            <Search size={18} className="shrink-0 text-night/40" />
+            <span className="flex-1 text-sm text-night/40">
+              Search documentation...
+            </span>
+            <kbd className="rounded-lg bg-night px-2 py-1 text-[11px] font-bold text-white/60">
+              ⌘K
+            </kbd>
+          </button>
         </div>
       </section>
 
-      {/* ── Body ── */}
+      {/* ── Popular Guides ── */}
       <section className="px-4 py-16 md:px-8 lg:px-12">
-        <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[230px_1fr] lg:gap-14">
-          {/* Table of contents */}
-          <aside className="lg:sticky lg:top-8 lg:self-start">
-            <p className="section-label text-coral">On this page</p>
-            <nav className="mt-3 flex flex-wrap gap-2 lg:flex-col lg:gap-1">
-              {toc.map(([id, label]) => (
-                <a
-                  key={id}
-                  href={`#${id}`}
-                  className="rounded-full border-2 border-night/10 px-4 py-1.5 text-sm font-bold text-night/70 transition hover:border-night hover:bg-night hover:text-white lg:border-transparent lg:px-2 lg:py-1">
-                  {label}
-                </a>
-              ))}
-            </nav>
-          </aside>
+        <div className="mx-auto max-w-7xl">
+          <h2 className="display text-3xl uppercase text-night sm:text-4xl">
+            Popular Guides
+          </h2>
+          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {popularGuides.map((guide) => {
+              const Icon = guide.icon;
+              return (
+                <Link
+                  key={guide.title}
+                  href={guide.href}
+                  className="group cut-corner rounded-[14px] border-2 border-night bg-white p-5 transition-all duration-300 hover:-translate-y-1 hover:border-violet hover:shadow-[0_0_30px_rgba(148,116,255,0.12)]"
+                >
+                  <span
+                    className={`grid size-10 place-items-center rounded-xl ${guide.color} bg-current/10`}
+                  >
+                    <Icon size={20} />
+                  </span>
+                  <h3 className="mt-3 display text-lg uppercase text-night">
+                    {guide.title}
+                  </h3>
+                  <p className="mt-1 text-[13px] font-bold leading-5 text-night/60">
+                    {guide.description}
+                  </p>
+                  <span className="mt-3 inline-flex items-center gap-1 text-[13px] font-black text-violet">
+                    Read Guide{" "}
+                    <ArrowRight
+                      size={12}
+                      className="transition-transform group-hover:translate-x-1"
+                    />
+                  </span>
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+      </section>
 
-          {/* Content */}
-          <div className="max-w-3xl">
-            {/* What is ORKA */}
-            <div id="what-is-orka" className="scroll-mt-24">
-              <h2 className="display text-4xl uppercase sm:text-5xl">
-                What is ORKA?
-              </h2>
-              <p className="mt-4 text-base leading-8 text-night/80 sm:text-[18px]">
-                ORKA is the financial operating system for service work. It
-                handles the annoying parts of running a project across borders —
-                proposals, escrow, verifying delivery, payouts, invoices, and
-                records — so agencies and freelancers can focus on the actual
-                work.
-              </p>
-              <p className="mt-4 text-base leading-8 text-night/80 sm:text-[18px]">
-                Under the hood it uses the Stellar blockchain to guarantee that
-                money moves only by the agreed rules. But you never see any of
-                that: you log in with email, pay with a card, and click to
-                approve. The blockchain is invisible.
-              </p>
-            </div>
-
-            {/* Key terms */}
-            <div id="key-terms" className="mt-14 scroll-mt-24">
-              <h2 className="display text-4xl uppercase sm:text-5xl">Key terms</h2>
-              <dl className="mt-6 grid gap-4 sm:grid-cols-2">
-                {terms.map(([term, def]) => (
-                  <div
-                    key={term}
-                    className="cut-corner rounded-[14px] border-2 border-night bg-white p-5">
-                    <dt className="display text-xl uppercase">{term}</dt>
-                    <dd className="mt-2 text-sm font-bold leading-6 text-night/68">
-                      {def}
-                    </dd>
-                  </div>
-                ))}
-              </dl>
-            </div>
-
-            {/* Who's who */}
-            <div id="who-is-who" className="mt-14 scroll-mt-24">
-              <h2 className="display text-4xl uppercase sm:text-5xl">
-                Who&apos;s who
-              </h2>
-              <div className="mt-6 grid gap-4 sm:grid-cols-2">
-                {roles.map(([role, copy]) => (
-                  <div
-                    key={role}
-                    className="rounded-[14px] border-2 border-night/12 bg-white p-5">
-                    <h3 className="display text-2xl uppercase">{role}</h3>
-                    <p className="mt-2 text-sm font-bold leading-6 text-night/68">
-                      {copy}
+      {/* ── Browse Documentation ── */}
+      <section className="px-4 py-12 md:px-8 lg:px-12">
+        <div className="mx-auto max-w-7xl">
+          <h2 className="display text-3xl uppercase text-night sm:text-4xl">
+            Browse Documentation
+          </h2>
+          <div className="mt-8 grid gap-3 sm:grid-cols-2">
+            {allItems.map((item) => {
+              const Icon = categoryIcons[item.slug] || Folder;
+              const desc =
+                categoryDescriptions[item.slug] || "Documentation for this topic.";
+              return (
+                <Link
+                  key={item.slug}
+                  href={`/docs/${item.slug}`}
+                  className="group flex items-center gap-4 rounded-xl border border-night/10 bg-white p-4 transition-all hover:-translate-y-0.5 hover:border-violet hover:shadow-[0_0_20px_rgba(148,116,255,0.08)]"
+                >
+                  <span className="grid size-10 place-items-center rounded-xl bg-violet/10 text-violet">
+                    <Icon size={18} />
+                  </span>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-black text-night">
+                      {item.title}
+                    </p>
+                    <p className="text-[12px] font-bold text-night/50">
+                      {desc}
                     </p>
                   </div>
-                ))}
-              </div>
-            </div>
+                  <ArrowRight
+                    size={14}
+                    className="shrink-0 text-night/20 transition-transform group-hover:translate-x-1"
+                  />
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+      </section>
 
-            {/* Getting started */}
-            <div id="getting-started" className="mt-14 scroll-mt-24">
-              <h2 className="display text-4xl uppercase sm:text-5xl">
-                Getting started
-              </h2>
-              <div className="mt-6 flex flex-col gap-3">
-                {startSteps.map(([title, copy], i) => (
-                  <div
-                    key={title}
-                    className="flex items-start gap-4 rounded-[14px] border-2 border-night bg-lime p-5 text-night">
-                    <span className="display text-3xl">{i + 1}.</span>
-                    <div>
-                      <h3 className="display text-xl uppercase">{title}</h3>
-                      <p className="mt-1 text-sm font-bold leading-6">{copy}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
+      {/* ── Features ── */}
+      <section className="px-4 py-16 md:px-8 lg:px-12">
+        <div className="mx-auto max-w-7xl">
+          <h2 className="display text-3xl uppercase text-night sm:text-4xl">
+            Platform Features
+          </h2>
+          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {features.map((feature) => {
+              const Icon = feature.icon;
+              return (
+                <div
+                  key={feature.title}
+                  className="rounded-xl border border-night/10 bg-white p-5"
+                >
+                  <span
+                    className={`grid size-10 place-items-center rounded-xl ${feature.color}`}
+                  >
+                    <Icon size={18} />
+                  </span>
+                  <h3 className="mt-3 text-sm font-black text-night">
+                    {feature.title}
+                  </h3>
+                  <p className="mt-1 text-[12px] font-bold text-night/50">
+                    {feature.description}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
 
-            {/* How it works */}
-            <div id="how-it-works" className="mt-14 scroll-mt-24">
-              <h2 className="display text-4xl uppercase sm:text-5xl">
-                How a project works
-              </h2>
-              <p className="mt-4 text-base leading-8 text-night/80 sm:text-[18px]">
-                Here&apos;s the full journey, from kickoff to payout — the
-                &quot;happy path&quot; where everything goes smoothly.
-              </p>
-              <ol className="mt-6 flex flex-col">
-                {flow.map(([title, copy], i) => (
-                  <li
-                    key={title}
-                    className="flex items-start gap-4 border-b-2 border-night/10 py-5">
-                    <span className="display shrink-0 text-4xl text-orange sm:text-5xl">
-                      {String(i + 1).padStart(2, "0")}
-                    </span>
-                    <div>
-                      <h3 className="display text-2xl uppercase">{title}</h3>
-                      <p className="mt-1 text-sm font-bold leading-6 text-night/70 sm:text-base">
-                        {copy}
-                      </p>
-                    </div>
-                  </li>
-                ))}
-              </ol>
-            </div>
-
-            {/* When things go wrong */}
-            <div id="when-things-go-wrong" className="mt-14 scroll-mt-24">
-              <h2 className="display text-4xl uppercase sm:text-5xl">
-                When things go wrong
-              </h2>
-              <p className="mt-4 text-base leading-8 text-night/80 sm:text-[18px]">
-                Not every project is smooth. ORKA is built so that no one can be
-                cheated, whatever happens.
-              </p>
-              <div className="mt-6 grid gap-4 md:grid-cols-3">
-                {trouble.map(([title, copy]) => (
-                  <div
-                    key={title}
-                    className="cut-corner rounded-[14px] border-2 border-night bg-white p-5">
-                    <h3 className="display text-xl uppercase">{title}</h3>
-                    <p className="mt-2 text-sm font-bold leading-6 text-night/68">
-                      {copy}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Your money is safe */}
-            <div id="your-money-is-safe" className="mt-14 scroll-mt-24">
-              <div className="rounded-[20px] bg-night p-6 text-white md:p-8">
-                <h2 className="display text-4xl uppercase text-lime sm:text-5xl">
-                  Why your money is safe
-                </h2>
-                <ul className="mt-6 flex flex-col gap-3">
-                  {guarantees.map((g) => (
-                    <li key={g} className="flex items-start gap-3">
-                      <span className="mt-0.5 grid size-6 shrink-0 place-items-center rounded-full bg-lime text-xs font-black text-night">
-                        ✓
-                      </span>
-                      <p className="text-sm font-bold leading-6 text-white/85 sm:text-base">
-                        {g}
-                      </p>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-
-            {/* Where things live */}
-            <div id="where-things-live" className="mt-14 scroll-mt-24">
-              <h2 className="display text-4xl uppercase sm:text-5xl">
-                Where everything lives
-              </h2>
-              <div className="mt-6 overflow-x-auto">
-                <table className="w-full min-w-[560px] border-collapse text-left">
-                  <thead>
-                    <tr className="border-b-2 border-night">
-                      <th className="display py-3 pr-4 text-sm uppercase">
-                        What
-                      </th>
-                      <th className="display py-3 pr-4 text-sm uppercase">
-                        Where
-                      </th>
-                      <th className="display py-3 text-sm uppercase">
-                        How it&apos;s confirmed
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {artifacts.map(([what, where, how]) => (
-                      <tr key={what} className="border-b border-night/10">
-                        <td className="py-3 pr-4 text-sm font-bold">{what}</td>
-                        <td className="py-3 pr-4 text-sm font-bold text-night/70">
-                          {where}
-                        </td>
-                        <td className="py-3 text-sm font-bold text-night/70">
-                          {how}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-
-            {/* FAQ */}
-            <div id="faq" className="mt-14 scroll-mt-24">
-              <h2 className="display text-4xl uppercase sm:text-5xl">FAQ</h2>
-              <div className="mt-4 flex flex-col">
-                {faqs.map(([q, a]) => (
-                  <details key={q} className="group border-b-2 border-night/10 py-5">
-                    <summary className="flex cursor-pointer items-start gap-3">
-                      <span className="mt-0.5 grid size-7 shrink-0 place-items-center rounded-full bg-night text-white transition-all duration-300 group-open:rotate-45 group-open:bg-violet">
-                        +
-                      </span>
-                      <span className="display text-xl uppercase leading-7 text-night transition-colors group-open:text-violet sm:text-2xl">
-                        {q}
-                      </span>
-                    </summary>
-                    <p className="ml-10 mt-3 text-sm font-bold leading-7 text-night/70 sm:text-base">
-                      {a}
-                    </p>
-                  </details>
-                ))}
-              </div>
+      {/* ── Help Section ── */}
+      <section className="px-4 py-16 md:px-8 lg:px-12">
+        <div className="mx-auto max-w-7xl rounded-[24px] bg-night p-8 text-white md:p-12">
+          <div className="text-center">
+            <h2 className="display text-4xl uppercase sm:text-5xl">
+              Still need help?
+            </h2>
+            <p className="mx-auto mt-4 max-w-xl text-base font-normal text-white/70">
+              Our support team is here to help you succeed with Orka.
+            </p>
+            <div className="mt-8 flex flex-wrap justify-center gap-4">
+              <a
+                href="#"
+                className="flex items-center gap-2 rounded-full bg-white/10 px-6 py-3 text-sm font-black text-white transition hover:bg-white/20"
+              >
+                <MessageSquare size={16} /> Join Discord
+              </a>
+              <Link
+                href="/contact"
+                className="flex items-center gap-2 rounded-full bg-violet px-6 py-3 text-sm font-black text-white transition hover:bg-violet/90"
+              >
+                <Headphones size={16} /> Contact Support
+              </Link>
+              <a
+                href="#"
+                className="flex items-center gap-2 rounded-full bg-white/10 px-6 py-3 text-sm font-black text-white transition hover:bg-white/20"
+              >
+                <BookOpen size={16} /> Book Demo
+              </a>
             </div>
           </div>
         </div>
       </section>
 
-      <WaitlistCta />
+      {/* ── Footer CTA ── */}
+      <section className="px-4 pb-16 md:px-8 lg:px-12">
+        <div className="mx-auto max-w-7xl text-center">
+          <h2 className="display text-3xl uppercase text-night sm:text-4xl">
+            Start building with ORKA
+          </h2>
+          <Link
+            href="/dashboard"
+            className="mt-6 inline-flex items-center gap-2 rounded-full bg-lime px-8 py-4 text-sm font-black uppercase text-night transition-all hover:-translate-y-0.5 hover:bg-orange hover:text-white"
+          >
+            Open Dashboard
+          </Link>
+        </div>
+      </section>
+      </div>
+
+      {/* Right Sidebar */}
+      <DocsLandingRightSidebar />
     </div>
   );
 }
