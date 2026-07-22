@@ -172,7 +172,7 @@ export default function AboutPage() {
       </section>
 
       {/* ── Custody model ── */}
-      <section className="px-4 py-10 md:px-8 lg:px-12">
+      <section className="px-4 py-16 md:px-8 lg:px-12">
         <div className="mx-auto max-w-7xl text-center md:text-left">
           <p className="section-label text-coral">Dual-Mode Custody</p>
           <h2 className="display mt-2 text-4xl uppercase sm:text-5xl md:text-6xl">

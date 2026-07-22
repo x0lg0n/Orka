@@ -52,8 +52,8 @@ export default function Hero() {
       {/* Hero content */}
       <div className="relative z-10 mx-auto max-w-7xl pt-16 pb-8">
         <div className="flex flex-wrap items-center justify-center gap-3 mb-6">
-          <span className="text-center text-[15px] font-medium text-white sm:text-[18px]">
-            ❤️ #1 Financial OS for Service Work
+          <span className="rounded-full border border-white/20 bg-white/8 px-4 py-1.5 text-center text-[13px] font-semibold uppercase tracking-[0.12em] text-white/80 sm:text-[14px]">
+            Early access — join the waitlist
           </span>
         </div>
 
@@ -98,9 +98,9 @@ export default function Hero() {
             </span>
           ))}
           <p className="mt-3 w-full text-[24px] font-medium uppercase leading-[28px] text-white/90 sm:text-[32px] sm:leading-[35px]">
-            5X achieved ROI on ad spend consistently! Average{" "}
+            From rough brief to{" "}
             <span className="text-white/50">
-              increase in ROI for our clients.
+              paid and reconciled in 4 steps.
             </span>
           </p>
         </div>
@@ -130,8 +130,7 @@ export default function Hero() {
             </p>
           </div>
           <p className="text-[14px] font-medium text-white/80">
-            Helping brands thrive with strategic campaigns, creative content,
-            and results-focused marketing precision marketing.
+            50+ design partners and early adopters already on the waitlist.
           </p>
         </div>
       </div>

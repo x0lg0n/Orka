@@ -37,7 +37,7 @@ export const engines: Engine[] = [
   {
     title: "Email & Payouts",
     copy: "Automated invoices, multi-currency records, tax categories, and back-office reporting workflows.",
-    color: "bg-coral",
+    color: "bg-violet",
   },
   {
     title: "Financial Ledger",

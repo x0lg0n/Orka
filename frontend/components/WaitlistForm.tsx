@@ -111,7 +111,7 @@ export default function WaitlistForm({
         <button
           type="submit"
           disabled={loading}
-          className="flex min-h-12 items-center justify-center gap-2 rounded-full border-2 border-night bg-lime px-7 text-m font-black uppercase text-night transition hover:-translate-y-0.5 hover:bg-orange hover:text-white disabled:cursor-wait disabled:opacity-70">
+          className="flex min-h-12 items-center justify-center gap-2 rounded-full border-2 border-night bg-lime px-7 text-sm font-black uppercase text-night transition hover:-translate-y-0.5 hover:bg-orange hover:text-white disabled:cursor-wait disabled:opacity-70">
           {loading ?
             "Joining..."
           : <>

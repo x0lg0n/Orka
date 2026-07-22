@@ -147,7 +147,7 @@ export default function ServicesPage() {
             </div>
             <div className="flex flex-col items-start gap-4 md:items-end">
               <Link
-                href="/signup"
+                href="/#waitlist"
                 className="group inline-flex min-h-12 items-center gap-3 bg-violet px-5 text-sm font-black uppercase text-white transition-colors hover:bg-night focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-violet"
               >
                 Create an account
