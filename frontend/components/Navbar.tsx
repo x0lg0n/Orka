@@ -6,8 +6,12 @@ import {
   ArrowRight,
   BookOpen,
   ChevronDown,
+  ExternalLink,
   FileText,
+  Mail,
   Menu,
+  Rss,
+  User,
   X,
 } from "lucide-react";
 import { useEffect, useId, useRef, useState } from "react";
@@ -61,6 +65,9 @@ const menuGroups: MenuGroup[] = [
     heading: "Everything you need to understand the ORKA approach.",
     links: [
       { label: "Documentation", description: "Product notes, setup guidance, and practical references.", href: "/docs", icon: BookOpen },
+      { label: "About", description: "Learn more about ORKA and the team behind it.", href: "/about", icon: User },
+      { label: "Blog", description: "Product updates, guides, and industry insights.", href: "/blog", icon: Rss },
+      { label: "Contact", description: "Get in touch with the ORKA team.", href: "/contact", icon: Mail },
       { label: "Privacy", description: "How ORKA collects, uses, and protects your data.", href: "/privacy", icon: FileText },
       { label: "Terms & conditions", description: "The terms governing access to ORKA.", href: "/terms", icon: FileText },
     ],
@@ -127,11 +134,14 @@ export default function Navbar() {
           <Link href="/pricing" className="inline-flex h-9 items-center rounded-md px-3 text-sm font-medium text-white/72 transition-colors hover:bg-white/8 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet">
             Pricing
           </Link>
+          <Link href="/blog" className="inline-flex h-9 items-center rounded-md px-3 text-sm font-medium text-white/72 transition-colors hover:bg-white/8 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet">
+            Blog
+          </Link>
         </div>
 
         <div className="ml-auto hidden items-center gap-2 lg:flex">
           <a
-            href="https://github.com/anomalyco/orka"
+            href="https://github.com/x0lg0n/Orka"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-1.5 rounded-md border border-white/18 px-3 py-2 text-sm font-medium text-white/78 transition-colors hover:text-white hover:bg-white/8 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet"
@@ -195,7 +205,10 @@ export default function Navbar() {
               </div>
             );
           })}
-          <Link href="/pricing" onClick={closeAll} className="block border-b border-white/10 px-2 py-4 text-sm font-semibold text-white">Pricing</Link>
+          <div className="flex gap-4 border-b border-white/10 px-2 py-4">
+            <Link href="/pricing" onClick={closeAll} className="text-sm font-semibold text-white">Pricing</Link>
+            <Link href="/blog" onClick={closeAll} className="text-sm font-semibold text-white">Blog</Link>
+          </div>
           <div className="grid grid-cols-2 gap-2 pt-4">
             <Link href="/signin" onClick={closeAll} className="rounded-md border border-white/18 px-3 py-2.5 text-center text-sm font-semibold text-white">Sign in</Link>
             <Link href="/signup" onClick={closeAll} className="rounded-md bg-violet px-3 py-2.5 text-center text-sm font-semibold text-white">Get started</Link>
