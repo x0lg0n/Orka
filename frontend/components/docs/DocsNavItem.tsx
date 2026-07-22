@@ -61,21 +61,18 @@ export default function DocsNavItem({ item }: DocsNavItemProps) {
 
       {hasChildren && (
         <div
-          className={`absolute left-1/2 top-full z-50 -translate-x-1/2 pt-2 transition-opacity duration-150 ${
-            isOpen ? "visible opacity-100" : "invisible opacity-0"
+          className={`absolute left-1/2 top-full z-50 -translate-x-1/2 pt-3 transition-all duration-150 ${
+            isOpen ? "visible opacity-100 translate-y-0" : "invisible opacity-0 translate-y-1"
           }`}
         >
-          <div className="w-[640px] rounded-2xl border border-night/10 bg-white p-6 shadow-xl backdrop-blur-xl">
-            <div className="mb-4">
-              <p className="text-sm font-black text-night">{item.title}</p>
-              {item.description && (
-                <p className="mt-0.5 text-[13px] font-bold text-night/50">
-                  {item.description}
-                </p>
-              )}
-            </div>
+          <div className="w-fit min-w-[220px] max-w-[480px] rounded-xl border border-night/[0.08] bg-white p-2 shadow-[0_12px_40px_-8px_rgba(0,0,0,0.12)]">
+            {item.description && (
+              <p className="mb-1 px-3 pt-2 pb-1 text-[11px] font-bold text-night/40 uppercase tracking-wide">
+                {item.description}
+              </p>
+            )}
 
-            <div className={`grid ${cols} gap-1`}>
+            <div className={`grid ${cols} gap-0.5`}>
               {item.children!.map((child) => {
                 const href = `/docs/${item.slug}/${child.slug}`;
                 const isChildActive = pathname === href;
@@ -84,13 +81,13 @@ export default function DocsNavItem({ item }: DocsNavItemProps) {
                   <Link
                     key={child.slug}
                     href={href}
-                    className={`rounded-xl px-3 py-2.5 transition-colors ${
+                    className={`rounded-lg px-3 py-2 text-[13px] font-semibold transition-colors ${
                       isChildActive
                         ? "bg-violet/10 text-violet"
-                        : "text-night hover:bg-night/5"
+                        : "text-night/70 hover:bg-night/[0.04] hover:text-night"
                     }`}
                   >
-                    <p className="text-[13px] font-bold">{child.title}</p>
+                    {child.title}
                   </Link>
                 );
               })}

@@ -52,7 +52,7 @@ export default function DocsNavbar() {
             </Link>
           </div>
 
-          <div className="scrollbar-hide hidden items-center gap-0.5 overflow-x-auto lg:flex">
+          <div className="scrollbar-hide hidden items-center gap-0.5 lg:flex">
             {allItems.map((item) => (
               <DocsNavItem key={item.slug} item={item} />
             ))}
