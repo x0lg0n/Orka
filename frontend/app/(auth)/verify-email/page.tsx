@@ -86,10 +86,10 @@ export default function VerifyEmailPage() {
       )}
 
       <Link
-        href="/login"
+        href="/signin"
         className="auth-text-link mt-6 block text-center text-sm"
       >
-        Back to login
+        Back to sigin
       </Link>
     </section>
   );

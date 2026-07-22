@@ -56,10 +56,10 @@ export default function ResetPasswordPage() {
       )}
 
       <Link
-        href="/login"
+        href="/signin"
         className="auth-text-link mt-6 block text-center text-sm"
       >
-        Back to login
+        Back to signin
       </Link>
     </section>
   );

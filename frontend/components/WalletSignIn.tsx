@@ -99,7 +99,7 @@ export default function WalletSignIn({ intent = "signin" }: WalletSignInProps) {
 
       <p className="text-center text-sm text-muted-foreground">
         {intent === "signup" ?
-          <>Already have an account? <Link href="/login" className="auth-inline-link">Sign in</Link></>
+          <>Already have an account? <Link href="/signin" className="auth-inline-link">Sign in</Link></>
         : <>Prefer email? <Link href="/signup" className="auth-inline-link">Create an account</Link></>}
       </p>
     </div>
