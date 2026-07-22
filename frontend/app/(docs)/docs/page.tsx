@@ -1,6 +1,5 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   Rocket,
@@ -15,7 +14,6 @@ import {
   Milestone,
   FileCheck,
   ArrowRight,
-  Search,
   MessageSquare,
   BarChart3,
   Activity,
@@ -23,8 +21,6 @@ import {
   Headphones,
   BookOpen,
 } from "lucide-react";
-import SearchModal from "@/components/docs/SearchModal";
-import DocsLandingRightSidebar from "@/components/docs/DocsLandingRightSidebar";
 import { docsNavigation } from "@/lib/docs/config";
 
 const popularGuides = [
@@ -144,29 +140,11 @@ const categoryDescriptions: Record<string, string> = {
 };
 
 export default function DocsPage() {
-  const [searchOpen, setSearchOpen] = useState(false);
-
-  useEffect(() => {
-    function handleKeyDown(e: KeyboardEvent) {
-      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
-        e.preventDefault();
-        setSearchOpen(true);
-      }
-    }
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, []);
-
   const allItems = docsNavigation.flatMap((s) => s.items);
 
   return (
-    <div className="flex gap-8">
-      <SearchModal open={searchOpen} onClose={() => setSearchOpen(false)} />
-
-      {/* Main Content */}
-      <div className="flex-1 min-w-0 overflow-hidden">
-
-      {/* ── Hero ── */}
+    <div>
+      {/* Hero */}
       <section className="relative overflow-hidden rounded-b-[42px] bg-night px-4 pb-16 pt-5 text-white md:rounded-b-[72px] md:px-8 lg:px-12">
         <div className="relative z-10 mx-auto max-w-5xl pt-16 pb-4 text-center">
           <span className="text-[15px] font-medium text-white sm:text-[18px]">
@@ -178,24 +156,10 @@ export default function DocsPage() {
           <p className="mx-auto mt-6 max-w-2xl text-base font-normal leading-7 text-white/78 sm:text-lg sm:leading-8">
             Everything you need to run your service business with ORKA.
           </p>
-
-          {/* Search bar */}
-          <button
-            onClick={() => setSearchOpen(true)}
-            className="mx-auto mt-8 flex w-full max-w-lg items-center gap-3 rounded-2xl bg-white px-5 py-4 text-left transition-all hover:shadow-[0_0_40px_rgba(255,255,255,0.15)]"
-          >
-            <Search size={18} className="shrink-0 text-night/40" />
-            <span className="flex-1 text-sm text-night/40">
-              Search documentation...
-            </span>
-            <kbd className="rounded-lg bg-night px-2 py-1 text-[11px] font-bold text-white/60">
-              ⌘K
-            </kbd>
-          </button>
         </div>
       </section>
 
-      {/* ── Popular Guides ── */}
+      {/* Popular Guides */}
       <section className="px-4 py-16 md:px-8 lg:px-12">
         <div className="mx-auto max-w-7xl">
           <h2 className="display text-3xl uppercase text-night sm:text-4xl">
@@ -235,7 +199,7 @@ export default function DocsPage() {
         </div>
       </section>
 
-      {/* ── Browse Documentation ── */}
+      {/* Browse Documentation */}
       <section className="px-4 py-12 md:px-8 lg:px-12">
         <div className="mx-auto max-w-7xl">
           <h2 className="display text-3xl uppercase text-night sm:text-4xl">
@@ -255,7 +219,7 @@ export default function DocsPage() {
                   <span className="grid size-10 place-items-center rounded-xl bg-violet/10 text-violet">
                     <Icon size={18} />
                   </span>
-                  <div className="flex-1 min-w-0">
+                  <div className="min-w-0 flex-1">
                     <p className="text-sm font-black text-night">
                       {item.title}
                     </p>
@@ -274,7 +238,7 @@ export default function DocsPage() {
         </div>
       </section>
 
-      {/* ── Features ── */}
+      {/* Features */}
       <section className="px-4 py-16 md:px-8 lg:px-12">
         <div className="mx-auto max-w-7xl">
           <h2 className="display text-3xl uppercase text-night sm:text-4xl">
@@ -306,7 +270,7 @@ export default function DocsPage() {
         </div>
       </section>
 
-      {/* ── Help Section ── */}
+      {/* Help Section */}
       <section className="px-4 py-16 md:px-8 lg:px-12">
         <div className="mx-auto max-w-7xl rounded-[24px] bg-night p-8 text-white md:p-12">
           <div className="text-center">
@@ -340,7 +304,7 @@ export default function DocsPage() {
         </div>
       </section>
 
-      {/* ── Footer CTA ── */}
+      {/* Footer CTA */}
       <section className="px-4 pb-16 md:px-8 lg:px-12">
         <div className="mx-auto max-w-7xl text-center">
           <h2 className="display text-3xl uppercase text-night sm:text-4xl">
@@ -354,10 +318,6 @@ export default function DocsPage() {
           </Link>
         </div>
       </section>
-      </div>
-
-      {/* Right Sidebar */}
-      <DocsLandingRightSidebar />
     </div>
   );
 }

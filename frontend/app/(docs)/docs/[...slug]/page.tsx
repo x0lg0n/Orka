@@ -4,8 +4,8 @@ import path from "path";
 import matter from "gray-matter";
 import { getAllDocSlugs, getDocBySlug, getParentSlug } from "@/lib/docs/config";
 import { renderMDX } from "@/lib/docs/mdx";
-import Breadcrumbs from "@/components/docs/Breadcrumbs";
-import DocsToc from "@/components/docs/DocsToc";
+import DocsBreadcrumbs from "@/components/docs/DocsBreadcrumbs";
+import DocsRightSidebar from "@/components/docs/DocsRightSidebar";
 import PrevNextNav from "@/components/docs/PrevNextNav";
 import Feedback from "@/components/docs/Feedback";
 import RelatedArticles from "@/components/docs/RelatedArticles";
@@ -42,16 +42,13 @@ export default async function DocPage({ params }: Props) {
 
   const docsDir = path.join(process.cwd(), "content/docs");
   
-  // Try nested path first, then flat path
   let filePath = path.join(docsDir, `${slugPath}.mdx`);
   
-  // For parent routes with children, try overview.mdx
   const parentSlug = getParentSlug(slugPath);
   if (!fs.existsSync(filePath) && parentSlug) {
     filePath = path.join(docsDir, `${slugPath}/overview.mdx`);
   }
   
-  // Fallback to parent's root file
   if (!fs.existsSync(filePath)) {
     filePath = path.join(docsDir, `${parentSlug || slugPath}.mdx`);
   }
@@ -66,28 +63,30 @@ export default async function DocPage({ params }: Props) {
   const mdxContent = await renderMDX(content);
 
   return (
-    <div className="flex gap-10">
-      <article className="flex-1 min-w-0 max-w-[720px]">
-        <Breadcrumbs slug={slugPath} />
+    <div className="mx-auto max-w-7xl px-4 py-8 md:px-8 lg:px-12">
+      <div className="grid gap-12" style={{ gridTemplateColumns: "minmax(0, 1fr) 320px" }}>
+        <article className="min-w-0 max-w-[920px]">
+          <DocsBreadcrumbs slug={slugPath} />
 
-        <h1 className="display text-4xl uppercase sm:text-5xl text-night">
-          {data.title || doc.title}
-        </h1>
+          <h1 className="display text-4xl uppercase sm:text-5xl text-night">
+            {data.title || doc.title}
+          </h1>
 
-        {data.description && (
-          <p className="mt-3 text-base font-normal leading-7 text-night/60 sm:text-[18px]">
-            {data.description}
-          </p>
-        )}
+          {data.description && (
+            <p className="mt-3 text-base font-normal leading-7 text-night/60 sm:text-[18px]">
+              {data.description}
+            </p>
+          )}
 
-        <div className="mt-8">{mdxContent}</div>
+          <div className="mt-8">{mdxContent}</div>
 
-        <PrevNextNav slug={slugPath} />
-        <Feedback slug={slugPath} />
-        <RelatedArticles slug={slugPath} />
-      </article>
+          <PrevNextNav slug={slugPath} />
+          <Feedback slug={slugPath} />
+          <RelatedArticles slug={slugPath} />
+        </article>
 
-      <DocsToc headings={headings} />
+        <DocsRightSidebar headings={headings} />
+      </div>
     </div>
   );
 }
