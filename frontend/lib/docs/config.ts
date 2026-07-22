@@ -7,6 +7,7 @@ export interface DocItem {
   title: string;
   slug: string;
   icon?: string;
+  description?: string;
   children?: DocItem[];
 }
 
@@ -26,6 +27,7 @@ export const docsNavigation: DocSection[] = [
         title: "Getting Started",
         slug: "getting-started",
         icon: "rocket",
+        description: "Set up your account and learn the basics.",
         children: [
           { title: "Overview", slug: "overview" },
           { title: "Create Account", slug: "create-account" },
@@ -38,6 +40,7 @@ export const docsNavigation: DocSection[] = [
         title: "Workspaces",
         slug: "workspaces",
         icon: "layout-grid",
+        description: "Create and manage your team workspace.",
         children: [
           { title: "Overview", slug: "overview" },
           { title: "Create Workspace", slug: "create" },
@@ -55,6 +58,7 @@ export const docsNavigation: DocSection[] = [
         title: "Projects",
         slug: "projects",
         icon: "folder",
+        description: "Manage client work, milestones, files, and payments.",
         children: [
           { title: "Overview", slug: "overview" },
           { title: "Creating Projects", slug: "creating" },
@@ -68,6 +72,7 @@ export const docsNavigation: DocSection[] = [
         title: "Proposals",
         slug: "proposals",
         icon: "file-text",
+        description: "Create, send, and track proposals with AI.",
         children: [
           { title: "Overview", slug: "overview" },
           { title: "AI Generator", slug: "ai-generator" },
@@ -81,6 +86,7 @@ export const docsNavigation: DocSection[] = [
         title: "Contracts",
         slug: "contracts",
         icon: "file-check",
+        description: "Generate contracts and collect signatures.",
         children: [
           { title: "Overview", slug: "overview" },
           { title: "Generate Contract", slug: "generate" },
@@ -93,6 +99,7 @@ export const docsNavigation: DocSection[] = [
         title: "Milestones",
         slug: "milestones",
         icon: "milestone",
+        description: "Break projects into trackable milestones.",
         children: [
           { title: "Overview", slug: "overview" },
           { title: "Create Milestone", slug: "create" },
@@ -105,6 +112,7 @@ export const docsNavigation: DocSection[] = [
         title: "Escrow",
         slug: "escrow",
         icon: "shield",
+        description: "Secure payments with automated releases.",
         children: [
           { title: "Overview", slug: "overview" },
           { title: "Fund Escrow", slug: "fund" },
@@ -118,6 +126,7 @@ export const docsNavigation: DocSection[] = [
         title: "Payments",
         slug: "payments",
         icon: "wallet",
+        description: "Track transactions and Stellar payments.",
         children: [
           { title: "Overview", slug: "overview" },
           { title: "Transaction History", slug: "transaction-history" },
@@ -130,6 +139,7 @@ export const docsNavigation: DocSection[] = [
         title: "Invoices",
         slug: "invoices",
         icon: "receipt",
+        description: "Generate invoices and get paid faster.",
         children: [
           { title: "Overview", slug: "overview" },
           { title: "Create Invoice", slug: "create" },
@@ -142,6 +152,7 @@ export const docsNavigation: DocSection[] = [
         title: "Clients",
         slug: "clients",
         icon: "users",
+        description: "Manage clients and the client portal.",
         children: [
           { title: "Overview", slug: "overview" },
           { title: "Client Portal", slug: "portal" },
@@ -154,6 +165,7 @@ export const docsNavigation: DocSection[] = [
         title: "Freighter",
         slug: "freighter",
         icon: "wallet",
+        description: "Connect your Stellar wallet with Freighter.",
         children: [
           { title: "Overview", slug: "overview" },
           { title: "Install Wallet", slug: "install" },
@@ -171,6 +183,7 @@ export const docsNavigation: DocSection[] = [
         title: "API",
         slug: "api",
         icon: "code",
+        description: "Developer resources and API reference.",
         children: [
           { title: "Overview", slug: "overview" },
           { title: "Authentication", slug: "authentication" },
@@ -184,6 +197,7 @@ export const docsNavigation: DocSection[] = [
         title: "Security",
         slug: "security",
         icon: "shield-check",
+        description: "Encryption, permissions, and best practices.",
         children: [
           { title: "Overview", slug: "overview" },
           { title: "Encryption", slug: "encryption" },
@@ -201,6 +215,7 @@ export const docsNavigation: DocSection[] = [
         title: "FAQ",
         slug: "faq",
         icon: "help-circle",
+        description: "Frequently asked questions.",
         children: [
           { title: "General", slug: "general" },
           { title: "Billing", slug: "billing" },
