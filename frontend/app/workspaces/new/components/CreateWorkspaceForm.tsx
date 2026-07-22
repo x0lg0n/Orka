@@ -16,7 +16,21 @@ import {
 } from "../../../../components/ui/dropdown-menu";
 import { createOrg } from "../../../../app/actions";
 
-const TYPES = ["Freelancer", "Agency", "Studio", "Consultancy", "Startup"] as const;
+const TYPES = [
+  { value: "freelancer", label: "Freelancer" },
+  { value: "agency", label: "Agency" },
+  { value: "studio", label: "Studio" },
+  { value: "consultancy", label: "Consultancy" },
+  { value: "startup", label: "Startup" },
+] as const;
+
+function toSlug(value: string) {
+  return value
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 60);
+}
 
 function SubmitButton() {
   const { pending } = useFormStatus();
@@ -39,13 +53,7 @@ export function CreateWorkspaceForm() {
   function onNameChange(value: string) {
     setName(value);
     if (!slugTouched) {
-      setSlug(
-        value
-          .toLowerCase()
-          .replace(/[^a-z0-9]+/g, "-")
-          .replace(/^-+|-+$/g, "")
-          .slice(0, 60),
-      );
+      setSlug(toSlug(value));
     }
   }
 
@@ -89,43 +97,47 @@ export function CreateWorkspaceForm() {
           </div>
         </div>
 
-        <div>
-          <Label htmlFor="ws-name" className="mb-1.5 block text-sm font-bold text-foreground">
-            Workspace name
-          </Label>
-          <Input
-            id="ws-name"
-            name="name"
-            required
-            placeholder="Acme Studio"
-            value={name}
-            onChange={(e) => onNameChange(e.target.value)}
-          />
-        </div>
+        <div className="grid gap-5 sm:grid-cols-[minmax(0,1fr)_13rem]">
+          <div>
+            <Label htmlFor="ws-name" className="mb-1.5 block text-sm font-bold text-foreground">
+              Workspace name
+            </Label>
+            <Input
+              id="ws-name"
+              name="name"
+              required
+              placeholder="Acme Studio"
+              value={name}
+              onChange={(e) => onNameChange(e.target.value)}
+            />
+          </div>
 
-        <div>
-          <Label className="mb-1.5 block text-sm font-bold text-foreground">Workspace type</Label>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button type="button" variant="outline" className="w-full justify-between">
-                {type ?? "Select a type"}
-                <Check className="size-4 opacity-0" aria-hidden />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-[--radix-dropdown-menu-trigger-width] border-border bg-card text-foreground">
-              {TYPES.map((t) => (
-                <DropdownMenuItem
-                  key={t}
-                  onSelect={() => setType(t)}
-                  className="text-foreground hover:bg-hover focus:bg-hover data-[highlighted]:bg-hover"
-                >
-                  {t}
-                  {type === t ? <Check className="ml-auto size-4 text-primary" aria-hidden /> : null}
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-          <input type="hidden" name="type" value={type ?? ""} />
+          <div>
+            <Label className="mb-1.5 block text-sm font-bold text-foreground">
+              Workspace type <span className="font-medium text-muted-foreground">(optional)</span>
+            </Label>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button type="button" variant="outline" className="w-full justify-between">
+                  {TYPES.find((item) => item.value === type)?.label ?? "Select a type"}
+                  <Check className="size-4 opacity-0" aria-hidden />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-[--radix-dropdown-menu-trigger-width] border-border bg-card text-foreground">
+                {TYPES.map((t) => (
+                  <DropdownMenuItem
+                    key={t.value}
+                    onSelect={() => setType(t.value)}
+                    className="text-foreground hover:bg-hover focus:bg-hover data-[highlighted]:bg-hover"
+                  >
+                    {t.label}
+                    {type === t.value ? <Check className="ml-auto size-4 text-primary" aria-hidden /> : null}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <input type="hidden" name="type" value={type ?? ""} />
+          </div>
         </div>
 
         <div>
@@ -133,7 +145,7 @@ export function CreateWorkspaceForm() {
             Workspace slug
           </Label>
           <div className="flex items-center gap-2">
-            <span className="text-sm font-bold text-muted-foreground">orka.io/</span>
+            <span className="shrink-0 text-sm font-bold text-muted-foreground">orka.io/w/</span>
             <Input
               id="ws-slug"
               name="slug"
@@ -141,10 +153,15 @@ export function CreateWorkspaceForm() {
               value={slug}
               onChange={(e) => {
                 setSlugTouched(true);
-                setSlug(e.target.value);
+                setSlug(toSlug(e.target.value));
               }}
+              maxLength={60}
+              pattern="[a-z0-9-]+"
             />
           </div>
+          <p className="mt-1.5 text-xs font-bold text-muted-foreground">
+            This is the workspace URL. Use lowercase letters, numbers, and dashes.
+          </p>
         </div>
 
         <SubmitButton />

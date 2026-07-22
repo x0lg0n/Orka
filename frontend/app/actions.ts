@@ -127,7 +127,7 @@ export async function createOrg(formData: FormData) {
   const { data: org, error } = await admin
     .from("organizations")
     .insert({ name, slug, type })
-    .select("id")
+    .select("id, slug")
     .single();
   if (error) {
     redirect(`/workspaces/new?error=${encodeURIComponent(error.message)}`);
@@ -159,7 +159,7 @@ export async function createOrg(formData: FormData) {
   });
 
   revalidatePath("/workspaces");
-  redirect(`/workspaces/${org.id}`);
+  redirect(org.slug ? `/w/${org.slug}/dashboard` : "/workspaces");
 }
 
 export async function createProject(formData: FormData) {

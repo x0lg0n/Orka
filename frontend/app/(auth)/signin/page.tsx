@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import WalletSignIn from "@/components/WalletSignIn";
+import AuthPageHeader from "@/components/auth/AuthPageHeader";
+import SignInForm from "@/components/SignInForm";
 
 export const metadata = {
   title: "Sign In · ORKA",
@@ -16,12 +17,14 @@ export default async function LoginPage() {
   if (user) redirect("/workspaces");
 
   return (
-    <div>
-      <h1 className="display mb-1 text-3xl uppercase">Sign in</h1>
-      <p className="mb-6 text-sm font-bold text-foreground/70">
-        Welcome back to ORKA.
-      </p>
-      <WalletSignIn />
-    </div>
+    <section>
+      <AuthPageHeader
+        title="Welcome back"
+        description="Use your email or Stellar wallet to return to your ORKA workspace."
+      />
+      <div className="mt-8">
+        <SignInForm />
+      </div>
+    </section>
   );
 }

@@ -384,7 +384,7 @@ begin
     new.id,
     new.raw_user_meta_data->>'full_name',
     new.raw_user_meta_data->>'role',
-    new.raw_user_meta_data->>'custody_mode',
+    nullif(new.raw_user_meta_data->>'custody_mode', '')::public.custody_mode,
     new.raw_user_meta_data->>'stellar_address'
   )
   on conflict (id) do update set

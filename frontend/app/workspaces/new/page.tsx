@@ -31,11 +31,11 @@ export default async function NewWorkspacePage({
 
   return (
     <main className="product-ui dashboard-light flex min-h-screen flex-col bg-shell font-product">
-      <WorkspaceNav name={name} initials={initials} />
+      <WorkspaceNav name={name} email={user.email ?? ""} initials={initials} />
       <div className="flex flex-1 items-center justify-center px-4 py-10">
         <div className="w-full max-w-[640px]">
           {error ? (
-            <p className="mb-5 rounded-[10px] border border-danger/35 bg-danger/10 px-4 py-3 text-sm font-bold text-red-100">
+            <p className="mb-5 rounded-[10px] border border-danger/35 bg-danger/10 px-4 py-3 text-sm font-bold text-destructive">
               {error}
             </p>
           ) : null}

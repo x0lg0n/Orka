@@ -7,9 +7,11 @@ import { Wallet, Loader2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { connectAndSignLogin } from "@/lib/stellar";
 
-const FN_URL = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/wallet-login`;
+type WalletSignInProps = {
+  intent?: "signin" | "signup";
+};
 
-export default function WalletSignIn() {
+export default function WalletSignIn({ intent = "signin" }: WalletSignInProps) {
   const router = useRouter();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -19,27 +21,39 @@ export default function WalletSignIn() {
     setLoading(true);
     try {
       const { address, challenge, signature } = await connectAndSignLogin();
-
-      const res = await fetch(FN_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ address, challenge, signature }),
+      const supabase = createClient();
+      const { data, error: functionError } = await supabase.functions.invoke("wallet-login", {
+        body: { address, challenge, signature, intent },
       });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok || !data.session) {
+
+      if (functionError || !data?.token_hash || !data?.verification_type) {
+        let code = data?.error as string | undefined;
+        if (!code && functionError && "context" in functionError) {
+          const response = functionError.context;
+          if (response instanceof Response) {
+            const body = await response.clone().json().catch(() => ({}));
+            code = body?.error;
+          }
+        }
         setError(
-          data?.error === "challenge_expired" ?
+          code === "challenge_expired" ?
             "Challenge expired. Try again."
-          : data?.error === "bad_signature" ?
+          : code === "bad_signature" ?
             "Signature rejected. Try again."
-          : "Wallet sign-in failed. Try again.",
+          : code === "wallet_not_registered" ?
+            "This wallet does not have an ORKA account yet. Create one first."
+          : code === "session_failed" ?
+            "Your wallet was verified, but ORKA could not start a session. Check the wallet-login function logs."
+          : "Wallet sign-in is unavailable right now. Check the wallet-login function logs in Supabase.",
         );
         return;
       }
 
-      const supabase = createClient();
-      const { error: setErr } = await supabase.auth.setSession(data.session);
-      if (setErr) {
+      const { error: verifyErr } = await supabase.auth.verifyOtp({
+        token_hash: data.token_hash,
+        type: data.verification_type,
+      });
+      if (verifyErr) {
         setError("Could not start your session. Try again.");
         return;
       }
@@ -52,7 +66,7 @@ export default function WalletSignIn() {
       } else if (msg.includes("reject") || msg.includes("denied")) {
         setError("Connection request was denied. Approve it in Freighter and retry.");
       } else {
-        setError("Something went wrong. Try again.");
+        setError("Could not reach wallet sign-in. Make sure the wallet-login Edge Function is deployed, then try again.");
       }
     } finally {
       setLoading(false);
@@ -60,31 +74,33 @@ export default function WalletSignIn() {
   }
 
   return (
-    <div className="flex flex-col items-center gap-4 py-4">
+    <div className="flex flex-col gap-4">
       <button
         type="button"
         onClick={onConnect}
         disabled={loading}
-        className="flex min-h-12 w-full items-center justify-center gap-2 rounded-full border-2 border-night bg-lime px-7 text-sm font-black uppercase text-night transition hover:-translate-y-0.5 hover:bg-orange hover:text-white disabled:cursor-wait disabled:opacity-70">
+        className="auth-primary-button"
+      >
         {loading ?
           <Loader2 size={18} className="animate-spin" />
         : <Wallet size={18} />}
-        {loading ? "Signing…" : "Continue with Wallet"}
+        {loading ? "Signing…" : intent === "signup" ? "Create account with Wallet" : "Continue with Wallet"}
       </button>
 
       {error ?
-        <p className="text-center text-sm font-bold text-coral" role="status">
+        <p className="auth-error-message px-3 py-2 text-center" role="alert">
           {error}
         </p>
-      : <p className="text-center text-sm font-bold text-foreground/70">
-          Sign with your Stellar wallet — no email, no password.
+      : <p className="text-center text-sm text-muted-foreground">
+        {intent === "signup" ?
+          "Your Stellar wallet will be your ORKA account — no email or password needed."
+        : "Sign with the Stellar wallet connected to your ORKA account."}
         </p>}
 
-      <p className="mt-2 text-center text-sm font-bold text-muted-foreground">
-        Prefer email?{" "}
-        <Link href="/signup" className="text-lime underline">
-          Create an account
-        </Link>
+      <p className="text-center text-sm text-muted-foreground">
+        {intent === "signup" ?
+          <>Already have an account? <Link href="/login" className="auth-inline-link">Sign in</Link></>
+        : <>Prefer email? <Link href="/signup" className="auth-inline-link">Create an account</Link></>}
       </p>
     </div>
   );

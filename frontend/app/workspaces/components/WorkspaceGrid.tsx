@@ -4,10 +4,10 @@ import { useMemo, useState } from "react";
 import {
   ArrowRight,
   Building2,
-  CircleDollarSign,
   Plus,
   Search,
   Users,
+  UsersRound,
   BriefcaseBusiness,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
@@ -69,35 +69,37 @@ export function WorkspaceGrid({ workspaces }: { workspaces: Workspace[] }) {
 
   return (
     <div className="mt-8 flex flex-col gap-6">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-        <div className="relative w-full sm:max-w-[460px]">
-          <Search className="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-muted-foreground" aria-hidden />
-          <Input
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-            placeholder="Search workspaces..."
-            className="pl-12"
-          />
+      {workspaces.length > 0 ? (
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+          <div className="relative w-full sm:max-w-[460px]">
+            <Search className="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-muted-foreground" aria-hidden />
+            <Input
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              placeholder="Search workspaces..."
+              className="pl-12"
+            />
+          </div>
+          <Button asChild size="sm" className="shrink-0 sm:ml-auto">
+            <Link href="/workspaces/new">
+              <Plus className="size-4" aria-hidden /> New workspace
+            </Link>
+          </Button>
         </div>
-        <Button asChild size="sm" className="shrink-0 sm:ml-auto">
-          <Link href="/workspaces/new">
-            <Plus className="size-4" aria-hidden /> New workspace
-          </Link>
-        </Button>
-      </div>
+      ) : null}
 
       {workspaces.length === 0 ? (
-        <div className="flex flex-col items-center gap-4 rounded-[16px] border border-border bg-card p-12 text-center">
-          <div className="grid size-14 place-items-center rounded-full bg-primary/15 text-primary">
-            <Building2 className="size-7" aria-hidden />
+        <div className="max-w-2xl rounded-[16px] border border-border bg-card p-7 sm:p-10">
+          <div className="grid size-12 place-items-center rounded-[10px] bg-primary/15 text-primary">
+            <Building2 className="size-6" aria-hidden />
           </div>
-          <div>
-            <p className="text-2xl font-extrabold tracking-[-0.02em]">Welcome to Orka</p>
-            <p className="mt-2 max-w-sm text-base font-bold text-muted-foreground">
-              Let&apos;s create your first workspace.
+          <div className="mt-6">
+            <p className="text-2xl font-extrabold tracking-[-0.02em] text-foreground">Set up your workspace</p>
+            <p className="mt-2 max-w-lg text-base font-bold leading-7 text-muted-foreground">
+              Give it a name and URL. You can invite collaborators and add your first project next.
             </p>
           </div>
-          <Button asChild size="lg" className="mt-2">
+          <Button asChild size="lg" className="mt-7">
             <Link href="/workspaces/new">
               <Plus className="size-4" aria-hidden /> Create Workspace
             </Link>
@@ -112,13 +114,13 @@ export function WorkspaceGrid({ workspaces }: { workspaces: Workspace[] }) {
           </p>
         </div>
       ) : (
-        <div className="grid gap-6 lg:grid-cols-3 sm:grid-cols-2">
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {filtered.map((w) => (
             <WorkspaceCard key={w.id} workspace={w} />
           ))}
            <Link
             href="/workspaces/new"
-            className="group flex min-h-[280px] flex-col items-center justify-center rounded-[16px] border border-dashed border-border bg-card p-7 text-center transition hover:border-primary hover:bg-primary/[0.04]"
+            className="group flex min-h-[280px] flex-col items-center justify-center rounded-[16px] border border-dashed border-border bg-card p-7 text-center transition-colors hover:border-primary hover:bg-primary/[0.04]"
           >
             <span className="grid size-14 place-items-center rounded-full border border-primary text-primary transition group-hover:bg-primary group-hover:text-white">
               <Plus className="size-7" aria-hidden />
@@ -145,7 +147,7 @@ export function WorkspaceGrid({ workspaces }: { workspaces: Workspace[] }) {
 
 function WorkspaceCard({ workspace: w }: { workspace: Workspace }) {
   return (
-    <Card className="flex min-h-[280px] flex-col rounded-[16px] border-border p-5 transition duration-200 hover:scale-[1.01] hover:border-primary hover:shadow-[0_12px_30px_rgba(148,116,255,0.18)]">
+    <Card className="flex min-h-[280px] flex-col rounded-[16px] border-border p-5 transition-colors duration-150 hover:border-primary hover:bg-primary/[0.02]">
       <div className="flex items-start justify-between">
         <Avatar className="size-12 rounded-[10px]">
           {w.logoUrl ? <AvatarImage src={w.logoUrl} alt={w.name} /> : null}
@@ -155,11 +157,9 @@ function WorkspaceCard({ workspace: w }: { workspace: Workspace }) {
         </Avatar>
         <div className="flex flex-wrap justify-end gap-2">
           {w.type ? <Badge variant="secondary">{TYPE_LABEL[w.type] ?? w.type}</Badge> : null}
-          {w.role === "owner" ? (
-            <Badge variant="outline" className="border-primary/40 text-primary">
-              Owner
-            </Badge>
-          ) : null}
+          <Badge variant="outline" className="border-primary/40 text-primary">
+            {ROLE_LABEL[w.role] ?? w.role}
+          </Badge>
         </div>
       </div>
 
@@ -169,7 +169,7 @@ function WorkspaceCard({ workspace: w }: { workspace: Workspace }) {
       <div className="mt-4 grid grid-cols-3 gap-3 border-t border-border pt-4">
         <Stat icon={BriefcaseBusiness} label="Projects" value={String(w.projects)} />
         <Stat icon={Users} label="Clients" value={String(w.clients)} />
-        <Stat icon={CircleDollarSign} label="Members" value={String(w.members)} />
+        <Stat icon={UsersRound} label="Members" value={String(w.members)} />
       </div>
 
       <Button asChild className="mt-auto w-full">

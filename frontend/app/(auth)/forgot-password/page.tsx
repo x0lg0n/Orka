@@ -3,9 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
-
-const btn =
-  "mt-6 flex min-h-12 w-full items-center justify-center gap-2 rounded-full border-2 border-night bg-lime px-7 text-sm font-black uppercase text-night transition hover:-translate-y-0.5 hover:bg-orange hover:text-white";
+import AuthPageHeader from "@/components/auth/AuthPageHeader";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
@@ -24,30 +22,35 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <div>
-      <h1 className="display text-3xl uppercase">Reset password</h1>
-      <p className="mt-2 text-sm font-bold text-muted-foreground">
-        Enter your email and we&apos;ll send a reset link.
-      </p>
+    <section>
+      <AuthPageHeader
+        title="Reset your password"
+        description="Enter the email linked to your account and we’ll send a secure reset link."
+      />
 
       {sent ? (
-        <p className="mt-6 rounded-[12px] bg-muted p-3 text-sm font-bold text-foreground">
+        <p className="auth-success-message mt-8 p-4" role="status">
           If that account exists, a reset link is on its way.
         </p>
       ) : (
-        <form onSubmit={onSubmit} className="mt-6 space-y-4">
+        <form onSubmit={onSubmit} className="mt-8 space-y-5">
+          <label htmlFor="reset-email" className="auth-field-label">Email address</label>
           <input
+            id="reset-email"
             type="email"
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="you@company.com"
-            className="w-full rounded-[12px] border border-border bg-background px-4 py-3 text-sm font-bold text-foreground outline-none focus:border-lime"
+            className="auth-input"
           />
           {error ? (
-            <p className="text-sm font-bold text-coral">{error}</p>
+            <p className="auth-error-message px-3 py-2" role="alert">{error}</p>
           ) : null}
-          <button type="submit" className={btn}>
+          <button
+            type="submit"
+            className="auth-primary-button"
+          >
             Send reset link
           </button>
         </form>
@@ -55,10 +58,10 @@ export default function ForgotPasswordPage() {
 
       <Link
         href="/login"
-        className="mt-6 block text-xs font-bold text-muted-foreground underline-offset-4 hover:underline"
+        className="auth-text-link mt-6 block text-center text-sm"
       >
         Back to login
       </Link>
-    </div>
+    </section>
   );
 }

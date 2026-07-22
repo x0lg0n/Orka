@@ -4,9 +4,7 @@ import { useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
-
-const btn =
-  "mt-6 flex min-h-12 w-full items-center justify-center gap-2 rounded-full border-2 border-night bg-lime px-7 text-sm font-black uppercase text-night transition hover:-translate-y-0.5 hover:bg-orange hover:text-white";
+import AuthPageHeader from "@/components/auth/AuthPageHeader";
 
 export default function InvitePage() {
   const { token } = useParams<{ token: string }>();
@@ -32,37 +30,48 @@ export default function InvitePage() {
   }
 
   return (
-    <div>
-      <h1 className="display text-3xl uppercase">Accept invite</h1>
-      <p className="mt-2 text-sm font-bold text-muted-foreground">
-        You&apos;ve been invited to a workspace. Create your account to join.
-      </p>
+    <section>
+      <AuthPageHeader
+        title="You’re invited"
+        description="Create an account to join this ORKA workspace."
+      />
 
       {done ? (
-        <p className="mt-6 rounded-[12px] bg-muted p-3 text-sm font-bold text-foreground">
+        <p className="auth-success-message mt-8 p-4" role="status">
           Account created. Check your email to finish verifying.
         </p>
       ) : (
-        <form onSubmit={onSubmit} className="mt-6 space-y-4">
+        <form onSubmit={onSubmit} className="mt-8 space-y-5">
+          <div>
+            <label htmlFor="invite-email" className="auth-field-label">Email address</label>
           <input
+            id="invite-email"
             type="email"
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="you@company.com"
-            className="w-full rounded-[12px] border border-border bg-background px-4 py-3 text-sm font-bold text-foreground outline-none focus:border-lime"
+            className="auth-input"
           />
+          </div>
+          <div>
+            <label htmlFor="invite-password" className="auth-field-label">Create password</label>
           <input
+            id="invite-password"
             type="password"
             required
             minLength={8}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="New password"
-            className="w-full rounded-[12px] border border-border bg-background px-4 py-3 text-sm font-bold text-foreground outline-none focus:border-lime"
+            className="auth-input"
           />
-          {error ? <p className="text-sm font-bold text-coral">{error}</p> : null}
-          <button type="submit" className={btn}>
+          </div>
+          {error ? <p className="auth-error-message px-3 py-2" role="alert">{error}</p> : null}
+          <button
+            type="submit"
+            className="auth-primary-button"
+          >
             Create account
           </button>
         </form>
@@ -70,10 +79,10 @@ export default function InvitePage() {
 
       <Link
         href="/login"
-        className="mt-6 block text-xs font-bold text-muted-foreground underline-offset-4 hover:underline"
+        className="auth-text-link mt-6 block text-center text-sm"
       >
         Back to login
       </Link>
-    </div>
+    </section>
   );
 }

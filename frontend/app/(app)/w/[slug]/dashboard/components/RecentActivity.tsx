@@ -31,12 +31,12 @@ const activityTone: Record<ActivityEventType, Tone> = {
 };
 
 const toneClasses: Record<Tone, string> = {
-  cyan: "border-cyan-200/30 bg-cyan-300/15 text-cyan-100",
-  violet: "border-violet/30 bg-violet/15 text-violet",
-  teal: "border-teal/30 bg-teal/15 text-teal",
-  orange: "border-orange/30 bg-orange/15 text-orange",
-  lime: "border-lime/30 bg-lime/15 text-lime",
-  coral: "border-coral/30 bg-coral/15 text-coral",
+  cyan: "bg-sky-100 text-sky-700",
+  violet: "bg-violet/15 text-[#6544dd]",
+  teal: "bg-teal/15 text-[#087d61]",
+  orange: "bg-orange/15 text-[#b85400]",
+  lime: "bg-[#eaff35]/30 text-[#436400]",
+  coral: "bg-coral/15 text-[#c9342a]",
 };
 
 interface RecentActivityProps {

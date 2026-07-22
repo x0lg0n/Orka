@@ -30,28 +30,27 @@ export function DashboardHeader({ user, slug }: DashboardHeaderProps) {
       </div>
 
       <div className="flex items-center gap-3">
-        <div className="relative hidden sm:block">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8b95aa]" />
-          <input
-            type="text"
-            placeholder="Search anything..."
-            className="h-10 w-64 rounded-lg border border-[#e5e8f0] bg-white pl-10 pr-4 text-sm text-[#11182d] outline-none transition-colors duration-200 placeholder:text-[#8b95aa] focus:border-[#7c3aed] focus:ring-1 focus:ring-[#7c3aed]/30"
-            aria-label="Search"
-          />
-          <span className="absolute right-3 top-1/2 -translate-y-1/2 rounded border border-[#e5e8f0] bg-[#f7f8fc] px-1.5 py-0.5 text-[10px] font-medium text-[#8b95aa]">
+        <Link
+          href={`/w/${slug}/search`}
+          className="relative hidden h-10 w-64 items-center rounded-lg border border-[#e5e8f0] bg-white pl-10 pr-10 text-sm text-[#5f6b86] transition-colors duration-150 hover:border-[#c9d2e8] hover:bg-[#f7f8fc] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7c3aed]/30 sm:flex"
+        >
+          <Search className="absolute left-3 h-4 w-4 text-[#8b95aa]" aria-hidden />
+          Search anything...
+          <span className="absolute right-3 rounded border border-[#e5e8f0] bg-white px-1.5 py-0.5 text-[10px] font-medium text-[#8b95aa]">
             /
           </span>
-        </div>
+        </Link>
 
-        <button
-          className="relative flex h-10 w-10 items-center justify-center rounded-lg border border-[#e5e8f0] bg-white text-[#5f6b86] transition-colors duration-200 hover:bg-[#f7f8fc]"
+        <Link
+          href={`/w/${slug}/notifications`}
+          className="relative flex h-10 w-10 items-center justify-center rounded-lg border border-[#e5e8f0] bg-white text-[#5f6b86] transition-colors duration-150 hover:bg-[#f7f8fc] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7c3aed]/30"
           aria-label="Notifications"
         >
           <Bell className="h-5 w-5" />
           <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-[#7c3aed] text-[9px] font-bold text-white">
             3
           </span>
-        </button>
+        </Link>
 
         <Link
           href={`/w/${slug}/projects/new`}

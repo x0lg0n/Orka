@@ -1,20 +1,22 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Plus } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { ThemeToggle } from "@/components/theme-toggle";
-import SignOutButton from "@/components/SignOutButton";
+import { WorkspaceAccountMenu } from "./WorkspaceAccountMenu";
 
 export function WorkspaceNav({
   name,
+  email,
   initials,
+  hasWorkspaces = false,
 }: {
   name: string;
+  email: string;
   initials: string;
+  hasWorkspaces?: boolean;
 }) {
   return (
-    <header className="sticky top-0 z-20 border-b border-border bg-card/80 backdrop-blur">
+    <header className="sticky top-0 z-20 border-b border-border bg-card">
       <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between gap-4 px-5 sm:px-8">
         <Link href="/workspaces" className="flex shrink-0 items-center gap-2.5">
           <Image
@@ -30,19 +32,14 @@ export function WorkspaceNav({
         </Link>
 
         <div className="flex items-center gap-2 sm:gap-3">
-          <Button asChild size="sm" className="hidden sm:inline-flex">
-            <Link href="/workspaces/new">
-              <Plus className="size-4" aria-hidden /> New workspace
-            </Link>
-          </Button>
-          <ThemeToggle />
-          <Avatar className="size-9">
-            <AvatarImage src="" alt={name} />
-            <AvatarFallback className="bg-primary/15 text-xs font-extrabold text-primary">
-              {initials}
-            </AvatarFallback>
-          </Avatar>
-          <SignOutButton />
+          {hasWorkspaces ? (
+            <Button asChild size="sm" className="hidden sm:inline-flex">
+              <Link href="/workspaces/new">
+                <Plus className="size-4" aria-hidden /> New workspace
+              </Link>
+            </Button>
+          ) : null}
+          <WorkspaceAccountMenu name={name} email={email} initials={initials} />
         </div>
       </div>
     </header>

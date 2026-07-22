@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import SignupForm from "@/components/SignupForm";
+import AuthPageHeader from "@/components/auth/AuthPageHeader";
 
 export const metadata = {
   title: "Sign Up · ORKA",
@@ -16,12 +17,14 @@ export default async function SignupPage() {
   if (user) redirect("/workspaces");
 
   return (
-    <div>
-      <h1 className="display mb-1 text-3xl uppercase">Create your account</h1>
-      <p className="mb-6 text-sm font-bold text-foreground/70">
-        Start running projects on ORKA.
-      </p>
-      <SignupForm />
-    </div>
+    <section>
+      <AuthPageHeader
+        title="Create your workspace"
+        description="Bring your projects, clients, and payments into one place."
+      />
+      <div className="mt-8">
+        <SignupForm />
+      </div>
+    </section>
   );
 }
