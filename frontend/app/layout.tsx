@@ -48,11 +48,7 @@ export default function RootLayout({
       suppressHydrationWarning
       className={cn(anton.variable, dmSans.variable, jetbrains.variable, jetbrainsMonoHeading.variable)}>
       <body>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="dark"
-          enableSystem={false}
-          disableTransitionOnChange>
+        <ThemeProvider>
           <TooltipProvider delayDuration={200}>{children}</TooltipProvider>
         </ThemeProvider>
       </body>
