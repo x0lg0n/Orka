@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -42,48 +42,73 @@ const iconMap: Record<string, typeof Rocket> = {
 
 const STORAGE_KEY = "docs_sidebar_expanded";
 
+function getInitialExpanded(): string[] {
+  if (typeof window === "undefined") return [];
+  const saved = localStorage.getItem(STORAGE_KEY);
+  if (saved) {
+    try {
+      return JSON.parse(saved);
+    } catch {
+      return [];
+    }
+  }
+  return [];
+}
+
 export default function DocsSidebar() {
   const pathname = usePathname();
-  const [expandedItems, setExpandedItems] = useState<string[]>([]);
+  const [expandedItems, setExpandedItems] = useState<string[]>(() => {
+    const initial = getInitialExpanded();
+    const parts = pathname.split("/");
+    if (parts[2] && !initial.includes(parts[2])) {
+      initial.push(parts[2]);
+    }
+    return initial;
+  });
   const [filterQuery, setFilterQuery] = useState("");
 
-  // Load expanded state from localStorage
-  useEffect(() => {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) {
-      try {
-        setExpandedItems(JSON.parse(saved));
-      } catch {
-        setExpandedItems([]);
-      }
-    }
-  }, []);
-
   // Save expanded state to localStorage
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(expandedItems));
-  }, [expandedItems]);
-
-  // Auto-expand based on current path
-  useEffect(() => {
-    const parts = pathname.split("/");
-    if (parts[2]) {
-      const parentSlug = parts[2];
-      if (!expandedItems.includes(parentSlug)) {
-        setExpandedItems((prev) => [...prev, parentSlug]);
-      }
-    }
-  }, [pathname]);
+  const saveToStorage = useCallback((items: string[]) => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+  }, []);
 
   const toggleExpanded = useCallback((slug: string) => {
-    setExpandedItems((prev) =>
-      prev.includes(slug) ? prev.filter((s) => s !== slug) : [...prev, slug]
-    );
-  }, []);
+    setExpandedItems((prev) => {
+      const next = prev.includes(slug) ? prev.filter((s) => s !== slug) : [...prev, slug];
+      saveToStorage(next);
+      return next;
+    });
+  }, [saveToStorage]);
 
   const handleFilter = useCallback((query: string) => {
     setFilterQuery(query.toLowerCase());
   }, []);
+
+  // Auto-expand matching categories during search
+  const matchingSlugs = useMemo(() => {
+    if (!filterQuery) return [];
+    return docsNavigation
+      .flatMap((section) => section.items)
+      .filter(
+        (item) =>
+          item.title.toLowerCase().includes(filterQuery) ||
+          item.children?.some((child) =>
+            child.title.toLowerCase().includes(filterQuery)
+          )
+      )
+      .map((item) => item.slug);
+  }, [filterQuery]);
+
+  // Compute effective expanded items including search matches
+  const effectiveExpandedItems = useMemo(() => {
+    if (matchingSlugs.length === 0) return expandedItems;
+    const combined = [...new Set([...expandedItems, ...matchingSlugs])];
+    // Save to storage if we added new items
+    if (combined.length > expandedItems.length) {
+      saveToStorage(combined);
+    }
+    return combined;
+  }, [expandedItems, matchingSlugs, saveToStorage]);
 
   // Filter items based on search query
   const filteredNavigation = docsNavigation.map((section) => ({
@@ -100,23 +125,7 @@ export default function DocsSidebar() {
     }),
   }));
 
-  // Auto-expand matching categories during search
-  useEffect(() => {
-    if (filterQuery) {
-      const matchingSlugs = docsNavigation
-        .flatMap((section) => section.items)
-        .filter(
-          (item) =>
-            item.title.toLowerCase().includes(filterQuery) ||
-            item.children?.some((child) =>
-              child.title.toLowerCase().includes(filterQuery)
-            )
-        )
-        .map((item) => item.slug);
-
-      setExpandedItems((prev) => [...new Set([...prev, ...matchingSlugs])]);
-    }
-  }, [filterQuery]);
+  const hasActiveFilter = filterQuery.length > 0;
 
   return (
     <aside className="sticky top-0 h-screen w-[240px] shrink-0 overflow-y-auto border-r border-night/10 bg-white/60 p-4 lg:block hidden">
@@ -131,17 +140,24 @@ export default function DocsSidebar() {
             <ul className="space-y-0.5">
               {section.items.map((item) => {
                 const Icon = item.icon ? iconMap[item.icon] : Folder;
-                const isExpanded = expandedItems.includes(item.slug);
+                const isExpanded = effectiveExpandedItems.includes(item.slug);
                 const hasChildren = item.children && item.children.length > 0;
+                const isFiltered =
+                  hasActiveFilter &&
+                  !item.title.toLowerCase().includes(filterQuery) &&
+                  !item.children?.some((child) =>
+                    child.title.toLowerCase().includes(filterQuery)
+                  );
 
                 return (
-                  <li key={item.slug}>
+                  <li key={item.slug} className={isFiltered ? "opacity-50" : ""}>
                     {hasChildren ? (
                       <DocsSidebarAccordion
                         item={item}
                         icon={<Icon size={15} />}
                         isExpanded={isExpanded}
                         onToggle={() => toggleExpanded(item.slug)}
+                        filterQuery={filterQuery}
                       />
                     ) : (
                       <Link

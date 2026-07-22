@@ -11,6 +11,7 @@ interface DocsSidebarAccordionProps {
   icon: React.ReactNode;
   isExpanded: boolean;
   onToggle: () => void;
+  filterQuery?: string;
 }
 
 export default function DocsSidebarAccordion({
@@ -18,6 +19,7 @@ export default function DocsSidebarAccordion({
   icon,
   isExpanded,
   onToggle,
+  filterQuery = "",
 }: DocsSidebarAccordionProps) {
   const pathname = usePathname();
   const contentRef = useRef<HTMLDivElement>(null);
@@ -71,6 +73,7 @@ export default function DocsSidebarAccordion({
           {item.children?.map((child) => {
             const childPath = `/docs/${item.slug}/${child.slug}`;
             const isChildCurrent = pathname === childPath;
+            const isChildMatching = filterQuery && child.title.toLowerCase().includes(filterQuery.toLowerCase());
             
             return (
               <Link
@@ -79,7 +82,9 @@ export default function DocsSidebarAccordion({
                 className={`block rounded-lg px-3 py-1.5 text-[13px] font-bold transition-colors ${
                   isChildCurrent
                     ? "border-l-[3px] border-violet bg-violet/5 pl-2.5 text-violet"
-                    : "text-night/60 hover:bg-night/5 hover:text-night"
+                    : isChildMatching
+                      ? "text-violet font-bold"
+                      : "text-night/60 hover:bg-night/5 hover:text-night"
                 }`}
               >
                 {child.title}
