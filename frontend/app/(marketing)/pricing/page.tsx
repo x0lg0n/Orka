@@ -97,10 +97,10 @@ export default function PricingPage() {
                   ))}
                 </ul>
                 <Link
-                  href="/#waitlist"
+                  href="/signup"
                   className="mt-8 flex min-h-12 items-center justify-center rounded-full bg-lime px-6 text-sm font-black uppercase text-night transition hover:-translate-y-0.5 hover:bg-orange hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet"
                 >
-                  Join waitlist
+                  Get started
                 </Link>
               </div>
             ))}

@@ -1,4 +1,5 @@
-import WaitlistForm from "./WaitlistForm";
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 
 export default function WaitlistCta() {
   return (
@@ -32,8 +33,13 @@ export default function WaitlistCta() {
               <span className="text-orange">full</span> potential?
             </h2>
           </div>
-          <div className="rounded-[18px] bg-white p-5 text-night md:p-6">
-            <WaitlistForm />
+          <div className="flex justify-center">
+            <Link
+              href="/signup"
+              className="group inline-flex min-h-14 items-center gap-3 rounded-full bg-white px-10 py-4 text-lg font-bold text-night transition-all hover:bg-lime hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+            >
+              Get started <ArrowRight size={18} className="transition-transform group-hover:translate-x-1" />
+            </Link>
           </div>
         </div>
       </div>

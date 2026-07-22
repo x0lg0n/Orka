@@ -9,7 +9,7 @@ export default function NotFound() {
           This milestone does not exist.
         </h1>
         <p className="mx-auto mt-5 max-w-lg text-sm font-bold leading-6 text-white/70">
-          The ORKA route you opened is not available. Head back to the landing page and join the waitlist.
+           The ORKA route you opened is not available. Head back to the landing page to get started.
         </p>
         <Link
           href="/"

@@ -1,7 +1,7 @@
 import Image from "next/image";
+import Link from "next/link";
 import Navbar from "./Navbar";
-import WaitlistForm from "./WaitlistForm";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowRight, ArrowUpRight } from "lucide-react";
 
 export default function Hero() {
   return (
@@ -53,7 +53,7 @@ export default function Hero() {
       <div className="relative z-10 mx-auto max-w-7xl pt-16 pb-8">
         <div className="flex flex-wrap items-center justify-center gap-3 mb-6">
           <span className="rounded-full border border-white/20 bg-white/8 px-4 py-1.5 text-center text-[13px] font-semibold uppercase tracking-[0.12em] text-white/80 sm:text-[14px]">
-            Early access — join the waitlist
+            Launch — start building today
           </span>
         </div>
 
@@ -68,10 +68,19 @@ export default function Hero() {
           and freelancers working across borders.
         </p>
 
-        <div className="mt-8 flex justify-center ">
-          <div className="rounded-[18px] bg-white p-5 text-night md:p-6">
-            <WaitlistForm compact />
-          </div>
+        <div className="mt-8 flex justify-center gap-4">
+          <Link
+            href="/signup"
+            className="inline-flex min-h-14 items-center gap-3 rounded-full bg-violet px-8 py-4 text-base font-bold text-white transition-all hover:bg-[#a78cff] hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+          >
+            Get started <ArrowRight size={18} />
+          </Link>
+          <Link
+            href="/pricing"
+            className="inline-flex min-h-14 items-center gap-2 rounded-full border border-white/25 px-8 py-4 text-base font-bold text-white/80 transition-all hover:bg-white/8 hover:text-white hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+          >
+            See pricing
+          </Link>
         </div>
       </div>
       {/* Stats + tag cloud row */}
@@ -130,7 +139,7 @@ export default function Hero() {
             </p>
           </div>
           <p className="text-[14px] font-medium text-white/80">
-            50+ design partners and early adopters already on the waitlist.
+              50+ design partners and early adopters already using ORKA.
           </p>
         </div>
       </div>

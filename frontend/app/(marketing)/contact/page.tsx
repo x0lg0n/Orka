@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
-import WaitlistForm from "@/components/WaitlistForm";
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Contact · ORKA",
-  description: "Get in touch with the ORKA team. Join the waitlist and we'll reach out when design partner slots open.",
+  description: "Get in touch with the ORKA team. Create your account and start building.",
 };
 
 export default function ContactPage() {
@@ -19,24 +20,29 @@ export default function ContactPage() {
             Talk to the <span className="text-orange">ORKA</span> team
           </h1>
           <p className="mx-auto mt-6 max-w-xl text-base font-normal leading-7 text-white/78 sm:text-lg sm:leading-8">
-            Tell us what you&apos;re building. Join the waitlist and we&apos;ll reach out when design partner slots open.
+            Tell us what you&apos;re building. Create your account and we&apos;ll reach out to help you get started.
           </p>
         </div>
       </section>
 
-      {/* Form section */}
+      {/* CTA section */}
       <section className="px-4 py-16 md:px-8 lg:px-12">
         <div className="mx-auto max-w-2xl">
           <div className="rounded-[24px] border-2 border-night bg-white p-6 shadow-hard md:p-10">
-            <p className="section-label text-coral">Join the waitlist</p>
+            <p className="section-label text-coral">Get started</p>
             <h2 className="display mt-2 text-3xl uppercase sm:text-4xl">
-              We reply within one business day.
+              Create your account.
             </h2>
             <p className="mt-4 text-sm font-bold leading-6 text-night/68">
-              Share your name and email — we&apos;ll reach out personally to discuss your use case and onboard you as a design partner.
+              Sign up for ORKA and we&apos;ll reach out personally to discuss your use case and get you set up.
             </p>
             <div className="mt-8">
-              <WaitlistForm />
+              <Link
+                href="/signup"
+                className="group inline-flex min-h-12 items-center gap-3 rounded-full bg-violet px-8 py-3 text-sm font-bold text-white transition-all hover:bg-night hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet"
+              >
+                Get started <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
+              </Link>
             </div>
           </div>
         </div>

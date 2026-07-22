@@ -115,7 +115,7 @@ export default function WaitlistForm({
           {loading ?
             "Joining..."
           : <>
-              Join waitlist
+              Get started
               <Image
                 src="/Icons/Arrow-Right-Down.svg"
                 alt="ORKA"

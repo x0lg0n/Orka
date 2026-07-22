@@ -42,7 +42,7 @@ export async function POST(request: Request) {
 
   if (!email) {
     return NextResponse.json(
-      { error: "Add your email to join the waitlist." },
+      { error: "Add your email to get started with ORKA." },
       { status: 400 }
     );
   }
