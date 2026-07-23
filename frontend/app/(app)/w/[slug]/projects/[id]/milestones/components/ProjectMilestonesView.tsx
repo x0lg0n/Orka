@@ -1,14 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { Plus, LayoutList, LayoutGrid } from "lucide-react";
+import { LayoutList, LayoutGrid } from "lucide-react";
 import { MilestoneProgressOverview } from "./MilestoneProgressOverview";
 import { MilestoneTable } from "./MilestoneTable";
 import { MilestoneSummaryCard } from "./MilestoneSummaryCard";
 import { EscrowDetailsCard } from "./EscrowDetailsCard";
 import { UpcomingMilestonesCard } from "./UpcomingMilestonesCard";
 import { MilestonePaymentFlow } from "./MilestonePaymentFlow";
-import { AddMilestoneModal } from "./AddMilestoneModal";
+import { AddMilestoneButton } from "./AddMilestoneButton";
 import { BoardView } from "./BoardView";
 import { MilestoneEmptyState } from "./MilestoneEmptyState";
 import type { WorkflowRole, WorkflowState } from "@/lib/workflow";
@@ -96,7 +96,6 @@ export function ProjectMilestonesView({
   mode: OrkaCustodyMode;
   stats: MilestoneStats;
 }) {
-  const [showModal, setShowModal] = useState(false);
   const [view, setView] = useState<"list" | "board">("list");
 
   const contractAddress = escrow?.contract_address ?? "";
@@ -174,23 +173,21 @@ export function ProjectMilestonesView({
               Board
             </button>
           </div>
-          <button
-            type="button"
-            onClick={() => setShowModal(true)}
-            className="inline-flex items-center gap-1.5 rounded-lg bg-[#7c3aed] px-3 py-1.5 text-sm font-medium text-white shadow-sm transition hover:bg-[#6d28d9]"
-          >
-            <Plus className="h-4 w-4" />
-            New Milestone
-          </button>
+          <AddMilestoneButton
+            onComplete={(data) => {
+              // TODO: Wire to saveMilestones server action (Task 10)
+              console.log("New milestone:", data);
+            }}
+          />
         </div>
       </div>
 
       <MilestoneProgressOverview stats={stats} />
 
       {milestones.length === 0 ? (
-        <MilestoneEmptyState onAdd={() => setShowModal(true)} />
+        <MilestoneEmptyState onAdd={() => {}} />
       ) : view === "list" ? (
-        <MilestoneTable milestones={milestones} onAdd={() => setShowModal(true)} />
+        <MilestoneTable milestones={milestones} onAdd={() => {}} />
       ) : (
         <BoardView
           milestones={milestones}
@@ -227,10 +224,6 @@ export function ProjectMilestonesView({
         </div>
       </div>
 
-      <AddMilestoneModal
-        open={showModal}
-        onClose={() => setShowModal(false)}
-      />
     </div>
   );
 }
