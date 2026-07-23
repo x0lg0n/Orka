@@ -6,7 +6,6 @@ import {
   ArrowRight,
   BookOpen,
   ChevronDown,
-  ExternalLink,
   FileText,
   Mail,
   Menu,
@@ -14,7 +13,8 @@ import {
   User,
   X,
 } from "lucide-react";
-import { useEffect, useId, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
+import { blogPosts } from "@/lib/blog-data";
 
 type MenuLink = {
   label: string;
@@ -75,12 +75,34 @@ const menuGroups: MenuGroup[] = [
   },
 ];
 
+const recentPosts = blogPosts.slice(1, 4);
+
 export default function Navbar() {
   const [openMenu, setOpenMenu] = useState<string | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileSection, setMobileSection] = useState<string | null>(null);
   const navRef = useRef<HTMLElement>(null);
+  const closeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const menuId = useId();
+
+  const clearCloseTimer = useCallback(() => {
+    if (closeTimeoutRef.current) {
+      clearTimeout(closeTimeoutRef.current);
+      closeTimeoutRef.current = null;
+    }
+  }, []);
+
+  const startCloseTimer = useCallback(() => {
+    clearCloseTimer();
+    closeTimeoutRef.current = setTimeout(() => {
+      setOpenMenu(null);
+    }, 200);
+  }, [clearCloseTimer]);
+
+  const handleOpen = useCallback((id: string) => {
+    clearCloseTimer();
+    setOpenMenu(id);
+  }, [clearCloseTimer]);
 
   useEffect(() => {
     const closeOnOutside = (event: MouseEvent) => {
@@ -100,7 +122,12 @@ export default function Navbar() {
     };
   }, []);
 
+  useEffect(() => {
+    return () => clearCloseTimer();
+  }, [clearCloseTimer]);
+
   const closeAll = () => {
+    clearCloseTimer();
     setOpenMenu(null);
     setMobileOpen(false);
     setMobileSection(null);
@@ -114,21 +141,26 @@ export default function Navbar() {
           <span className="text-[1.5rem] font-bold tracking-[-0.04em]">ORKA</span>
         </Link>
 
-        <div className="ml-10 hidden h-full items-center gap-1 lg:flex">
+        <div className="ml-10 hidden h-full items-center gap-1 lg:flex" onMouseLeave={startCloseTimer}>
           {menuGroups.map((group) => {
             const isOpen = openMenu === group.id;
             return (
-              <button
+              <div
                 key={group.id}
-                type="button"
-                aria-expanded={isOpen}
-                aria-controls={`${menuId}-${group.id}`}
-                onClick={() => setOpenMenu(isOpen ? null : group.id)}
-                className="inline-flex h-9 items-center gap-1.5 rounded-md px-3 text-sm font-medium text-white/72 transition-colors hover:bg-white/8 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet"
+                className="relative flex h-full items-center"
+                onMouseEnter={() => handleOpen(group.id)}
               >
-                {group.label}
-                <ChevronDown size={15} className={`transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`} />
-              </button>
+                <button
+                  type="button"
+                  aria-expanded={isOpen}
+                  aria-controls={`${menuId}-${group.id}`}
+                  onClick={() => setOpenMenu(isOpen ? null : group.id)}
+                  className="inline-flex h-9 items-center gap-1.5 rounded-md px-3 text-sm font-medium text-white/72 transition-colors hover:bg-white/8 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet"
+                >
+                  {group.label}
+                  <ChevronDown size={15} className={`transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`} />
+                </button>
+              </div>
             );
           })}
           <Link href="/pricing" className="inline-flex h-9 items-center rounded-md px-3 text-sm font-medium text-white/72 transition-colors hover:bg-white/8 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet">
@@ -163,12 +195,31 @@ export default function Navbar() {
       </nav>
 
       {openMenu && (
-        <div id={`${menuId}-${openMenu}`} className="absolute left-4 right-4 top-[72px] hidden rounded-xl border border-white/12 bg-[#061a2b] shadow-[0_22px_60px_rgba(0,0,0,0.28)] lg:block">
+        <div
+          onMouseEnter={() => handleOpen(openMenu)}
+          onMouseLeave={startCloseTimer}
+          className="absolute left-4 right-4 top-[78px] hidden rounded-xl border border-white/12 bg-[#061a2b] shadow-[0_22px_60px_rgba(0,0,0,0.28)] lg:block"
+        >
           {menuGroups.filter((group) => group.id === openMenu).map((group) => (
             <div key={group.id} className="grid grid-cols-[0.78fr_1.55fr_0.72fr] gap-10 p-8 xl:p-10">
               <div className="border-r border-white/10 pr-8">
                 <p className="text-xs font-semibold uppercase tracking-[0.16em] text-teal">{group.eyebrow}</p>
                 <p className="mt-4 max-w-[16rem] text-xl font-medium leading-7 text-white">{group.heading}</p>
+                {group.id === "resources" && recentPosts.length > 0 && (
+                  <div className="mt-8">
+                    <p className="text-xs font-semibold uppercase tracking-[0.16em] text-white/40">Recent from the blog</p>
+                    <ul className="mt-3 space-y-3">
+                      {recentPosts.map((post) => (
+                        <li key={post.slug}>
+                          <Link href={`/blog/${post.slug}`} onClick={closeAll} className="group block rounded-md p-2 transition-colors hover:bg-white/7 focus-visible:outline-2 focus-visible:outline-violet">
+                            <p className="text-sm font-medium leading-5 text-white transition-colors group-hover:text-violet">{post.title}</p>
+                            <p className="mt-0.5 text-xs text-white/40">{post.category} · {post.readingTime}</p>
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </div>
               <div className="grid grid-cols-2 gap-x-6 gap-y-2">
                 {group.links.map(({ label, description, href, icon: Icon }) => (
@@ -179,13 +230,13 @@ export default function Navbar() {
                   </Link>
                 ))}
               </div>
-              <Link href={group.featured.href} onClick={closeAll} className="group flex flex-col justify-between bg-white px-5 py-5 text-night transition-transform duration-200 hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet">
+              <Link href={group.featured.href} onClick={closeAll} className="group flex flex-col justify-between rounded-xl border border-white/10 bg-white/6 px-5 py-5 text-white transition-transform duration-200 hover:-translate-y-0.5 hover:border-white/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet">
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-[0.15em] text-violet">{group.featured.label}</p>
-                  <p className="mt-4 text-lg font-semibold leading-6">{group.featured.title}</p>
-                  <p className="mt-3 text-sm leading-5 text-night/68">{group.featured.copy}</p>
+                  <p className="mt-4 text-lg font-semibold leading-6 text-white">{group.featured.title}</p>
+                  <p className="mt-3 text-sm leading-5 text-white/60">{group.featured.copy}</p>
                 </div>
-                <span className="mt-8 inline-flex items-center gap-2 text-sm font-semibold">Explore <ArrowRight size={16} className="transition-transform duration-200 group-hover:translate-x-1" /></span>
+                <span className="mt-8 inline-flex items-center gap-2 text-sm font-semibold text-white/80 group-hover:text-white">Explore <ArrowRight size={16} className="transition-transform duration-200 group-hover:translate-x-1" /></span>
               </Link>
             </div>
           ))}
@@ -201,7 +252,21 @@ export default function Navbar() {
                 <button type="button" onClick={() => setMobileSection(expanded ? null : group.id)} aria-expanded={expanded} className="flex w-full items-center justify-between px-2 py-4 text-left text-sm font-semibold text-white focus-visible:outline-2 focus-visible:outline-violet">
                   {group.label}<ChevronDown size={17} className={`transition-transform duration-200 ${expanded ? "rotate-180" : ""}`} />
                 </button>
-                {expanded && <div className="space-y-1 pb-3">{group.links.map(({ label, href }) => <Link key={label} href={href} onClick={closeAll} className="block rounded-md px-3 py-2 text-sm text-white/68 hover:bg-white/7 hover:text-white focus-visible:outline-2 focus-visible:outline-violet">{label}</Link>)}</div>}
+                {expanded && (
+                  <div className="space-y-1 pb-3">
+                    {group.links.map(({ label, href }) => (
+                      <Link key={label} href={href} onClick={closeAll} className="block rounded-md px-3 py-2 text-sm text-white/68 hover:bg-white/7 hover:text-white focus-visible:outline-2 focus-visible:outline-violet">{label}</Link>
+                    ))}
+                    {group.id === "resources" && recentPosts.length > 0 && (
+                      <div className="mt-2 border-t border-white/10 pt-2">
+                        <p className="px-3 pb-1 text-xs font-semibold uppercase tracking-[0.16em] text-white/40">Recent from the blog</p>
+                        {recentPosts.map((post) => (
+                          <Link key={post.slug} href={`/blog/${post.slug}`} onClick={closeAll} className="block rounded-md px-3 py-2 text-sm text-white/68 hover:bg-white/7 hover:text-white focus-visible:outline-2 focus-visible:outline-violet">{post.title}</Link>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             );
           })}
