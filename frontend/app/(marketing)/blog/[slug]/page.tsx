@@ -2,7 +2,6 @@ import { notFound } from "next/navigation";
 import {
   getPostBySlug,
   getRelatedPosts,
-  tocHeadings,
 } from "@/lib/blog-data";
 import ArticleHeader from "./components/ArticleHeader";
 import ArticleContent from "./components/ArticleContent";
@@ -32,19 +31,19 @@ export default async function BlogPostPage({
       <ReadingProgress />
 
       {/* 3-column layout */}
-      <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-[1400px] px-4 pt-8 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-[22%_1fr_25%]">
           {/* Left sidebar — TOC (desktop) */}
           <aside className="hidden lg:block">
             <div className="sticky top-28">
-              <TableOfContents headings={tocHeadings} />
+              <TableOfContents headings={post.headings} />
             </div>
           </aside>
 
           {/* Main content */}
           <main className="min-w-0">
             <ArticleHeader post={post} />
-            <ArticleContent />
+            <ArticleContent slug={slug} />
           </main>
 
           {/* Right sidebar */}

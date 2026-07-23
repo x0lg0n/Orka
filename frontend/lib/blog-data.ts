@@ -193,12 +193,14 @@ const postDetails: Record<string, Omit<BlogPostDetail, keyof BlogPost>> = {
   "agencies-lose-revenue-bad-client-management": {
     headings: [
       { id: "introduction", title: "Introduction", level: 2 },
-      { id: "why-agencies-lose-revenue", title: "Why Agencies Lose Revenue", level: 2 },
-      { id: "common-client-management-mistakes", title: "Common Client Management Mistakes", level: 2 },
-      { id: "how-orka-solves-this", title: "How ORKA Solves This", level: 2 },
+      { id: "why-agencies-lose-revenue-to-poor-client-management", title: "Why Agencies Lose Revenue to Poor Client Management", level: 2 },
+      { id: "the-proposal-problem-that-kills-deals", title: "The Proposal Problem That Kills Deals", level: 3 },
+      { id: "why-most-contracts-fail-to-protect-you", title: "Why Most Contracts Fail to Protect You", level: 3 },
+      { id: "5-client-management-mistakes-costing-you-money", title: "5 Client Management Mistakes Costing You Money", level: 2 },
+      { id: "how-orka-eliminates-these-revenue-leaks", title: "How ORKA Eliminates These Revenue Leaks", level: 2 },
       { id: "the-orka-workflow", title: "The ORKA Workflow", level: 2 },
-      { id: "real-impact", title: "Real Impact", level: 2 },
-      { id: "best-practices", title: "Best Practices", level: 2 },
+      { id: "what-agencies-report-after-switching-to-orka", title: "What Agencies Report After Switching to ORKA", level: 2 },
+      { id: "best-practices-for-agency-client-management", title: "Best Practices for Agency Client Management", level: 2 },
       { id: "conclusion", title: "Conclusion", level: 2 },
       { id: "faq", title: "FAQ", level: 2 },
     ],
@@ -211,10 +213,16 @@ const postDetails: Record<string, Omit<BlogPostDetail, keyof BlogPost>> = {
   "ai-writes-better-proposals": {
     headings: [
       { id: "introduction", title: "Introduction", level: 2 },
-      { id: "why-ai-proposals", title: "Why AI Proposals Work Better", level: 2 },
-      { id: "prompt-strategies", title: "Prompt Strategies That Win", level: 2 },
-      { id: "real-examples", title: "Real Examples", level: 2 },
+      { id: "3-ways-ai-proposal-tools-save-hours-every-week", title: "3 Ways AI Proposal Tools Save Hours Every Week", level: 2 },
+      { id: "eliminate-blank-page-paralysis", title: "Eliminate Blank-Page Paralysis", level: 3 },
+      { id: "personalize-at-scale", title: "Personalize at Scale", level: 3 },
+      { id: "optimize-for-close-rates", title: "Optimize for Close Rates", level: 3 },
+      { id: "what-makes-an-ai-proposal-effective", title: "What Makes an AI Proposal Effective?", level: 2 },
+      { id: "how-proposal-quality-improves-client-trust", title: "How Proposal Quality Improves Client Trust", level: 2 },
+      { id: "ai-proposals-and-the-orka-platform", title: "AI Proposals and the ORKA Platform", level: 2 },
+      { id: "when-ai-cant-replace-the-personal-touch", title: "When AI Can't Replace the Personal Touch", level: 2 },
       { id: "conclusion", title: "Conclusion", level: 2 },
+      { id: "faq", title: "FAQ", level: 2 },
     ],
     relatedSlugs: [
       "agencies-lose-revenue-bad-client-management",
@@ -225,15 +233,129 @@ const postDetails: Record<string, Omit<BlogPostDetail, keyof BlogPost>> = {
   "escrow-future-of-client-payments": {
     headings: [
       { id: "introduction", title: "Introduction", level: 2 },
-      { id: "what-is-escrow", title: "What Is Escrow", level: 2 },
-      { id: "benefits", title: "Benefits for Agencies", level: 2 },
-      { id: "how-it-works", title: "How It Works", level: 2 },
+      { id: "the-trust-problem-in-client-payments", title: "The Trust Problem in Client Payments", level: 2 },
+      { id: "how-escrow-protects-both-parties", title: "How Escrow Protects Both Parties", level: 2 },
+      { id: "why-traditional-milestone-payments-fall-short", title: "Why Traditional Milestone Payments Fall Short", level: 2 },
+      { id: "setting-up-smart-escrow-milestones", title: "Setting Up Smart Escrow Milestones", level: 2 },
+      { id: "orkas-escrow-how-it-works", title: "ORKA's Escrow: How It Works", level: 2 },
+      { id: "is-escrow-right-for-every-project", title: "Is Escrow Right for Every Project?", level: 2 },
       { id: "conclusion", title: "Conclusion", level: 2 },
+      { id: "faq", title: "FAQ", level: 2 },
     ],
     relatedSlugs: [
       "milestone-payments-client-trust",
       "freelancer-contracts-protect-you",
       "agencies-lose-revenue-bad-client-management",
+    ],
+  },
+  "freelancer-contracts-protect-you": {
+    headings: [
+      { id: "introduction", title: "Introduction", level: 2 },
+      { id: "what-a-strong-freelancer-contract-includes", title: "What a Strong Freelancer Contract Includes", level: 2 },
+      { id: "why-most-freelancers-skip-contracts", title: "Why Most Freelancers Skip Contracts", level: 2 },
+    ],
+    relatedSlugs: [
+      "proposal-vs-contract-vs-invoice",
+      "agencies-lose-revenue-bad-client-management",
+      "milestone-payments-client-trust",
+    ],
+  },
+  "agency-onboarding-checklist": {
+    headings: [
+      { id: "introduction", title: "Introduction", level: 2 },
+      { id: "the-agency-onboarding-checklist-preview", title: "The Agency Onboarding Checklist Preview", level: 2 },
+      { id: "why-onboarding-matters-for-retention", title: "Why Onboarding Matters for Retention", level: 2 },
+    ],
+    relatedSlugs: [
+      "client-portal-benefits",
+      "managing-multiple-projects",
+      "agencies-lose-revenue-bad-client-management",
+    ],
+  },
+  "managing-multiple-projects": {
+    headings: [
+      { id: "introduction", title: "Introduction", level: 2 },
+      { id: "managing-multiple-projects-without-losing-your-mind", title: "Managing Multiple Projects Without Losing Your Mind", level: 2 },
+      { id: "why-scattered-projects-fail", title: "Why Scattered Projects Fail", level: 2 },
+    ],
+    relatedSlugs: [
+      "agency-onboarding-checklist",
+      "pricing-strategies-agencies",
+      "ai-helps-agencies-win-clients",
+    ],
+  },
+  "proposal-vs-contract-vs-invoice": {
+    headings: [
+      { id: "introduction", title: "Introduction", level: 2 },
+      { id: "proposal-vs-contract-vs-invoice-the-relationship", title: "Proposal vs Contract vs Invoice: The Relationship", level: 2 },
+      { id: "why-they-should-be-connected", title: "Why They Should Be Connected", level: 2 },
+    ],
+    relatedSlugs: [
+      "agencies-lose-revenue-bad-client-management",
+      "freelancer-contracts-protect-you",
+      "milestone-payments-client-trust",
+    ],
+  },
+  "milestone-payments-client-trust": {
+    headings: [
+      { id: "introduction", title: "Introduction", level: 2 },
+      { id: "why-milestone-payments-build-client-trust", title: "Why Milestone Payments Build Client Trust", level: 2 },
+      { id: "how-to-structure-milestone-payments", title: "How to Structure Milestone Payments", level: 2 },
+    ],
+    relatedSlugs: [
+      "escrow-future-of-client-payments",
+      "agencies-lose-revenue-bad-client-management",
+      "proposal-vs-contract-vs-invoice",
+    ],
+  },
+  "freelancer-to-agency-owner": {
+    headings: [
+      { id: "introduction", title: "Introduction", level: 2 },
+      { id: "the-freelancer-to-agency-owner-transition", title: "The Freelancer to Agency Owner Transition", level: 2 },
+      { id: "operations", title: "Operations", level: 3 },
+      { id: "pricing", title: "Pricing", level: 3 },
+      { id: "client-management", title: "Client Management", level: 3 },
+    ],
+    relatedSlugs: [
+      "pricing-strategies-agencies",
+      "agency-onboarding-checklist",
+      "client-portal-benefits",
+    ],
+  },
+  "ai-helps-agencies-win-clients": {
+    headings: [
+      { id: "introduction", title: "Introduction", level: 2 },
+      { id: "how-ai-helps-agencies-win-clients", title: "How AI Helps Agencies Win Clients", level: 2 },
+      { id: "the-ai-workflow-for-client-acquisition", title: "The AI Workflow for Client Acquisition", level: 2 },
+    ],
+    relatedSlugs: [
+      "ai-writes-better-proposals",
+      "agencies-lose-revenue-bad-client-management",
+      "pricing-strategies-agencies",
+    ],
+  },
+  "pricing-strategies-agencies": {
+    headings: [
+      { id: "introduction", title: "Introduction", level: 2 },
+      { id: "5-pricing-strategies-for-agencies", title: "5 Pricing Strategies for Agencies", level: 2 },
+      { id: "why-hourly-billing-hurts-your-agency", title: "Why Hourly Billing Hurts Your Agency", level: 2 },
+    ],
+    relatedSlugs: [
+      "freelancer-to-agency-owner",
+      "proposal-vs-contract-vs-invoice",
+      "agencies-lose-revenue-bad-client-management",
+    ],
+  },
+  "client-portal-benefits": {
+    headings: [
+      { id: "introduction", title: "Introduction", level: 2 },
+      { id: "why-every-agency-needs-a-client-portal-in-2025", title: "Why Every Agency Needs a Client Portal in 2025", level: 2 },
+      { id: "what-to-look-for-in-a-client-portal", title: "What to Look for in a Client Portal", level: 2 },
+    ],
+    relatedSlugs: [
+      "agency-onboarding-checklist",
+      "milestone-payments-client-trust",
+      "proposal-vs-contract-vs-invoice",
     ],
   },
 };
