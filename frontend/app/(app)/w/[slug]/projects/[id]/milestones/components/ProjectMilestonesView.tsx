@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { LayoutList, LayoutGrid } from "lucide-react";
 import { MilestoneProgressOverview } from "./MilestoneProgressOverview";
 import { MilestoneTable } from "./MilestoneTable";
@@ -180,8 +181,13 @@ export function ProjectMilestonesView({
           </div>
           <AddMilestoneButton
             onComplete={async (data) => {
-              await saveMilestones({ orgId, projectId, milestones: [data] });
-              router.refresh();
+              const res = await saveMilestones({ orgId, projectId, slug, milestones: [data] });
+              if (res.ok) {
+                toast.success("Milestone created");
+                router.refresh();
+              } else {
+                toast.error(res.error ?? "Failed to create milestone");
+              }
             }}
           />
         </div>

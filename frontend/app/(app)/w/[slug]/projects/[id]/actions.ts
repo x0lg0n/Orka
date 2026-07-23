@@ -1,6 +1,7 @@
 // frontend/app/(app)/w/[slug]/projects/[id]/actions.ts
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { orkaClient, type OrkaCustodyMode } from "@/lib/stellar";
 import { blocksToMarkdown } from "@/lib/proposalBlocks";
@@ -578,6 +579,7 @@ export async function signContractAgency(input: {
 export async function saveMilestones(input: {
   orgId: string;
   projectId: string;
+  slug?: string;
   milestones: Array<{
     name: string;
     description: string;
@@ -601,6 +603,7 @@ export async function saveMilestones(input: {
     }));
     const { error } = await supabase.from("milestones").insert(rows);
     if (error) throw new Error(error.message);
+    revalidatePath(`/w/${input.slug ?? "[slug]"}/projects/${input.projectId}/milestones`);
     return { ok: true };
   } catch (err) {
     return { ok: false, error: err instanceof Error ? err.message : "saveMilestones failed" };

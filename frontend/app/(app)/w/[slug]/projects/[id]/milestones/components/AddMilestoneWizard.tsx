@@ -30,9 +30,10 @@ export function AddMilestoneWizard({
 }: {
   open: boolean;
   onClose: () => void;
-  onComplete: (data: MilestoneData) => void;
+  onComplete: (data: MilestoneData) => void | Promise<void>;
 }) {
   const [step, setStep] = useState(0);
+  const [saving, setSaving] = useState(false);
   const [data, setData] = useState<MilestoneData>({
     name: "",
     description: "",
@@ -44,16 +45,34 @@ export function AddMilestoneWizard({
   const update = (field: keyof MilestoneData, value: string) =>
     setData((prev) => ({ ...prev, [field]: value }));
 
+  const reset = () => {
+    setStep(0);
+    setData({ name: "", description: "", dueDate: "", amount: "", asset: "USDC" });
+  };
+
   const canNext =
     (step === 0 && data.name.trim().length > 0) ||
     (step === 1 && data.amount.trim().length > 0 && Number(data.amount) > 0) ||
     step === 2;
 
-  const handleComplete = () => {
-    onComplete(data);
-    setStep(0);
-    setData({ name: "", description: "", dueDate: "", amount: "", asset: "USDC" });
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      await onComplete(data);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleComplete = async () => {
+    await handleSave();
+    reset();
     onClose();
+  };
+
+  const handleAddAnother = async () => {
+    await handleSave();
+    reset();
   };
 
   return (
@@ -61,7 +80,7 @@ export function AddMilestoneWizard({
       open={open}
       onOpenChange={(v) => {
         if (!v) {
-          setStep(0);
+          reset();
           onClose();
         }
       }}
@@ -214,18 +233,28 @@ export function AddMilestoneWizard({
             {step < 2 ? (
               <Button
                 onClick={() => setStep(step + 1)}
-                disabled={!canNext}
+                disabled={!canNext || saving}
                 className="bg-[#7c3aed] hover:bg-[#6d28d9]"
               >
                 Next <ChevronRight className="ml-1 h-4 w-4" />
               </Button>
             ) : (
-              <Button
-                onClick={handleComplete}
-                className="bg-[#7c3aed] hover:bg-[#6d28d9]"
-              >
-                <Check className="mr-1 h-4 w-4" /> Confirm
-              </Button>
+              <div className="flex gap-2">
+                <Button
+                  onClick={handleAddAnother}
+                  disabled={saving}
+                  variant="outline"
+                >
+                  {saving ? "Saving..." : "Add Another"}
+                </Button>
+                <Button
+                  onClick={handleComplete}
+                  disabled={saving}
+                  className="bg-[#7c3aed] hover:bg-[#6d28d9]"
+                >
+                  <Check className="mr-1 h-4 w-4" /> Confirm & Close
+                </Button>
+              </div>
             )}
           </div>
         </DialogFooter>

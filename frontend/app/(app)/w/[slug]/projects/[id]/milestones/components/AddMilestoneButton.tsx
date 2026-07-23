@@ -13,7 +13,7 @@ export function AddMilestoneButton({
     dueDate: string;
     amount: string;
     asset: string;
-  }) => void;
+  }) => void | Promise<void>;
 }) {
   const [open, setOpen] = useState(false);
 
