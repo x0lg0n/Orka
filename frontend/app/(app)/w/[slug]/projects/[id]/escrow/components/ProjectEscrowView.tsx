@@ -3,6 +3,7 @@
 
 import { useRouter } from "next/navigation";
 import { deriveWorkflowState, nextActionsForRole, type WorkflowState } from "@/lib/workflow";
+import type { MilestoneStatus } from "@/lib/orka";
 import { WorkflowStepper } from "../../components/WorkflowStepper";
 import { EscrowDeploymentFlow } from "./EscrowDeploymentFlow";
 import { deployEscrow } from "../../actions";
@@ -30,7 +31,7 @@ type ProjectEscrowViewProps = {
     deployed_at?: string | null;
     custody_mode?: string;
   } | null;
-  milestones: { status: string }[];
+  milestones: { id: string; status: string }[];
   role: "agency" | "client";
 };
 
@@ -49,7 +50,7 @@ export function ProjectEscrowView({
     contract: {
       client_sig: project.client_sig ?? null,
       freelancer_sig: project.freelancer_sig ?? null,
-      status: project.contract_status ?? null,
+      status: project.contract_status ?? undefined,
     },
     escrow: escrow
       ? {
@@ -59,11 +60,19 @@ export function ProjectEscrowView({
           deployed_at: escrow.deployed_at ?? null,
         }
       : null,
-    milestones: milestones.map((m) => ({ status: m.status })),
+    milestones: milestones.map((m) => ({ status: m.status as MilestoneStatus })),
   });
 
   const handleDeploy = async () => {
-    await deployEscrow({ projectId, orgId });
+    const asset = escrow?.asset ?? project.asset ?? "XLM";
+    const milestoneIds = milestones.map((m) => m.id);
+    await deployEscrow({
+      projectId,
+      orgId,
+      asset,
+      milestoneIds,
+      mode: "orka",
+    });
     router.refresh();
   };
 

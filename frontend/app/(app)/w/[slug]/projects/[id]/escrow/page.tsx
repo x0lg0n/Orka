@@ -32,7 +32,7 @@ export default async function EscrowPage({
 
   const { data: milestones } = await supabase
     .from("milestones")
-    .select("status")
+    .select("id, status")
     .eq("project_id", id);
 
   const role =
