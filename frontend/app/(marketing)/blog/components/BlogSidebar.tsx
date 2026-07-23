@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { FileText, ArrowRight } from "lucide-react";
 import NewsletterWidget from "./NewsletterWidget";
 
@@ -30,72 +31,82 @@ export default function BlogSidebar() {
         <NewsletterWidget />
 
         <div className="rounded-2xl border border-night/10 bg-white p-5">
-          <h3 className="text-[11px] font-black uppercase tracking-wider text-night/50">
+          <h3 className="text-xs font-black uppercase tracking-wider text-night/50">
             Free Resources
           </h3>
           <div className="mt-3 space-y-2.5">
             {resources.map((r) => (
               <div
                 key={r}
-                className="flex items-center justify-between text-[12px] font-bold text-night/70"
+                className="flex items-center justify-between text-sm font-bold text-night/70 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet/50"
               >
                 <span className="flex items-center gap-2">
                   <FileText size={13} className="text-violet" />
                   {r}
                 </span>
-                <span className="text-[10px] font-bold text-night/30">
+                <span className="text-2xs font-bold text-night/30">
                   Free
                 </span>
               </div>
             ))}
           </div>
-          <a
-            href="#"
-            className="mt-3 block text-center text-[11px] font-black text-violet hover:underline"
+          <Link
+            href="/resources"
+            className="mt-3 block text-center text-xs font-black text-violet hover:underline"
           >
             View all resources →
-          </a>
+          </Link>
         </div>
 
         <div className="rounded-2xl border border-violet/20 bg-violet/5 p-5">
-          <h3 className="text-[15px] font-black text-night">
+          <h3 className="text-md font-black text-night">
             See Orka in Action
           </h3>
-          <p className="mt-1 text-[12px] font-bold leading-5 text-night/50">
+          <p className="mt-1 text-sm font-bold leading-5 text-night/50">
             Book a 15-min demo and see how Orka can streamline your operations.
           </p>
-          <a
-            href="#"
-            className="mt-3 inline-flex items-center gap-1.5 rounded-xl bg-violet px-4 py-2 text-[12px] font-black text-white transition-colors hover:bg-violet/90"
-          >
-            Book a Demo <ArrowRight size={12} />
-          </a>
+          <div className="mt-3 flex gap-2">
+            <Link
+              href="/demo"
+              className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-violet px-3 py-2 text-sm font-black text-white transition-colors hover:bg-violet/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+            >
+              Book a Demo <ArrowRight size={12} />
+            </Link>
+            <a
+              href="https://forms.gle/MucRjiXUXS9soq37A"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-night/20 px-3 py-2 text-sm font-bold text-night/60 transition-colors hover:border-violet/30 hover:text-violet focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet/50"
+            >
+              Feedback
+            </a>
+          </div>
         </div>
 
         <div className="rounded-2xl border border-night/10 bg-white p-5">
-          <h3 className="text-[11px] font-black uppercase tracking-wider text-night/50">
+          <h3 className="text-xs font-black uppercase tracking-wider text-night/50">
             Recommended Reads
           </h3>
           <div className="mt-3 space-y-3">
             {recommended.map((r) => (
-              <a
+              <Link
                 key={r.title}
-                href="#"
-                className="group block text-[12px] font-bold text-night/70 transition-colors hover:text-violet"
+                href="/blog"
+                className="group block text-sm font-bold text-night/70 transition-colors hover:text-violet focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet/50 rounded"
               >
                 {r.title}
-                <span className="mt-0.5 block text-[10px] font-bold text-night/35">
+                <span className="mt-0.5 block text-2xs font-bold text-night/35">
                   {r.readingTime}
                 </span>
-              </a>
+              </Link>
             ))}
           </div>
-          <a
-            href="#"
-            className="mt-3 block text-center text-[11px] font-black text-violet hover:underline"
+          <Link
+            href="/blog"
+            className="mt-3 block text-center text-xs font-black text-violet hover:underline"
           >
             View all articles →
-          </a>
+          </Link>
         </div>
       </div>
     </aside>

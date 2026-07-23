@@ -7,7 +7,7 @@ export default function ArticleHeader({ post }: { post: BlogPostDetail }) {
   return (
     <>
       {/* Breadcrumb */}
-      <nav className="mb-6 flex items-center gap-2 text-[12px] font-bold text-night/40">
+      <nav className="mb-6 flex items-center gap-2 text-sm font-bold text-night/40">
         <Link href="/" className="transition-colors hover:text-night/70">
           Home
         </Link>
@@ -22,7 +22,7 @@ export default function ArticleHeader({ post }: { post: BlogPostDetail }) {
       </nav>
 
       {/* Category badge */}
-      <span className="inline-block rounded-full border border-violet/30 bg-violet/10 px-3 py-1 text-[10px] font-black uppercase tracking-wider text-violet">
+      <span className="inline-block rounded-full border border-night/10 bg-night/5 px-3 py-1 text-2xs font-black uppercase tracking-wider text-night/60">
         {post.category}
       </span>
 
@@ -32,19 +32,19 @@ export default function ArticleHeader({ post }: { post: BlogPostDetail }) {
       </h1>
 
       {/* Excerpt */}
-      <p className="mt-4 max-w-2xl text-[15px] font-bold leading-6 text-night/60">
+      <p className="mt-4 max-w-2xl text-md font-bold leading-6 text-night/60">
         {post.excerpt}
       </p>
 
       {/* Author + metadata */}
       <div className="mt-6 flex flex-wrap items-center gap-4">
         <div className="flex items-center gap-3">
-          <span className="grid size-9 place-items-center rounded-full bg-violet/10 text-[11px] font-black text-violet">
+          <span className="grid size-9 place-items-center rounded-full bg-night/10 text-xs font-black text-night/60">
             {post.author.initials}
           </span>
           <div>
-            <p className="text-[13px] font-bold text-night">{post.author.name}</p>
-            <p className="text-[11px] font-bold text-night/40">
+            <p className="text-base font-bold text-night">{post.author.name}</p>
+            <p className="text-xs font-bold text-night/40">
               {post.publishedAt} · {post.readingTime}
             </p>
           </div>

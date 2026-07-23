@@ -68,7 +68,7 @@ export default function BlogPage() {
           <div>
             {filtered.length === 0 ? (
               <div className="rounded-2xl border border-night/10 bg-white p-12 text-center">
-                <p className="text-[15px] font-bold text-night/50">
+                <p className="text-md font-bold text-night/50">
                   No articles found matching &ldquo;{searchQuery}&rdquo;
                 </p>
                 <button
@@ -76,7 +76,7 @@ export default function BlogPage() {
                     setSearchQuery("");
                     setActiveCategory("All");
                   }}
-                  className="mt-3 text-[13px] font-bold text-violet hover:underline"
+                  className="mt-3 text-base font-bold text-violet hover:underline"
                 >
                   Clear search
                 </button>

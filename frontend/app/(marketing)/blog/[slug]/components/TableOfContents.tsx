@@ -28,7 +28,7 @@ export default function TableOfContents({ headings }: { headings: TocHeading[] }
 
   return (
     <nav>
-      <h3 className="text-[10px] font-black uppercase tracking-wider text-night/40">
+      <h3 className="text-2xs font-black uppercase tracking-wider text-night/40">
         On This Page
       </h3>
       <ul className="mt-3 space-y-1">
@@ -36,7 +36,7 @@ export default function TableOfContents({ headings }: { headings: TocHeading[] }
           <li key={h.id}>
             <a
               href={`#${h.id}`}
-              className={`block border-l-2 py-1 text-[12px] font-bold transition-all duration-200 ${
+              className={`block border-l-2 py-1 text-sm font-bold transition-all duration-200 ${
                 h.level === 3 ? "pl-6" : "pl-3"
               } ${
                 activeId === h.id

@@ -14,17 +14,20 @@ export default function BlogSearch({
       <Search
         size={16}
         className="absolute left-3 top-1/2 -translate-y-1/2 text-night/30"
+        aria-hidden="true"
       />
       <input
         type="text"
         placeholder="Search articles..."
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full rounded-xl border border-night/10 bg-white py-2.5 pl-9 pr-9 text-[13px] font-bold text-night placeholder:text-night/30 focus:border-violet focus:outline-none focus:ring-2 focus:ring-violet/20"
+        aria-label="Search articles"
+        className="w-full rounded-xl border border-night/10 bg-white py-2.5 pl-9 pr-9 text-base font-bold text-night placeholder:text-night/30 focus:border-violet focus:outline-none focus:ring-2 focus:ring-violet/20"
       />
       {value && (
         <button
           onClick={() => onChange("")}
+          aria-label="Clear search"
           className="absolute right-3 top-1/2 -translate-y-1/2 text-night/30 hover:text-night/60"
         >
           <X size={14} />

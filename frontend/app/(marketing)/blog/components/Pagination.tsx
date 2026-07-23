@@ -36,11 +36,12 @@ export default function Pagination({
   }
 
   return (
-    <div className="flex items-center justify-center gap-1.5">
+    <div className="mt-10 flex items-center justify-center gap-1.5">
       <button
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 1}
-        className="grid size-9 place-items-center rounded-xl border border-night/10 text-night/40 transition-colors hover:bg-night/5 hover:text-night disabled:opacity-30 disabled:hover:bg-transparent"
+        aria-label="Previous page"
+        className="grid size-9 place-items-center rounded-xl border border-night/10 text-night/40 transition-colors hover:bg-night/5 hover:text-night disabled:opacity-30 disabled:hover:bg-transparent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet/50"
       >
         <ChevronLeft size={16} />
       </button>
@@ -48,7 +49,7 @@ export default function Pagination({
         page === "..." ? (
           <span
             key={`dots-${i}`}
-            className="grid size-9 place-items-center text-[13px] font-bold text-night/30"
+            className="grid size-9 place-items-center text-base font-bold text-night/30"
           >
             ...
           </span>
@@ -56,11 +57,12 @@ export default function Pagination({
           <button
             key={page}
             onClick={() => onPageChange(page)}
-            className={`grid size-9 place-items-center rounded-xl text-[13px] font-bold transition-all duration-200 ${
+            aria-label={`Page ${page}`}
+            className={`grid size-9 place-items-center rounded-xl text-base font-bold transition-all duration-200 ${
               currentPage === page
                 ? "bg-violet text-white shadow-[0_2px_8px_rgba(148,116,255,0.3)]"
                 : "border border-night/10 text-night/50 hover:bg-night/5 hover:text-night"
-            }`}
+            } focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet/50`}
           >
             {page}
           </button>
@@ -69,7 +71,8 @@ export default function Pagination({
       <button
         onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage === totalPages}
-        className="grid size-9 place-items-center rounded-xl border border-night/10 text-night/40 transition-colors hover:bg-night/5 hover:text-night disabled:opacity-30 disabled:hover:bg-transparent"
+        aria-label="Next page"
+        className="grid size-9 place-items-center rounded-xl border border-night/10 text-night/40 transition-colors hover:bg-night/5 hover:text-night disabled:opacity-30 disabled:hover:bg-transparent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet/50"
       >
         <ChevronRight size={16} />
       </button>

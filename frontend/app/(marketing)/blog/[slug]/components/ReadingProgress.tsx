@@ -23,7 +23,7 @@ export default function ReadingProgress() {
     <div className="sticky top-0 z-50 border-b border-night/8 bg-paper/90 backdrop-blur-md">
       <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8">
         <div className="flex items-center gap-3 py-2">
-          <span className="hidden text-[10px] font-black uppercase tracking-wider text-night/40 sm:inline">
+          <span className="hidden text-2xs font-black uppercase tracking-wider text-night/40 sm:inline">
             Reading Progress
           </span>
           <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-night/8">
@@ -32,7 +32,7 @@ export default function ReadingProgress() {
               style={{ width: `${progress}%` }}
             />
           </div>
-          <span className="text-[11px] font-bold text-violet">{progress}%</span>
+          <span className="text-xs font-bold text-violet">{progress}%</span>
         </div>
       </div>
     </div>
