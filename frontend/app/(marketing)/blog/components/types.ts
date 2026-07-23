@@ -9,12 +9,10 @@ export interface BlogPost {
   slug: string;
   title: string;
   excerpt: string;
-  content: string;
-  author: BlogAuthor;
+  coverGradient: string;
   category: string;
-  tags: string[];
+  author: BlogAuthor;
+  readingTime: string;
   publishedAt: string;
-  readTime: number;
   featured: boolean;
-  image?: string;
 }
