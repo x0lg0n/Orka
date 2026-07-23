@@ -75,7 +75,7 @@ export async function portalFundEscrow(input: {
 export async function portalApproveMilestone(input: {
   token: string;
   contractAddress: string;
-  milestoneId: string;
+  milestonePos: number;
   mode: OrkaCustodyMode;
 }): Promise<ActionResult> {
   try {
@@ -85,7 +85,7 @@ export async function portalApproveMilestone(input: {
     const client = orkaClient(input.mode);
     const res = await client.approveMilestone({
       contractId: input.contractAddress,
-      milestoneId: Number(input.milestoneId),
+      milestoneId: input.milestonePos,
     });
     return { ok: true, txHash: txHashOf(res) };
   } catch (err) {
@@ -96,7 +96,7 @@ export async function portalApproveMilestone(input: {
 export async function portalReleaseMilestone(input: {
   token: string;
   contractAddress: string;
-  milestoneId: string;
+  milestonePos: number;
   mode: OrkaCustodyMode;
 }): Promise<ActionResult> {
   try {
@@ -109,7 +109,7 @@ export async function portalReleaseMilestone(input: {
     // the call and never weakens that requirement.
     const res = await client.releaseMilestone({
       contractId: input.contractAddress,
-      milestoneId: Number(input.milestoneId),
+      milestoneId: input.milestonePos,
     });
     return { ok: true, txHash: txHashOf(res) };
   } catch (err) {

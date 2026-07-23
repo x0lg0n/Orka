@@ -125,7 +125,7 @@ export default async function PortalPage({
           {project.milestones.length === 0 ? (
             <p className="text-sm text-muted-foreground">No milestones yet.</p>
           ) : (
-            project.milestones.map((m) => (
+            project.milestones.map((m, idx) => (
               <div
                 key={m.id}
                 className="space-y-3 rounded-[12px] border border-border bg-panel p-4"
@@ -146,7 +146,7 @@ export default async function PortalPage({
                   <PortalMilestoneActions
                     token={projectToken}
                     contractAddress={project.contract_address}
-                    milestoneId={m.id}
+                    milestonePos={m.chain_index ?? idx + 1}
                     status={m.status}
                     mode={mode}
                   />

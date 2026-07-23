@@ -37,6 +37,15 @@ export default async function ProjectMilestonesPage({
     .limit(1)
     .maybeSingle();
 
+  const { data: proposal } = await supabase
+    .from("project_proposals")
+    .select("status")
+    .eq("project_id", id)
+    .eq("org_id", org.id)
+    .order("updated_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
   let owner = null;
   if (project.created_by) {
     const { data } = await supabase
@@ -46,6 +55,16 @@ export default async function ProjectMilestonesPage({
       .single();
     owner = data;
   }
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  const userId = user?.id ?? "";
+
+  // Role detection: if the current user is the client, show client actions.
+  // Otherwise they see agency actions.
+  const role =
+    project.client_id && userId === project.client_id ? "client" : "agency";
 
   const allMilestones = milestones ?? [];
 
@@ -92,6 +111,7 @@ export default async function ProjectMilestonesPage({
   const escrowRow = escrow;
 
   const workflowState = deriveWorkflowState({
+    proposal: proposal ? { status: proposal.status } : null,
     contract: {
       client_sig: project.client_sig,
       freelancer_sig: project.freelancer_sig,
@@ -116,7 +136,7 @@ export default async function ProjectMilestonesPage({
       owner={owner}
       escrow={escrowRow}
       workflowState={workflowState}
-      role="agency"
+      role={role}
       orgId={org.id}
       mode="orka"
       stats={{

@@ -102,42 +102,51 @@ export function ProjectMilestonesView({
   const router = useRouter();
 
   const contractAddress = escrow?.contract_address ?? "";
+  const milestonePos = (id: string): number => {
+    const idx = milestones.findIndex((m) => m.id === id);
+    if (idx === -1) return 0;
+    return milestones[idx].position ?? idx + 1;
+  };
 
   const handleSubmitMilestone = async (milestoneId: string) => {
-    await submitMilestone({
+    const result = await submitMilestone({
       orgId,
       projectId,
       contractAddress,
-      milestoneId,
+      milestonePos: milestonePos(milestoneId),
       mode,
     });
+    if (result.ok) router.refresh();
   };
   const handleApproveMilestone = async (milestoneId: string) => {
-    await approveMilestone({
+    const result = await approveMilestone({
       orgId,
       projectId,
       contractAddress,
-      milestoneId,
+      milestonePos: milestonePos(milestoneId),
       mode,
     });
+    if (result.ok) router.refresh();
   };
   const handleRejectMilestone = async (milestoneId: string) => {
-    await rejectMilestone({
+    const result = await rejectMilestone({
       orgId,
       projectId,
       contractAddress,
-      milestoneId,
+      milestonePos: milestonePos(milestoneId),
       mode,
     });
+    if (result.ok) router.refresh();
   };
   const handleReleaseMilestone = async (milestoneId: string) => {
-    await releaseMilestone({
+    const result = await releaseMilestone({
       orgId,
       projectId,
       contractAddress,
-      milestoneId,
+      milestonePos: milestonePos(milestoneId),
       mode,
     });
+    if (result.ok) router.refresh();
   };
 
   return (

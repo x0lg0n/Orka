@@ -12,13 +12,13 @@ type Mode = "orka" | "freighter";
 export function PortalMilestoneActions({
   token,
   contractAddress,
-  milestoneId,
+  milestonePos,
   status,
   mode,
 }: {
   token: string;
   contractAddress: string;
-  milestoneId: string;
+  milestonePos: number;
   status: string;
   mode: Mode;
 }) {
@@ -50,7 +50,7 @@ export function PortalMilestoneActions({
           disabled={pending}
           onClick={() =>
             run(() =>
-              portalApproveMilestone({ token, contractAddress, milestoneId, mode }),
+              portalApproveMilestone({ token, contractAddress, milestonePos, mode }),
             )
           }
           className={btn}
@@ -65,7 +65,7 @@ export function PortalMilestoneActions({
           disabled={pending}
           onClick={() =>
             run(() =>
-              portalReleaseMilestone({ token, contractAddress, milestoneId, mode }),
+              portalReleaseMilestone({ token, contractAddress, milestonePos, mode }),
             )
           }
           className={btn}

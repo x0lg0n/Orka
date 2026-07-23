@@ -78,14 +78,14 @@ export async function submitMilestone(input: {
   orgId: string;
   projectId: string;
   contractAddress: string;
-  milestoneId: string;
+  milestonePos: number;
   mode: OrkaCustodyMode;
 }): Promise<{ ok: true; txHash: string } | { ok: false; error: string }> {
   try {
     const client = orkaClient(input.mode);
     const res = await client.submitMilestone({
       contractId: input.contractAddress,
-      milestoneId: Number(input.milestoneId),
+      milestoneId: input.milestonePos,
     });
     const txHash = "txHash" in res ? res.txHash : "";
     return { ok: true, txHash };
@@ -98,14 +98,14 @@ export async function approveMilestone(input: {
   orgId: string;
   projectId: string;
   contractAddress: string;
-  milestoneId: string;
+  milestonePos: number;
   mode: OrkaCustodyMode;
 }): Promise<{ ok: true; txHash: string } | { ok: false; error: string }> {
   try {
     const client = orkaClient(input.mode);
     const res = await client.approveMilestone({
       contractId: input.contractAddress,
-      milestoneId: Number(input.milestoneId),
+      milestoneId: input.milestonePos,
     });
     const txHash = "txHash" in res ? res.txHash : "";
     return { ok: true, txHash };
@@ -118,14 +118,14 @@ export async function rejectMilestone(input: {
   orgId: string;
   projectId: string;
   contractAddress: string;
-  milestoneId: string;
+  milestonePos: number;
   mode: OrkaCustodyMode;
 }): Promise<{ ok: true; txHash: string } | { ok: false; error: string }> {
   try {
     const client = orkaClient(input.mode);
     const res = await client.rejectMilestone({
       contractId: input.contractAddress,
-      milestoneId: Number(input.milestoneId),
+      milestoneId: input.milestonePos,
     });
     const txHash = "txHash" in res ? res.txHash : "";
     return { ok: true, txHash };
@@ -141,14 +141,14 @@ export async function releaseMilestone(input: {
   orgId: string;
   projectId: string;
   contractAddress: string;
-  milestoneId: string;
+  milestonePos: number;
   mode: OrkaCustodyMode;
 }): Promise<{ ok: true; txHash: string } | { ok: false; error: string }> {
   try {
     const client = orkaClient(input.mode);
     const res = await client.releaseMilestone({
       contractId: input.contractAddress,
-      milestoneId: Number(input.milestoneId),
+      milestoneId: input.milestonePos,
     });
     const txHash = "txHash" in res ? res.txHash : "";
     return { ok: true, txHash };
