@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { LayoutList, LayoutGrid } from "lucide-react";
 import { MilestoneProgressOverview } from "./MilestoneProgressOverview";
 import { MilestoneTable } from "./MilestoneTable";
@@ -18,6 +19,7 @@ import {
   approveMilestone,
   rejectMilestone,
   releaseMilestone,
+  saveMilestones,
 } from "../../actions";
 
 type ProjectRow = {
@@ -97,6 +99,7 @@ export function ProjectMilestonesView({
   stats: MilestoneStats;
 }) {
   const [view, setView] = useState<"list" | "board">("list");
+  const router = useRouter();
 
   const contractAddress = escrow?.contract_address ?? "";
 
@@ -174,9 +177,13 @@ export function ProjectMilestonesView({
             </button>
           </div>
           <AddMilestoneButton
-            onComplete={(data) => {
-              // TODO: Wire to saveMilestones server action (Task 10)
-              console.log("New milestone:", data);
+            onComplete={async (data) => {
+              await saveMilestones({
+                orgId,
+                projectId,
+                milestones: [data],
+              });
+              router.refresh();
             }}
           />
         </div>
