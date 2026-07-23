@@ -20,25 +20,47 @@ function FloatingCard({
   return (
     <div
       className="absolute hidden rounded-xl border border-night/8 bg-white px-4 py-3 shadow-[0_8px_30px_rgba(0,0,0,0.06)] lg:block"
-      style={style}
-    >
+      style={style}>
       <div className="flex items-center gap-3">
         <span
-          className={`grid size-9 place-items-center rounded-lg ${iconColor}`}
-        >
+          className={`grid size-9 place-items-center rounded-lg ${iconColor}`}>
           {icon === "file" && (
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round">
               <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
               <polyline points="14 2 14 8 20 8" />
             </svg>
           )}
           {icon === "shield" && (
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round">
               <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
             </svg>
           )}
           {icon === "wallet" && (
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round">
               <rect x="2" y="4" width="20" height="16" rx="2" />
               <path d="M22 10H2" />
             </svg>
@@ -57,8 +79,7 @@ function ProjectCard({ style }: { style?: React.CSSProperties }) {
   return (
     <div
       className="absolute hidden rounded-xl border border-night/8 bg-white p-4 shadow-[0_8px_30px_rgba(0,0,0,0.06)] lg:block"
-      style={style}
-    >
+      style={style}>
       <div className="mb-2 flex items-center justify-between">
         <p className="text-[13px] font-bold text-night">Q2 Website Redesign</p>
         <span className="rounded-full bg-teal/10 px-2 py-0.5 text-[10px] font-bold text-teal">
@@ -75,10 +96,15 @@ function ProjectCard({ style }: { style?: React.CSSProperties }) {
         ].map((m) => (
           <div key={m.name} className="flex items-center gap-2">
             <span
-              className={`size-4 rounded-full border-2 ${m.done ? "border-teal bg-teal" : "border-night/20"} flex items-center justify-center`}
-            >
+              className={`size-4 rounded-full border-2 ${m.done ? "border-teal bg-teal" : "border-night/20"} flex items-center justify-center`}>
               {m.done && (
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3">
+                <svg
+                  width="10"
+                  height="10"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="white"
+                  strokeWidth="3">
                   <polyline points="20 6 9 17 4 12" />
                 </svg>
               )}
@@ -106,10 +132,6 @@ export default function BlogHero({
   return (
     <section className="relative overflow-hidden rounded-b-[42px] bg-night px-4 pb-16 pt-5 text-white md:rounded-b-[72px] md:px-8 lg:px-12">
       {/* Background blurs */}
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute -left-32 -top-32 size-96 rounded-full bg-violet/8 blur-[100px]" />
-        <div className="absolute -bottom-32 -right-32 size-96 rounded-full bg-teal/6 blur-[100px]" />
-      </div>
 
       <div className="relative z-10 mx-auto max-w-7xl pt-16 pb-4 lg:grid lg:grid-cols-2 lg:gap-8 lg:items-center">
         {/* Left: Text */}

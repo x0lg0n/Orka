@@ -17,15 +17,13 @@ export default function BlogCta() {
           <div className="flex flex-wrap items-center gap-4">
             <Link
               href="/signup"
-              className="inline-flex items-center gap-2 rounded-full bg-violet px-6 py-3 text-sm font-black text-white transition-colors hover:bg-violet/90"
-            >
-              Explore Platform <ArrowRight size={16} />
+              className="inline-flex min-h-14 items-center gap-3 rounded-full bg-violet px-8 py-4 text-base font-bold text-white transition-all hover:bg-[#a78cff] hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">
+              Explore Platform <ArrowRight size={18} />
             </Link>
             <Link
-              href="/docs"
-              className="inline-flex items-center gap-2 text-sm font-bold text-white/70 transition-colors hover:text-white"
-            >
-              See how it works <ArrowRight size={14} />
+              href="/pricing"
+              className="inline-flex min-h-14 items-center gap-2 rounded-full border border-white/25 px-8 py-4 text-base font-bold text-white/80 transition-all hover:bg-white/8 hover:text-white hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">
+              See how it works <ArrowRight size={18} />
             </Link>
           </div>
         </div>
