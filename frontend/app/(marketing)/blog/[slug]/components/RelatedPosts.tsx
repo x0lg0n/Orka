@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import type { BlogPost } from "../../components/types";
+import type { BlogPostMeta } from "@/lib/blogs/types";
 
-export default function RelatedPosts({ posts }: { posts: BlogPost[] }) {
+export default function RelatedPosts({ posts }: { posts: BlogPostMeta[] }) {
   if (posts.length === 0) return null;
 
   return (

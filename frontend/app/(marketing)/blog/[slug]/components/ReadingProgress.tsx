@@ -7,11 +7,22 @@ export default function ReadingProgress() {
 
   useEffect(() => {
     function updateProgress() {
-      const scrollTop = window.scrollY;
-      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-      if (docHeight > 0) {
-        setProgress(Math.min(Math.round((scrollTop / docHeight) * 100), 100));
+      const article = document.querySelector("article");
+      if (!article) return;
+
+      const rect = article.getBoundingClientRect();
+      const articleTop = rect.top + window.scrollY;
+      const articleHeight = rect.height;
+      const scrolled = window.scrollY - articleTop;
+      const totalScrollable = articleHeight - window.innerHeight;
+
+      if (totalScrollable <= 0) {
+        setProgress(100);
+        return;
       }
+
+      const pct = Math.round((scrolled / totalScrollable) * 100);
+      setProgress(Math.min(Math.max(pct, 0), 100));
     }
 
     window.addEventListener("scroll", updateProgress, { passive: true });

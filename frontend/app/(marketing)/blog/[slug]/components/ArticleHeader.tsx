@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { FileText } from "lucide-react";
-import type { BlogPostDetail } from "@/lib/blog-data";
+import type { BlogArticle } from "@/lib/blogs/types";
 import ShareButtons from "./ShareButtons";
 
-export default function ArticleHeader({ post }: { post: BlogPostDetail }) {
+export default function ArticleHeader({ post }: { post: BlogArticle }) {
   return (
     <>
       {/* Breadcrumb */}
