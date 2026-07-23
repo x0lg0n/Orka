@@ -1,10 +1,12 @@
 import Link from "next/link";
-import { Lock, ExternalLink } from "lucide-react";
+import { Lock, ExternalLink, ShieldCheck, ArrowRight } from "lucide-react";
 
 type EscrowRow = {
   id: string;
   status: string;
-  amount: number;
+  contract_address: string | null;
+  total_amount?: number;
+  total_funded?: number;
   asset: string;
   created_at: string;
 } | null;
@@ -21,22 +23,33 @@ function escrowStatusBadge(status: string) {
   const map: Record<string, { label: string; color: string }> = {
     funded: {
       label: "Funded",
-      color: "bg-[#7c3aed]/10 text-[#7c3aed]",
+      color: "bg-[#7c3aed]/10 text-[#7c3aed] border-[#7c3aed]/20",
     },
     released: {
       label: "Released",
-      color: "bg-emerald-50 text-emerald-600",
+      color: "bg-emerald-50 text-emerald-600 border-emerald-200",
     },
     pending: {
       label: "Pending",
-      color: "bg-amber-50 text-amber-600",
+      color: "bg-amber-50 text-amber-600 border-amber-200",
     },
   };
   return (
     map[status] ?? {
       label: status,
-      color: "bg-gray-100 text-gray-600",
+      color: "bg-gray-50 text-gray-600 border-gray-200",
     }
+  );
+}
+
+function statRow(label: string, value: string, accent?: string) {
+  return (
+    <div className="flex items-center justify-between py-1.5">
+      <span className="text-xs text-gray-500">{label}</span>
+      <span className={`text-xs font-semibold ${accent ?? "text-gray-900"}`}>
+        {value}
+      </span>
+    </div>
   );
 }
 
@@ -50,58 +63,57 @@ export function EscrowDetailsCard({
   projectId: string;
 }) {
   return (
-    <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-      <h3 className="text-sm font-semibold text-gray-900">Escrow Details</h3>
+    <div className="group relative overflow-hidden rounded-xl border border-gray-200 bg-white p-4 shadow-sm transition hover:shadow-md">
+      <div className="absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-[#7c3aed] via-[#a78bfa] to-[#7c3aed] opacity-0 transition group-hover:opacity-100" />
+      <div className="flex items-center gap-2">
+        <ShieldCheck className="h-4 w-4 text-[#7c3aed]" />
+        <h3 className="text-sm font-semibold text-gray-900">Escrow Details</h3>
+      </div>
 
       {escrow ? (
         <>
-          <div className="mt-3 flex flex-col gap-2">
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-gray-500">Escrow ID</span>
-              <span className="font-mono text-xs text-gray-700">
-                {escrow.id.slice(0, 8)}...
-              </span>
-            </div>
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-gray-500">Status</span>
+          <div className="mt-3 space-y-0.5 rounded-lg bg-gray-50/50 px-3 py-2">
+            {statRow("Status", "", "")}
+            <div className="mb-1.5">
               <span
-                className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${escrowStatusBadge(escrow.status).color}`}
+                className={`inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium ${escrowStatusBadge(escrow.status).color}`}
               >
                 {escrowStatusBadge(escrow.status).label}
               </span>
             </div>
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-gray-500">Funded Amount</span>
-              <span className="font-medium text-gray-900">
-                {Number(escrow.amount).toLocaleString("en-US", {
-                  maximumFractionDigits: 0,
-                })}{" "}
-                {escrow.asset}
-              </span>
-            </div>
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-gray-500">Funded Date</span>
-              <span className="text-gray-700">
-                {formatDate(escrow.created_at)}
-              </span>
-            </div>
+            {statRow(
+              "Total Amount",
+              `${Number(escrow.total_amount ?? 0).toLocaleString("en-US", { maximumFractionDigits: 0 })} ${escrow.asset ?? "XLM"}`,
+            )}
+            {statRow(
+              "Funded",
+              `${Number(escrow.total_funded ?? 0).toLocaleString("en-US", { maximumFractionDigits: 0 })} ${escrow.asset ?? "XLM"}`,
+              escrow.total_funded && escrow.total_amount && escrow.total_funded >= escrow.total_amount
+                ? "text-emerald-600"
+                : "text-amber-600",
+            )}
+            {statRow(
+              "Created",
+              formatDate(escrow.created_at),
+              "text-gray-500",
+            )}
           </div>
 
           <Link
             href={`/w/${slug}/projects/${projectId}/escrow`}
-            className="mt-3 flex w-full items-center justify-center gap-1.5 rounded-lg border border-gray-200 py-1.5 text-sm font-medium text-gray-600 transition hover:bg-gray-50"
+            className="mt-3 flex w-full items-center justify-center gap-1.5 rounded-lg border border-gray-200 py-1.5 text-xs font-medium text-gray-600 transition hover:border-[#7c3aed]/20 hover:bg-[#7c3aed]/5 hover:text-[#7c3aed]"
           >
-            <Lock className="h-3.5 w-3.5" />
+            <Lock className="h-3 w-3" />
             View Escrow
-            <ExternalLink className="h-3 w-3" />
+            <ArrowRight className="h-3 w-3" />
           </Link>
         </>
       ) : (
-        <div className="mt-4 flex flex-col items-center py-6 text-center">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-100">
-            <Lock className="h-5 w-5 text-gray-400" />
+        <div className="mt-4 flex flex-col items-center py-4 text-center">
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gray-100">
+            <Lock className="h-4 w-4 text-gray-400" />
           </div>
-          <p className="mt-2 text-sm text-gray-400">No escrow configured</p>
+          <p className="mt-2 text-xs text-gray-400">No escrow configured</p>
         </div>
       )}
     </div>

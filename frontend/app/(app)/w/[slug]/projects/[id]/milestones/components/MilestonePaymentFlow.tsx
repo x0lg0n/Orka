@@ -1,10 +1,7 @@
-// frontend/app/(app)/w/[slug]/projects/[id]/milestones/components/MilestonePaymentFlow.tsx
 "use client";
 import { useTransition } from "react";
 import { FileText, Eye, CheckCircle2, Banknote } from "lucide-react";
-import {
-  ActionButton,
-} from "@/app/(app)/w/[slug]/projects/[id]/components/ActionButton";
+import { ActionButton } from "@/app/(app)/w/[slug]/projects/[id]/components/ActionButton";
 import type { WorkflowRole, WorkflowState } from "@/lib/workflow";
 
 type MilestoneRow = {
@@ -14,11 +11,22 @@ type MilestoneRow = {
 };
 
 const STEPS = [
-  { icon: FileText, title: "Work Submitted", description: "Contractor submits deliverables for review" },
-  { icon: Eye, title: "Client Review", description: "Client reviews and provides feedback" },
-  { icon: CheckCircle2, title: "Milestone Approved", description: "Client approves the completed work" },
-  { icon: Banknote, title: "Payment Released", description: "Escrow funds are released to contractor" },
+  { icon: FileText, title: "Submitted", description: "Contractor submits deliverables" },
+  { icon: Eye, title: "Review", description: "Client reviews the work" },
+  { icon: CheckCircle2, title: "Approved", description: "Milestone is approved" },
+  { icon: Banknote, title: "Released", description: "Payment sent to contractor" },
 ];
+
+function completedSteps(status: string): number {
+  switch (status) {
+    case "released": return 4;
+    case "approved": return 3;
+    case "in_review": return 2;
+    case "funded": return 1;
+    case "draft": return 0;
+    default: return 0;
+  }
+}
 
 export function MilestonePaymentFlow({
   milestones,
@@ -39,38 +47,50 @@ export function MilestonePaymentFlow({
 }) {
   const [pending, startTransition] = useTransition();
 
-  // The single active milestone drives the action panel: the first milestone in
-  // `in_review` (awaiting client decision) or `approved` (awaiting release).
   const active =
     milestones.find((m) => m.status === "in_review") ??
     milestones.find((m) => m.status === "approved") ??
     null;
 
+  const stepsCompleted = active ? completedSteps(active.status) : 0;
+
   return (
-    <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-      <h3 className="text-sm font-semibold text-gray-900">Milestone Payment Flow</h3>
-      <p className="mt-0.5 text-xs text-gray-500">How milestone payments work</p>
+    <div className="group relative overflow-hidden rounded-xl border border-gray-200 bg-white p-4 shadow-sm transition hover:shadow-md">
+      <div className="absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-[#7c3aed] via-[#a78bfa] to-[#7c3aed] opacity-0 transition group-hover:opacity-100" />
+      <h3 className="text-sm font-semibold text-gray-900">Payment Flow</h3>
+      <p className="mt-0.5 text-xs text-gray-500">
+        {active ? `"${active.title}" status: ${active.status}` : "No active milestone"}
+      </p>
 
       <div className="mt-4 flex items-start gap-0">
         {STEPS.map((step, i) => {
           const isLast = i === STEPS.length - 1;
-          const isCompleted = i < 2;
+          const done = i < stepsCompleted;
+          const current = i === stepsCompleted;
           return (
             <div key={step.title} className="flex flex-1 items-start">
               <div className="flex flex-col items-center text-center">
                 <div
-                  className={`flex h-10 w-10 items-center justify-center rounded-full ${
-                    isCompleted ? "bg-[#7c3aed] text-white" : "bg-gray-100 text-gray-400"
+                  className={`flex h-10 w-10 items-center justify-center rounded-full transition-all ${
+                    done
+                      ? "bg-[#7c3aed] text-white shadow-sm"
+                      : current
+                        ? "border-2 border-[#7c3aed] bg-white text-[#7c3aed]"
+                        : "bg-gray-50 text-gray-300"
                   }`}
                 >
                   <step.icon className="h-5 w-5" />
                 </div>
-                <p className="mt-2 text-xs font-medium text-gray-900">{step.title}</p>
-                <p className="mt-0.5 max-w-[120px] text-[10px] text-gray-400">{step.description}</p>
+                <p className={`mt-2 text-xs font-medium ${done || current ? "text-gray-900" : "text-gray-400"}`}>
+                  {step.title}
+                </p>
+                <p className="mt-0.5 max-w-[120px] text-[10px] leading-tight text-gray-400">
+                  {step.description}
+                </p>
               </div>
               {!isLast && (
                 <div className="mx-1 mt-5 flex-1">
-                  <div className={`h-0.5 w-full ${isCompleted ? "bg-[#7c3aed]" : "bg-gray-200"}`} />
+                  <div className={`h-0.5 w-full ${done ? "bg-[#7c3aed]" : "bg-gray-100"}`} />
                 </div>
               )}
             </div>
@@ -79,8 +99,8 @@ export function MilestonePaymentFlow({
       </div>
 
       {active && contractAddress && (
-        <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-gray-100 pt-4">
-          <span className="text-xs font-medium text-gray-700">{active.title}</span>
+        <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-gray-100 pt-3">
+          <span className="mr-1 text-xs font-medium text-gray-700">{active.title}</span>
           {active.status === "in_review" && (
             <>
               <ActionButton

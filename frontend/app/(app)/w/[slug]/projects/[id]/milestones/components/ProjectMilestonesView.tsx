@@ -55,6 +55,8 @@ type EscrowRow = {
   id: string;
   status: string;
   contract_address: string | null;
+  total_amount?: number;
+  total_funded?: number;
   amount: number;
   asset: string;
   created_at: string;
@@ -99,6 +101,7 @@ export function ProjectMilestonesView({
   stats: MilestoneStats;
 }) {
   const [view, setView] = useState<"list" | "board">("list");
+  const [addOpen, setAddOpen] = useState(false);
   const router = useRouter();
 
   const contractAddress = escrow?.contract_address ?? "";
@@ -110,52 +113,42 @@ export function ProjectMilestonesView({
 
   const handleSubmitMilestone = async (milestoneId: string) => {
     const result = await submitMilestone({
-      orgId,
-      projectId,
-      contractAddress,
-      milestonePos: milestonePos(milestoneId),
-      mode,
+      orgId, projectId, contractAddress,
+      milestonePos: milestonePos(milestoneId), mode,
     });
     if (result.ok) router.refresh();
   };
   const handleApproveMilestone = async (milestoneId: string) => {
     const result = await approveMilestone({
-      orgId,
-      projectId,
-      contractAddress,
-      milestonePos: milestonePos(milestoneId),
-      mode,
+      orgId, projectId, contractAddress,
+      milestonePos: milestonePos(milestoneId), mode,
     });
     if (result.ok) router.refresh();
   };
   const handleRejectMilestone = async (milestoneId: string) => {
     const result = await rejectMilestone({
-      orgId,
-      projectId,
-      contractAddress,
-      milestonePos: milestonePos(milestoneId),
-      mode,
+      orgId, projectId, contractAddress,
+      milestonePos: milestonePos(milestoneId), mode,
     });
     if (result.ok) router.refresh();
   };
   const handleReleaseMilestone = async (milestoneId: string) => {
     const result = await releaseMilestone({
-      orgId,
-      projectId,
-      contractAddress,
-      milestonePos: milestonePos(milestoneId),
-      mode,
+      orgId, projectId, contractAddress,
+      milestonePos: milestonePos(milestoneId), mode,
     });
     if (result.ok) router.refresh();
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
+      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-lg font-semibold text-gray-900">Milestones</h2>
           <p className="mt-0.5 text-sm text-gray-500">
-            Track deliverables, approvals and payments
+            {stats.totalMilestones} milestone{stats.totalMilestones !== 1 ? "s" : ""}
+            {stats.totalBudget > 0 ? ` · ${Number(stats.totalBudget).toLocaleString("en-US", { maximumFractionDigits: 0 })} ${stats.milestoneAsset} total` : ""}
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -187,59 +180,58 @@ export function ProjectMilestonesView({
           </div>
           <AddMilestoneButton
             onComplete={async (data) => {
-              await saveMilestones({
-                orgId,
-                projectId,
-                milestones: [data],
-              });
+              await saveMilestones({ orgId, projectId, milestones: [data] });
               router.refresh();
             }}
           />
         </div>
       </div>
 
+      {/* Progress bar */}
       <MilestoneProgressOverview stats={stats} />
 
+      {/* Main content: list/board + payment flow + sidebar */}
       {milestones.length === 0 ? (
-        <MilestoneEmptyState onAdd={() => {}} />
-      ) : view === "list" ? (
-        <MilestoneTable milestones={milestones} onAdd={() => {}} />
+        <MilestoneEmptyState onAdd={() => setAddOpen(true)} />
       ) : (
-        <BoardView
-          milestones={milestones}
-          state={workflowState}
-          role={role}
-          onSubmitMilestone={handleSubmitMilestone}
-        />
+        <div className="space-y-5">
+          {view === "list" ? (
+            <MilestoneTable
+              milestones={milestones}
+              onSubmitMilestone={handleSubmitMilestone}
+              onApprove={handleApproveMilestone}
+              onReject={handleRejectMilestone}
+              onRelease={handleReleaseMilestone}
+            />
+          ) : (
+            <BoardView
+              milestones={milestones}
+              state={workflowState}
+              role={role}
+              onSubmitMilestone={handleSubmitMilestone}
+            />
+          )}
+
+          <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
+            <div className="flex flex-col gap-5 lg:col-span-2">
+              <MilestonePaymentFlow
+                milestones={milestones}
+                state={workflowState}
+                role={role}
+                contractAddress={escrow?.contract_address ?? ""}
+                onApprove={handleApproveMilestone}
+                onReject={handleRejectMilestone}
+                onRelease={handleReleaseMilestone}
+              />
+            </div>
+            <div className="flex flex-col gap-4">
+              <MilestoneSummaryCard stats={stats} owner={owner} />
+              <EscrowDetailsCard escrow={escrow} slug={slug} projectId={projectId} />
+              <UpcomingMilestonesCard milestones={milestones} slug={slug} projectId={projectId} />
+            </div>
+          </div>
+        </div>
       )}
-
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-        <div className="flex flex-col gap-4 lg:col-span-2">
-          <MilestonePaymentFlow
-            milestones={milestones}
-            state={workflowState}
-            role={role}
-            contractAddress={escrow?.contract_address ?? ""}
-            onApprove={handleApproveMilestone}
-            onReject={handleRejectMilestone}
-            onRelease={handleReleaseMilestone}
-          />
-        </div>
-        <div className="flex flex-col gap-4">
-          <MilestoneSummaryCard stats={stats} owner={owner} />
-          <EscrowDetailsCard
-            escrow={escrow}
-            slug={slug}
-            projectId={projectId}
-          />
-          <UpcomingMilestonesCard
-            milestones={milestones}
-            slug={slug}
-            projectId={projectId}
-          />
-        </div>
-      </div>
-
     </div>
   );
 }
