@@ -1,43 +1,49 @@
 // frontend/app/(app)/w/[slug]/projects/[id]/escrow/components/ProjectEscrowView.tsx
-import { createClient } from "@/lib/supabase/server";
-import { getActiveOrgBySlug } from "@/lib/orka";
+"use client";
+
+import { useRouter } from "next/navigation";
 import { deriveWorkflowState, nextActionsForRole, type WorkflowState } from "@/lib/workflow";
 import { WorkflowStepper } from "../../components/WorkflowStepper";
+import { EscrowDeploymentFlow } from "./EscrowDeploymentFlow";
+import { deployEscrow } from "../../actions";
 
-export async function ProjectEscrowView({
-  slug,
-  orgId,
-  projectId,
-}: {
+type ProjectEscrowViewProps = {
   slug: string;
   orgId: string;
   projectId: string;
-}) {
-  const supabase = await createClient();
-  const org = await getActiveOrgBySlug(supabase, slug);
-  if (!org) return null;
+  project: {
+    id: string;
+    shared_token?: string | null;
+    sharedToken?: string | null;
+    asset?: string | null;
+    client_sig?: string | null;
+    freelancer_sig?: string | null;
+    contract_status?: string | null;
+  };
+  escrow: {
+    id: string;
+    status: string;
+    contract_address: string | null;
+    total_amount: number;
+    total_funded: number;
+    asset: string;
+    deployed_at?: string | null;
+    custody_mode?: string;
+  } | null;
+  milestones: { status: string }[];
+  role: "agency" | "client";
+};
 
-  const { data: project } = await supabase
-    .from("projects")
-    .select("*")
-    .eq("org_id", orgId)
-    .eq("id", projectId)
-    .single();
-
-  if (!project) return null;
-
-  const { data: escrow } = await supabase
-    .from("escrow_contracts")
-    .select("*")
-    .eq("project_id", projectId)
-    .order("created_at", { ascending: false })
-    .limit(1)
-    .maybeSingle();
-
-  const { data: milestones } = await supabase
-    .from("milestones")
-    .select("status")
-    .eq("project_id", projectId);
+export function ProjectEscrowView({
+  slug,
+  orgId,
+  projectId,
+  project,
+  escrow,
+  milestones,
+  role,
+}: ProjectEscrowViewProps) {
+  const router = useRouter();
 
   const state: WorkflowState = deriveWorkflowState({
     contract: {
@@ -50,10 +56,16 @@ export async function ProjectEscrowView({
           contract_address: escrow.contract_address ?? null,
           total_funded: Number(escrow.total_funded ?? 0),
           total_amount: Number(escrow.total_amount ?? 0),
+          deployed_at: escrow.deployed_at ?? null,
         }
       : null,
-    milestones: (milestones ?? []).map((m) => ({ status: m.status })),
+    milestones: milestones.map((m) => ({ status: m.status })),
   });
+
+  const handleDeploy = async () => {
+    await deployEscrow({ projectId, orgId });
+    router.refresh();
+  };
 
   if (!escrow) {
     return (
@@ -61,16 +73,15 @@ export async function ProjectEscrowView({
         <div className="rounded-lg border border-gray-200 bg-white p-4">
           <WorkflowStepper stage={state.stage} />
         </div>
-        <div className="rounded-lg border border-dashed border-gray-300 bg-white p-10 text-center">
-          <h3 className="text-sm font-semibold text-gray-900">
-            Escrow unlocks after contract is signed
-          </h3>
-          <p className="mt-1 text-sm text-gray-500">
-            Once both parties sign the contract, the client can fund the escrow
-            pool. Milestone funds are released from this single pool — there is
-            no per-milestone funding.
-          </p>
-        </div>
+        <EscrowDeploymentFlow
+          projectSlug={slug}
+          projectId={projectId}
+          projectToken={project.shared_token ?? project.sharedToken ?? null}
+          deployedAt={null}
+          contractAddress={null}
+          role={role}
+          onDeploy={handleDeploy}
+        />
       </div>
     );
   }
@@ -78,14 +89,24 @@ export async function ProjectEscrowView({
   const totalAmount = Number(escrow.total_amount ?? 0);
   const totalFunded = Number(escrow.total_funded ?? 0);
   const pct = totalAmount > 0 ? Math.min(100, Math.round((totalFunded / totalAmount) * 100)) : 0;
-  const custodyMode = (escrow.custody_mode as string) ?? "orka";
-  const asset = (escrow.asset as string) ?? project.asset ?? "XLM";
+  const custodyMode = escrow.custody_mode ?? "orka";
+  const asset = escrow.asset ?? project.asset ?? "XLM";
 
   return (
     <div className="space-y-6">
       <div className="rounded-lg border border-gray-200 bg-white p-4">
         <WorkflowStepper stage={state.stage} />
       </div>
+
+      <EscrowDeploymentFlow
+        projectSlug={slug}
+        projectId={projectId}
+        projectToken={project.shared_token ?? project.sharedToken ?? null}
+        deployedAt={escrow.deployed_at ?? null}
+        contractAddress={escrow.contract_address}
+        role={role}
+        onDeploy={handleDeploy}
+      />
 
       <div className="grid gap-6 lg:grid-cols-2">
         <section className="rounded-lg border border-gray-200 bg-white p-5">
@@ -156,7 +177,7 @@ export async function ProjectEscrowView({
               </a>
             )}
           </div>
-          {state.stage === "contract_signed" && (
+          {state.stage === "escrow_deployed" && (
             <p className="mt-3 text-xs text-gray-500">
               The client funds the escrow from the public portal. Copy the portal
               link to your client to complete funding.
