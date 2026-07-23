@@ -574,3 +574,76 @@ export async function signContractAgency(input: {
     };
   }
 }
+
+export async function saveMilestones(input: {
+  orgId: string;
+  projectId: string;
+  milestones: Array<{
+    name: string;
+    description: string;
+    dueDate: string;
+    amount: string;
+    asset: string;
+  }>;
+}): Promise<{ ok: true } | { ok: false; error: string }> {
+  try {
+    const supabase = await createClient();
+    const rows = input.milestones.map((m, i) => ({
+      org_id: input.orgId,
+      project_id: input.projectId,
+      title: m.name,
+      description: m.description || null,
+      amount: Number(m.amount),
+      asset: m.asset,
+      status: "draft" as const,
+      due_date: m.dueDate || null,
+      position: i,
+    }));
+    const { error } = await supabase.from("milestones").insert(rows);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  } catch (err) {
+    return { ok: false, error: err instanceof Error ? err.message : "saveMilestones failed" };
+  }
+}
+
+export async function deployEscrow(input: {
+  orgId: string;
+  projectId: string;
+  asset: string;
+  milestoneIds: string[];
+  mode: OrkaCustodyMode;
+}): Promise<{ ok: true; contractAddress: string } | { ok: false; error: string }> {
+  try {
+    const res = await fetch(`${process.env.SERVICES_URL ?? ""}/escrow/create`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        project_id: input.projectId,
+        milestone_ids: input.milestoneIds,
+        asset: input.asset,
+        mode: input.mode,
+      }),
+    });
+    if (!res.ok) throw new Error(`deployEscrow failed: ${res.status}`);
+    const data = (await res.json()) as { contract_address?: string; contractAddress?: string };
+    const contractAddress = data.contract_address ?? data.contractAddress ?? "";
+
+    const supabase = await createClient();
+    const { error } = await supabase.from("escrow_contracts").insert({
+      contract_address: contractAddress,
+      org_id: input.orgId,
+      project_id: input.projectId,
+      status: "deployed",
+      asset: input.asset,
+      total_amount: 0,
+      total_funded: 0,
+      deployed_at: new Date().toISOString(),
+    });
+    if (error) throw new Error(error.message);
+
+    return { ok: true, contractAddress };
+  } catch (err) {
+    return { ok: false, error: err instanceof Error ? err.message : "deployEscrow failed" };
+  }
+}

@@ -82,6 +82,8 @@ type OverviewStats = {
   refundedAmount: number;
   milestoneAsset: string;
   escrowFundedPct: number;
+  contractAddress?: string | null;
+  escrowStatus?: string | null;
 };
 
 export function ProjectOverviewView({
@@ -149,6 +151,8 @@ export function ProjectOverviewView({
           asset={stats.milestoneAsset}
           escrowFundedPct={stats.escrowFundedPct}
           slug={slug}
+          contractAddress={stats.contractAddress}
+          escrowStatus={stats.escrowStatus}
         />
         <RecentActivityCard
           slug={slug}

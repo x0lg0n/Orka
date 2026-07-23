@@ -46,6 +46,8 @@ export function EscrowOverviewCard({
   asset,
   escrowFundedPct,
   slug,
+  contractAddress,
+  escrowStatus,
 }: {
   fundedAmount: number;
   releasedAmount: number;
@@ -55,6 +57,8 @@ export function EscrowOverviewCard({
   asset: string;
   escrowFundedPct?: number;
   slug: string;
+  contractAddress?: string | null;
+  escrowStatus?: string | null;
 }) {
   const data = [
     { name: "Funded", value: fundedAmount },
@@ -76,6 +80,36 @@ export function EscrowOverviewCard({
           View Details
         </Link>
       </div>
+
+      {(contractAddress || escrowStatus) && (
+        <div className="mt-2 flex flex-wrap items-center gap-2">
+          {escrowStatus && (
+            <span
+              className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
+                escrowStatus === "deployed"
+                  ? "bg-blue-50 text-blue-600"
+                  : escrowStatus === "funded"
+                    ? "bg-green-50 text-green-600"
+                    : escrowStatus === "active"
+                      ? "bg-emerald-50 text-emerald-600"
+                      : "bg-gray-100 text-gray-600"
+              }`}
+            >
+              {escrowStatus}
+            </span>
+          )}
+          {contractAddress && (
+            <a
+              href={`https://stellar.expert/explorer/public/contract/${contractAddress}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-mono text-xs text-gray-500 hover:text-[#7c3aed] hover:underline"
+            >
+              {contractAddress.slice(0, 6)}…{contractAddress.slice(-4)}
+            </a>
+          )}
+        </div>
+      )}
 
       <div className="mt-3 flex items-center gap-4">
         <div className="relative h-32 w-32 flex-shrink-0">
