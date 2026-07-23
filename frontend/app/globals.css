@@ -10,6 +10,13 @@
 /* ORKA brand tokens — namespaced to avoid colliding with shadcn semantic tokens */
 @theme inline {
 
+  /* ORKA blog type scale — constrained 6-tier system */
+  --text-2xs: 10px;
+  --text-xs: 11px;
+  --text-sm: 12px;
+  --text-base: 13px;
+  --text-md: 15px;
+  --text-lead: 18px;
 
   /* ORKA brand colors — simple names so existing product-UI classes
      (bg-shell, text-lime, from-orange, to-violet, bg-coral, …) keep working.
