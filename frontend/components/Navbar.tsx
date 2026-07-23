@@ -152,8 +152,8 @@ export default function Navbar() {
           <Link href="/signin" className="rounded-md px-3 py-2 text-sm font-medium text-white/78 transition-colors hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet">
             Sign in
           </Link>
-          <Link href="/waitlist" className="inline-flex items-center gap-2 rounded-md bg-violet px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#a78cff] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">
-            Join Waitlist <ArrowRight size={15} />
+          <Link href="/signin" className="inline-flex items-center gap-2 rounded-md bg-violet px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#a78cff] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">
+            Explore Platform <ArrowRight size={15} />
           </Link>
         </div>
 
@@ -211,7 +211,7 @@ export default function Navbar() {
           </div>
           <div className="grid grid-cols-2 gap-2 pt-4">
             <Link href="/signin" onClick={closeAll} className="rounded-md border border-white/18 px-3 py-2.5 text-center text-sm font-semibold text-white">Sign in</Link>
-            <Link href="/waitlist" onClick={closeAll} className="rounded-md bg-violet px-3 py-2.5 text-center text-sm font-semibold text-white">Join Waitlist</Link>
+            <Link href="/signin" onClick={closeAll} className="rounded-md bg-violet px-3 py-2.5 text-center text-sm font-semibold text-white">Explore Platform</Link>
           </div>
         </div>
       )}

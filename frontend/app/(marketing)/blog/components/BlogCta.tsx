@@ -19,7 +19,7 @@ export default function BlogCta() {
               href="/signup"
               className="inline-flex items-center gap-2 rounded-full bg-violet px-6 py-3 text-sm font-black text-white transition-colors hover:bg-violet/90"
             >
-              Join Waitlist <ArrowRight size={16} />
+              Explore Platform <ArrowRight size={16} />
             </Link>
             <Link
               href="/docs"

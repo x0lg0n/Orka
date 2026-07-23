@@ -96,13 +96,13 @@ function ProjectCard({ style }: { style?: React.CSSProperties }) {
   );
 }
 
-export default function BlogHero() {
-  function handleSearchFocus() {
-    document.dispatchEvent(
-      new KeyboardEvent("keydown", { key: "k", ctrlKey: true })
-    );
-  }
-
+export default function BlogHero({
+  searchQuery,
+  onSearchChange,
+}: {
+  searchQuery: string;
+  onSearchChange: (v: string) => void;
+}) {
   return (
     <section className="relative overflow-hidden rounded-b-[42px] bg-night px-4 pb-16 pt-5 text-white md:rounded-b-[72px] md:px-8 lg:px-12">
       {/* Background blurs */}
@@ -125,16 +125,19 @@ export default function BlogHero() {
             freelancers run smarter and grow faster.
           </p>
           <div className="mx-auto mt-8 max-w-xl lg:mx-0">
-            <button
-              onClick={handleSearchFocus}
-              className="flex w-full items-center gap-3 rounded-2xl border border-white/15 bg-white/8 px-5 py-4 text-left text-sm text-white/50 transition-colors hover:bg-white/12"
-            >
-              <Search size={18} />
-              Search articles...
-              <kbd className="ml-auto rounded-lg border border-white/10 bg-white/5 px-2.5 py-1 text-[11px] font-bold text-white/40">
-                ⌘K
-              </kbd>
-            </button>
+            <div className="relative">
+              <Search
+                size={18}
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40"
+              />
+              <input
+                type="text"
+                placeholder="Search articles..."
+                value={searchQuery}
+                onChange={(e) => onSearchChange(e.target.value)}
+                className="w-full rounded-2xl border border-white/15 bg-white/8 py-4 pl-11 pr-4 text-sm text-white placeholder:text-white/40 transition-colors focus:border-violet/50 focus:bg-white/12 focus:outline-none focus:ring-2 focus:ring-violet/30"
+              />
+            </div>
           </div>
         </div>
 

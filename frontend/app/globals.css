@@ -746,6 +746,106 @@ input {
   }
 }
 
+/* ── Blog article prose ─────────────────────────────────────── */
+.prose-orka {
+  font-family: var(--font-product);
+  color: #082033;
+}
+.prose-orka h2 {
+  font-family: var(--font-display), "Anton", sans-serif;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+  font-size: 1.6rem;
+  line-height: 1.2;
+  margin-top: 2.5rem;
+  margin-bottom: 0.75rem;
+}
+.prose-orka h3 {
+  font-family: var(--font-product);
+  font-weight: 800;
+  font-size: 1.15rem;
+  line-height: 1.35;
+  margin-top: 1.75rem;
+  margin-bottom: 0.5rem;
+}
+.prose-orka p {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1.75;
+  color: rgba(8, 32, 51, 0.7);
+  margin-bottom: 1rem;
+}
+.prose-orka strong {
+  font-weight: 800;
+  color: #082033;
+}
+.prose-orka ul,
+.prose-orka ol {
+  margin: 1rem 0;
+  padding-left: 1.5rem;
+}
+.prose-orka li {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1.7;
+  color: rgba(8, 32, 51, 0.7);
+  margin-bottom: 0.35rem;
+}
+.prose-orka a {
+  color: #9474ff;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  font-weight: 700;
+}
+.prose-orka a:hover {
+  color: #7c5ce0;
+}
+.prose-orka blockquote {
+  margin: 2rem 0;
+  border-left: 4px solid rgba(148, 116, 255, 0.3);
+  padding: 0.5rem 0 0.5rem 1.5rem;
+}
+.prose-orka blockquote p {
+  font-size: 1.125rem;
+  font-style: italic;
+  font-weight: 700;
+  color: rgba(8, 32, 51, 0.7);
+}
+.prose-orka pre {
+  background: #0a1c2e;
+  color: #e2e8f0;
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  line-height: 1.7;
+  margin: 1.5rem 0;
+}
+.prose-orka code {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  background: rgba(148, 116, 255, 0.08);
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  font-weight: 600;
+}
+.prose-orka pre code {
+  background: none;
+  padding: 0;
+  border-radius: 0;
+}
+.prose-orka img {
+  border-radius: 12px;
+  margin: 1.5rem 0;
+}
+.prose-orka hr {
+  border: none;
+  border-top: 1px solid rgba(8, 32, 51, 0.08);
+  margin: 2rem 0;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

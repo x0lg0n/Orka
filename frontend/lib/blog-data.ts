@@ -1,5 +1,16 @@
 import type { BlogPost } from "@/app/(marketing)/blog/components/types";
 
+export interface TocHeading {
+  id: string;
+  title: string;
+  level: 2 | 3;
+}
+
+export interface BlogPostDetail extends BlogPost {
+  headings: TocHeading[];
+  relatedSlugs: string[];
+}
+
 export const categories = [
   "All",
   "Agency",
@@ -37,7 +48,7 @@ export const blogPosts: BlogPost[] = [
     slug: "ai-writes-better-proposals",
     title: "How AI Writes Better Proposals (That Clients Actually Accept)",
     excerpt:
-      "Prompt strategies, structure, and real examples from winning proposals.",
+      "Prompt strategies, structure,, and real examples from winning proposals.",
     coverGradient: "from-violet/15 via-info/10 to-violet/5",
     category: "AI",
     author: { name: "Janvi Singhal", initials: "JS", role: "Founder, ORKA" },
@@ -175,7 +186,71 @@ export const blogPosts: BlogPost[] = [
     publishedAt: "Apr 18, 2026",
     featured: false,
   },
+
 ];
+
+const postDetails: Record<string, Omit<BlogPostDetail, keyof BlogPost>> = {
+  "agencies-lose-revenue-bad-client-management": {
+    headings: [
+      { id: "introduction", title: "Introduction", level: 2 },
+      { id: "why-agencies-lose-revenue", title: "Why Agencies Lose Revenue", level: 2 },
+      { id: "common-client-management-mistakes", title: "Common Client Management Mistakes", level: 2 },
+      { id: "how-orka-solves-this", title: "How ORKA Solves This", level: 2 },
+      { id: "the-orka-workflow", title: "The ORKA Workflow", level: 2 },
+      { id: "real-impact", title: "Real Impact", level: 2 },
+      { id: "best-practices", title: "Best Practices", level: 2 },
+      { id: "conclusion", title: "Conclusion", level: 2 },
+      { id: "faq", title: "FAQ", level: 2 },
+    ],
+    relatedSlugs: [
+      "milestone-payments-client-trust",
+      "proposal-vs-contract-vs-invoice",
+      "ai-helps-agencies-win-clients",
+    ],
+  },
+  "ai-writes-better-proposals": {
+    headings: [
+      { id: "introduction", title: "Introduction", level: 2 },
+      { id: "why-ai-proposals", title: "Why AI Proposals Work Better", level: 2 },
+      { id: "prompt-strategies", title: "Prompt Strategies That Win", level: 2 },
+      { id: "real-examples", title: "Real Examples", level: 2 },
+      { id: "conclusion", title: "Conclusion", level: 2 },
+    ],
+    relatedSlugs: [
+      "agencies-lose-revenue-bad-client-management",
+      "proposal-vs-contract-vs-invoice",
+      "freelancer-contracts-protect-you",
+    ],
+  },
+  "escrow-future-of-client-payments": {
+    headings: [
+      { id: "introduction", title: "Introduction", level: 2 },
+      { id: "what-is-escrow", title: "What Is Escrow", level: 2 },
+      { id: "benefits", title: "Benefits for Agencies", level: 2 },
+      { id: "how-it-works", title: "How It Works", level: 2 },
+      { id: "conclusion", title: "Conclusion", level: 2 },
+    ],
+    relatedSlugs: [
+      "milestone-payments-client-trust",
+      "freelancer-contracts-protect-you",
+      "agencies-lose-revenue-bad-client-management",
+    ],
+  },
+};
+
+const defaultDetail: Omit<BlogPostDetail, keyof BlogPost> = {
+  headings: [
+    { id: "introduction", title: "Introduction", level: 2 },
+    { id: "main-content", title: "Main Content", level: 2 },
+    { id: "key-takeaways", title: "Key Takeaways", level: 2 },
+    { id: "conclusion", title: "Conclusion", level: 2 },
+  ],
+  relatedSlugs: [
+    "agencies-lose-revenue-bad-client-management",
+    "milestone-payments-client-trust",
+    "proposal-vs-contract-vs-invoice",
+  ],
+};
 
 export function getFeaturedPost(): BlogPost {
   return blogPosts.find((p) => p.featured) || blogPosts[0];
@@ -185,3 +260,34 @@ export function getPostsByCategory(category: string): BlogPost[] {
   if (category === "All") return blogPosts.filter((p) => !p.featured);
   return blogPosts.filter((p) => !p.featured && p.category === category);
 }
+
+export function getPostBySlug(slug: string): BlogPostDetail | undefined {
+  const post = blogPosts.find((p) => p.slug === slug);
+  if (!post) return undefined;
+  const detail = postDetails[slug] || defaultDetail;
+  return { ...post, ...detail };
+}
+
+export function getRelatedPosts(slug: string, limit?: number): BlogPost[] {
+  const detail = postDetails[slug] || defaultDetail;
+  const slugs = limit ? detail.relatedSlugs.slice(0, limit) : detail.relatedSlugs;
+  return slugs
+    .map((s) => blogPosts.find((p) => p.slug === s))
+    .filter(Boolean) as BlogPost[];
+}
+
+export const tocHeadings: TocHeading[] = [
+  { id: "introduction", title: "Introduction", level: 2 },
+  { id: "why-agencies-lose-revenue", title: "Why Agencies Lose Revenue", level: 2 },
+  { id: "the-proposal-problem", title: "The Proposal Problem", level: 3 },
+  { id: "the-contract-gap", title: "The Contract Gap", level: 3 },
+  { id: "common-client-management-mistakes", title: "Common Client Management Mistakes", level: 2 },
+  { id: "how-orka-solves-this", title: "How ORKA Solves This", level: 2 },
+  { id: "the-orka-workflow", title: "The ORKA Workflow", level: 2 },
+  { id: "real-impact", title: "Real Impact", level: 2 },
+  { id: "best-practices", title: "Best Practices", level: 2 },
+  { id: "conclusion", title: "Conclusion", level: 2 },
+  { id: "faq", title: "FAQ", level: 2 },
+];
+
+export const posts = blogPosts;
