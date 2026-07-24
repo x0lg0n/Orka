@@ -64,15 +64,16 @@ export function ProjectEscrowView({
   });
 
   const handleDeploy = async () => {
-    const asset = escrow?.asset ?? project.asset ?? "XLM";
+    const asset = escrow?.asset ?? project.asset ?? "CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC";
     const milestoneIds = milestones.map((m) => m.id);
-    await deployEscrow({
+    const res = await deployEscrow({
       projectId,
       orgId,
       asset,
       milestoneIds,
       mode: "orka",
     });
+    if (!res.ok) throw new Error(res.error);
     router.refresh();
   };
 

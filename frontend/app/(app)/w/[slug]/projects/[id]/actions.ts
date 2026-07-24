@@ -618,34 +618,71 @@ export async function deployEscrow(input: {
   mode: OrkaCustodyMode;
 }): Promise<{ ok: true; contractAddress: string } | { ok: false; error: string }> {
   try {
-    const res = await fetch(`${process.env.SERVICES_URL ?? ""}/escrow/create`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        project_id: input.projectId,
-        milestone_ids: input.milestoneIds,
-        asset: input.asset,
-        mode: input.mode,
-      }),
-    });
-    if (!res.ok) throw new Error(`deployEscrow failed: ${res.status}`);
-    const data = (await res.json()) as { contract_address?: string; contractAddress?: string };
-    const contractAddress = data.contract_address ?? data.contractAddress ?? "";
-
     const supabase = await createClient();
-    const { error } = await supabase.from("escrow_contracts").insert({
-      contract_address: contractAddress,
-      org_id: input.orgId,
-      project_id: input.projectId,
-      status: "deployed",
-      asset: input.asset,
-      total_amount: 0,
-      total_funded: 0,
-      deployed_at: new Date().toISOString(),
-    });
-    if (error) throw new Error(error.message);
 
-    return { ok: true, contractAddress };
+    const { data: project } = await supabase
+      .from("projects")
+      .select("client_id, created_by")
+      .eq("id", input.projectId)
+      .eq("org_id", input.orgId)
+      .single();
+    if (!project) return { ok: false, error: "Project not found" };
+
+    const { data: milestones } = await supabase
+      .from("milestones")
+      .select("id, amount, description, position")
+      .eq("project_id", input.projectId)
+      .order("position", { ascending: true });
+    if (!milestones || milestones.length === 0) {
+      return { ok: false, error: "No milestones found" };
+    }
+
+    let clientAddress = "";
+    if (project.client_id) {
+      const { data: client } = await supabase
+        .from("clients")
+        .select("stellar_address")
+        .eq("id", project.client_id)
+        .single();
+      clientAddress = client?.stellar_address ?? "";
+    }
+
+    let freelancerAddress = "";
+    if (project.created_by) {
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("stellar_address")
+        .eq("id", project.created_by)
+        .single();
+      freelancerAddress = profile?.stellar_address ?? "";
+    }
+
+    if (!clientAddress) {
+      return { ok: false, error: "Client Stellar address not set. Ask the client to connect their wallet." };
+    }
+    if (!freelancerAddress) {
+      return { ok: false, error: "Agency Stellar address not set. Connect your wallet first." };
+    }
+
+    const client = orkaClient(input.mode);
+    const result = await client.createEscrow({
+      orgId: input.orgId,
+      projectId: input.projectId,
+      client: clientAddress,
+      freelancer: freelancerAddress,
+      asset: input.asset,
+      milestones: milestones.map((m) => ({
+        amount: Number(m.amount),
+        description: m.description ?? "",
+      })),
+      milestoneIds: input.milestoneIds,
+    });
+
+    if ("txXdr" in result) {
+      return { ok: false, error: "Freighter mode not yet supported for escrow creation" };
+    }
+
+    return { ok: true, contractAddress: result.contractId };
   } catch (err) {
     return { ok: false, error: err instanceof Error ? err.message : "deployEscrow failed" };
   }
