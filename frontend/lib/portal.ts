@@ -35,7 +35,7 @@ export type PortalProject = {
   custody_mode: string;
   created_at: string;
   organization: { name: string | null } | null;
-  client: { name: string | null } | null;
+  client: { id: string; name: string | null; email: string | null; stellar_address: string | null } | null;
   milestones: PortalMilestone[];
   invoices: PortalInvoice[];
   proposals: PortalProposal[];
@@ -63,6 +63,11 @@ export async function getPortalProject(
     p_token: token,
   });
 
-  if (error || !data) return null;
+  if (error || !data) {
+    if (typeof console !== "undefined") {
+      console.error("getPortalProject error:", error?.message ?? "No data returned");
+    }
+    return null;
+  }
   return data as PortalProject;
 }

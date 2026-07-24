@@ -75,7 +75,7 @@ export async function portalFundEscrow(input: {
 export async function portalApproveMilestone(input: {
   token: string;
   contractAddress: string;
-  milestoneId: string;
+  milestonePos: number;
   mode: OrkaCustodyMode;
 }): Promise<ActionResult> {
   try {
@@ -85,7 +85,7 @@ export async function portalApproveMilestone(input: {
     const client = orkaClient(input.mode);
     const res = await client.approveMilestone({
       contractId: input.contractAddress,
-      milestoneId: Number(input.milestoneId),
+      milestoneId: input.milestonePos,
     });
     return { ok: true, txHash: txHashOf(res) };
   } catch (err) {
@@ -96,7 +96,7 @@ export async function portalApproveMilestone(input: {
 export async function portalReleaseMilestone(input: {
   token: string;
   contractAddress: string;
-  milestoneId: string;
+  milestonePos: number;
   mode: OrkaCustodyMode;
 }): Promise<ActionResult> {
   try {
@@ -109,7 +109,7 @@ export async function portalReleaseMilestone(input: {
     // the call and never weakens that requirement.
     const res = await client.releaseMilestone({
       contractId: input.contractAddress,
-      milestoneId: Number(input.milestoneId),
+      milestoneId: input.milestonePos,
     });
     return { ok: true, txHash: txHashOf(res) };
   } catch (err) {
@@ -121,6 +121,28 @@ export async function portalReleaseMilestone(input: {
 // is allowed. Accepting the proposal advances the workflow to Contract stage
 // (deriveWorkflowState gates on proposal acceptance); requesting changes is a
 // soft state the agency picks up and re-sends.
+export async function portalConnectWallet(input: {
+  token: string;
+  address: string;
+}): Promise<ActionResult> {
+  try {
+    const project = await getPortalProject(input.token);
+    if (!project) return { ok: false, error: "Project not found" };
+    if (!project.client?.id) return { ok: false, error: "Client not found" };
+
+    const supabase = await createClient();
+    const { error } = await supabase
+      .from("clients")
+      .update({ stellar_address: input.address })
+      .eq("id", project.client.id);
+
+    if (error) throw new Error(error.message);
+    return { ok: true, txHash: input.address };
+  } catch (err) {
+    return { ok: false, error: err instanceof Error ? err.message : "portalConnectWallet failed" };
+  }
+}
+
 export async function portalAcceptProposal(input: {
   token: string;
 }): Promise<ActionResult> {

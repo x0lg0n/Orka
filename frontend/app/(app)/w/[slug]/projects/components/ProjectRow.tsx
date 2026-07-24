@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowRight, FolderKanban } from "lucide-react";
 import type { ProjectSummary, ProjectStatus } from "@/lib/orka";
+import { TimeAgo } from "./TimeAgo";
 
 export type { ProjectSummary };
 
@@ -127,7 +128,7 @@ export function ProjectRow({
 
       {/* Last Updated */}
       <td className="px-4 py-3 text-sm text-gray-500">
-        {timeAgo(p.updated_at)}
+        <TimeAgo iso={p.updated_at} />
       </td>
 
       {/* Actions */}

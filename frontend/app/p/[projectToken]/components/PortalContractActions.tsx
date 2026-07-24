@@ -1,4 +1,3 @@
-// frontend/app/p/[projectToken]/components/PortalContractActions.tsx
 "use client";
 
 import { useState, useTransition } from "react";
@@ -6,6 +5,7 @@ import {
   portalSignContract,
   portalFundEscrow,
 } from "../actions";
+import { AlertCircle } from "lucide-react";
 
 type Mode = "orka" | "freighter";
 
@@ -14,6 +14,7 @@ export function PortalContractActions({
   contractAddress,
   contractId,
   custodyMode,
+  clientAddress,
   signed,
   funded,
   totalAmount,
@@ -23,6 +24,7 @@ export function PortalContractActions({
   contractAddress: string | null;
   contractId: string | null;
   custodyMode: Mode;
+  clientAddress: string | null;
   signed: boolean;
   funded: boolean;
   totalAmount: number;
@@ -45,14 +47,23 @@ export function PortalContractActions({
   }
 
   const btn =
-    "inline-flex items-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-indigo-500 disabled:opacity-50";
+    "inline-flex items-center rounded-lg bg-[#7c3aed] px-3 py-1.5 text-sm font-semibold text-white hover:bg-[#6d28d9] disabled:opacity-50";
+
+  const needsWallet = custodyMode === "freighter" && !clientAddress;
 
   return (
     <div className="space-y-2">
+      {needsWallet ? (
+        <div className="flex items-center gap-2 text-xs text-gray-500">
+          <AlertCircle className="h-3.5 w-3.5 text-amber-500" />
+          <span>Connect your wallet above to sign the contract and fund escrow.</span>
+        </div>
+      ) : null}
+
       {!signed && !done ? (
         <button
           type="button"
-          disabled={pending}
+          disabled={pending || needsWallet}
           onClick={() =>
             run("sign", () => portalSignContract({ token, mode: custodyMode }))
           }
@@ -67,7 +78,7 @@ export function PortalContractActions({
       {signed && !funded && contractAddress && !done ? (
         <button
           type="button"
-          disabled={pending}
+          disabled={pending || needsWallet}
           onClick={() =>
             run("fund", () =>
               portalFundEscrow({
@@ -87,7 +98,7 @@ export function PortalContractActions({
 
       {done ? (
         <span className="text-xs font-medium text-emerald-600">
-          {done === "sign" ? "Signature submitted" : "Funding submitted"} — awaiting on-chain confirmation.
+          {done === "sign" ? "Signature submitted" : "Funding submitted"}
         </span>
       ) : null}
 
@@ -96,7 +107,7 @@ export function PortalContractActions({
       ) : null}
 
       {contractId ? null : (
-        <p className="text-xs text-muted-foreground">
+        <p className="text-xs text-gray-500">
           No on-chain contract yet.
         </p>
       )}

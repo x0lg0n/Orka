@@ -127,7 +127,7 @@ export default function HowItWorks() {
 
                       {/* Before / After */}
                       <div className="mt-6 grid gap-4 md:grid-cols-2">
-                        <div className="rounded-[12px] bg-night/15 p-4 text-white">
+                        <div className="rounded-card bg-night/15 p-4 text-white">
                           <div className="flex items-center gap-2 text-sm font-black uppercase">
                             <X size={16} className="text-white/70" /> Before ORKA
                           </div>
@@ -135,7 +135,7 @@ export default function HowItWorks() {
                             {step.traditional}
                           </p>
                         </div>
-                        <div className="rounded-[12px] bg-white p-4 text-night">
+                        <div className="rounded-card bg-white p-4 text-night">
                           <div className="flex items-center gap-2 text-sm font-black uppercase text-teal">
                             <Check size={16} /> With ORKA
                           </div>
