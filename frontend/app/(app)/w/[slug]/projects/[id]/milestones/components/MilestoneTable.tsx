@@ -1,7 +1,7 @@
 "use client";
 import { useState, useRef, useEffect, useTransition } from "react";
 import {
-  MoreHorizontal, Eye, Pencil, CheckCircle2, Send, Banknote, Trash2, Calendar, Plus, GripVertical,
+  MoreHorizontal, Eye, Pencil, CheckCircle2, Send, Banknote, Trash2, Calendar,
 } from "lucide-react";
 
 type MilestoneRow = {
@@ -17,40 +17,14 @@ type MilestoneRow = {
 };
 
 function statusConfig(status: string) {
-  const map: Record<string, { label: string; color: string; dot: string }> = {
-    released: {
-      label: "Released",
-      color: "bg-emerald-50 text-emerald-600 border-emerald-200",
-      dot: "bg-emerald-500",
-    },
-    approved: {
-      label: "Approved",
-      color: "bg-blue-50 text-blue-600 border-blue-200",
-      dot: "bg-blue-500",
-    },
-    funded: {
-      label: "In Progress",
-      color: "bg-[#7c3aed]/10 text-[#7c3aed] border-[#7c3aed]/20",
-      dot: "bg-[#7c3aed]",
-    },
-    in_review: {
-      label: "In Review",
-      color: "bg-amber-50 text-amber-600 border-amber-200",
-      dot: "bg-amber-500",
-    },
-    draft: {
-      label: "Draft",
-      color: "bg-gray-50 text-gray-500 border-gray-200",
-      dot: "bg-gray-400",
-    },
+  const map: Record<string, { label: string; dot: string }> = {
+    released: { label: "Released", dot: "bg-emerald-500" },
+    approved: { label: "Approved", dot: "bg-blue-500" },
+    funded: { label: "In Progress", dot: "bg-[#7c3aed]" },
+    in_review: { label: "In Review", dot: "bg-amber-500" },
+    draft: { label: "Draft", dot: "bg-gray-400" },
   };
-  return (
-    map[status] ?? {
-      label: status,
-      color: "bg-gray-50 text-gray-600 border-gray-200",
-      dot: "bg-gray-400",
-    }
-  );
+  return map[status] ?? { label: status, dot: "bg-gray-400" };
 }
 
 function formatDate(dateStr: string) {
@@ -223,8 +197,7 @@ export function MilestoneTable({
   onRelease?: (id: string) => Promise<void>;
 }) {
   return (
-    <div className="group relative overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm transition hover:shadow-md">
-      <div className="absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-[#7c3aed] via-[#a78bfa] to-[#7c3aed] opacity-0 transition group-hover:opacity-100" />
+    <div className="rounded-xl border border-gray-200 bg-white shadow-sm">
       {milestones.length === 0 ? (
         <div className="px-4 py-12 text-center text-sm text-gray-400">No milestones yet</div>
       ) : (
@@ -232,12 +205,12 @@ export function MilestoneTable({
           <table className="w-full">
             <thead>
               <tr className="border-b border-gray-100 text-left text-xs text-gray-500">
-                <th className="w-10 px-4 py-3 font-medium">#</th>
+                <th className="w-8 px-4 py-3 font-medium">#</th>
                 <th className="px-4 py-3 font-medium">Milestone</th>
                 <th className="px-4 py-3 font-medium">Status</th>
                 <th className="px-4 py-3 font-medium">Due Date</th>
                 <th className="px-4 py-3 font-medium">Amount</th>
-                <th className="w-12 px-4 py-3" />
+                <th className="w-10 px-4 py-3" />
               </tr>
             </thead>
             <tbody>
@@ -249,29 +222,24 @@ export function MilestoneTable({
                     className="group border-b border-gray-50 transition hover:bg-gray-50/50 last:border-0"
                   >
                     <td className="px-4 py-3">
-                      <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gray-100 text-xs font-medium text-gray-600">
+                      <span className="flex h-6 w-6 items-center justify-center rounded-md bg-gray-100 text-xs font-medium text-gray-500">
                         {i + 1}
-                      </div>
+                      </span>
                     </td>
                     <td className="px-4 py-3">
-                      <div className="flex items-center gap-2.5">
-                        <GripVertical className="h-4 w-4 text-gray-200 opacity-0 transition group-hover:opacity-100" />
-                        <div>
-                          <p className="text-sm font-medium text-gray-900">
-                            {m.title ?? `Milestone ${m.position ?? i + 1}`}
+                      <div>
+                        <p className="text-sm font-medium text-gray-900">
+                          {m.title ?? `Milestone ${m.position ?? i + 1}`}
+                        </p>
+                        {m.description && (
+                          <p className="mt-0.5 max-w-xs truncate text-xs text-gray-400">
+                            {m.description}
                           </p>
-                          {m.description && (
-                            <p className="mt-0.5 max-w-xs truncate text-xs text-gray-400">
-                              {m.description}
-                            </p>
-                          )}
-                        </div>
+                        )}
                       </div>
                     </td>
                     <td className="px-4 py-3">
-                      <span
-                        className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-medium ${cfg.color}`}
-                      >
+                      <span className="inline-flex items-center gap-1.5 rounded-md border border-gray-200 bg-gray-50 px-2 py-0.5 text-xs font-medium text-gray-600">
                         <span className={`h-1.5 w-1.5 rounded-full ${cfg.dot}`} />
                         {cfg.label}
                       </span>
@@ -280,11 +248,9 @@ export function MilestoneTable({
                       <DueDateDisplay dueDate={m.due_date} status={m.status} />
                     </td>
                     <td className="px-4 py-3">
-                      <span className="text-sm font-semibold text-gray-900">
-                        {Number(m.amount).toLocaleString("en-US", {
-                          maximumFractionDigits: 0,
-                        })}{" "}
-                        {m.asset}
+                      <span className="font-mono text-sm font-semibold text-gray-900">
+                        {Number(m.amount).toLocaleString("en-US", { maximumFractionDigits: 0 })}{" "}
+                        <span className="text-xs font-normal text-gray-500">{m.asset}</span>
                       </span>
                     </td>
                     <td className="px-4 py-3">

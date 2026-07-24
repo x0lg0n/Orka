@@ -1,4 +1,4 @@
-import { GripVertical, Calendar } from "lucide-react";
+import { Calendar } from "lucide-react";
 import type { WorkflowRole, WorkflowState } from "@/lib/workflow";
 import { MilestoneActionButton } from "./MilestoneActionButton";
 
@@ -46,7 +46,6 @@ function BoardCard({
         <p className="text-sm font-medium text-gray-900">
           {milestone.title ?? `Milestone ${milestone.position ?? ""}`}
         </p>
-        <GripVertical className="h-4 w-4 text-gray-200" />
       </div>
       {milestone.description && (
         <p className="mt-1 line-clamp-2 text-xs text-gray-400">
@@ -95,38 +94,40 @@ export function BoardView({
   onSubmitMilestone: (milestoneId: string) => Promise<void>;
 }) {
   return (
-    <div className="grid grid-cols-5 gap-3">
-      {COLUMNS.map((col) => {
-        const items = milestones.filter((m) => m.status === col.key);
-        return (
-          <div key={col.key} className="flex flex-col">
-            <div className="flex items-center gap-2 px-1 pb-2">
-              <div className={`h-2 w-2 rounded-full ${col.color}`} />
-              <span className="text-sm font-medium text-gray-700">
-                {col.label}
-              </span>
-              <span className="text-xs text-gray-400">({items.length})</span>
+    <div className="overflow-x-auto pb-2">
+      <div className="grid min-w-[700px] grid-cols-5 gap-3">
+        {COLUMNS.map((col) => {
+          const items = milestones.filter((m) => m.status === col.key);
+          return (
+            <div key={col.key} className="flex flex-col">
+              <div className="flex items-center gap-2 px-1 pb-2">
+                <div className={`h-2 w-2 rounded-full ${col.color}`} />
+                <span className="text-sm font-medium text-gray-700">
+                  {col.label}
+                </span>
+                <span className="text-xs text-gray-400">({items.length})</span>
+              </div>
+              <div className="flex flex-1 flex-col gap-2 rounded-xl border border-gray-100 bg-gray-50/50 p-2">
+                {items.length === 0 ? (
+                  <div className="py-6 text-center text-xs text-gray-400">
+                    Empty
+                  </div>
+                ) : (
+                  items.map((m) => (
+                    <BoardCard
+                      key={m.id}
+                      milestone={m}
+                      state={state}
+                      role={role}
+                      onSubmit={onSubmitMilestone}
+                    />
+                  ))
+                )}
+              </div>
             </div>
-            <div className="flex flex-1 flex-col gap-2 rounded-xl border border-gray-100 bg-gray-50/50 p-2">
-              {items.length === 0 ? (
-                <div className="py-6 text-center text-xs text-gray-400">
-                  Empty
-                </div>
-              ) : (
-                items.map((m) => (
-                  <BoardCard
-                    key={m.id}
-                    milestone={m}
-                    state={state}
-                    role={role}
-                    onSubmit={onSubmitMilestone}
-                  />
-                ))
-              )}
-            </div>
-          </div>
-        );
-      })}
+          );
+        })}
+      </div>
     </div>
   );
 }
