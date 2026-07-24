@@ -1,6 +1,21 @@
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Calendar } from "lucide-react";
 import type { BlogPost } from "./types";
+
+const CAT_COLORS: Record<string, string> = {
+  AI: "bg-violet-500",
+  Agency: "bg-lime-500",
+  Payments: "bg-teal-500",
+  Contracts: "bg-orange-500",
+  Escrow: "bg-teal-500",
+  Guides: "bg-violet-400",
+  Productivity: "bg-blue-500",
+  "Client Management": "bg-sky-500",
+};
+
+function fmtDate(iso: string) {
+  return new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+}
 
 export default function BlogCard({ post }: { post: BlogPost }) {
   return (
@@ -30,24 +45,30 @@ export default function BlogCard({ post }: { post: BlogPost }) {
       </div>
 
       <div className="p-5">
-        <span className="mb-2 inline-block rounded-full bg-night/5 px-3 py-1 text-2xs font-black uppercase tracking-wider text-night/60">
+        <span className="mb-2 inline-flex items-center gap-1.5 rounded-full bg-night/8 px-3 py-1 text-2xs font-black uppercase tracking-wider text-night/60">
+          <span className={`h-1.5 w-1.5 rounded-full ${CAT_COLORS[post.category] ?? "bg-night/30"}`} />
           {post.category}
         </span>
-        <h3 className="display text-lg uppercase leading-tight text-night">
+        <h3 className="text-lg uppercase font-black leading-tight text-night">
           {post.title}
         </h3>
         <p className="mt-2 text-base font-bold leading-5 text-night/55 line-clamp-2">
           {post.excerpt}
         </p>
         <div className="mt-4 flex items-center gap-2.5">
-          <span className="grid size-7 place-items-center rounded-full bg-night/10 text-2xs font-black text-night/60">
+          <span className="grid size-8 place-items-center rounded-full bg-night/10 text-xs font-black text-night/60">
             {post.author.initials}
           </span>
-          <div>
-            <p className="text-sm font-bold text-night">{post.author.name}</p>
-            <p className="text-2xs font-bold text-night/40">
-              {post.publishedAt} · {post.readingTime}
-            </p>
+          <div className="min-w-0 flex-1">
+            <p className="text-sm font-bold text-night truncate">{post.author.name}</p>
+            <div className="mt-0.5 flex items-center gap-2 text-xs font-bold text-night/40">
+              <span className="flex items-center gap-1">
+                <Calendar className="h-3 w-3" />
+                {fmtDate(post.publishedAt)}
+              </span>
+              <span className="h-1 w-1 rounded-full bg-night/20" />
+              <span>{post.readingTime}</span>
+            </div>
           </div>
         </div>
         <span className="mt-4 inline-flex items-center gap-1 text-sm font-black text-night/60 group-hover:text-violet">

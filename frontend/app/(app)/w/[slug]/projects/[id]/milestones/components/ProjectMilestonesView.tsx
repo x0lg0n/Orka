@@ -1,14 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import { Plus, LayoutList, LayoutGrid } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { LayoutList, LayoutGrid } from "lucide-react";
 import { MilestoneProgressOverview } from "./MilestoneProgressOverview";
 import { MilestoneTable } from "./MilestoneTable";
 import { MilestoneSummaryCard } from "./MilestoneSummaryCard";
 import { EscrowDetailsCard } from "./EscrowDetailsCard";
 import { UpcomingMilestonesCard } from "./UpcomingMilestonesCard";
 import { MilestonePaymentFlow } from "./MilestonePaymentFlow";
-import { AddMilestoneModal } from "./AddMilestoneModal";
+import { AddMilestoneButton } from "./AddMilestoneButton";
 import { BoardView } from "./BoardView";
 import { MilestoneEmptyState } from "./MilestoneEmptyState";
 import type { WorkflowRole, WorkflowState } from "@/lib/workflow";
@@ -18,7 +20,10 @@ import {
   approveMilestone,
   rejectMilestone,
   releaseMilestone,
+  saveMilestones,
+  deployEscrow,
 } from "../../actions";
+import { ActionButton } from "../../components/ActionButton";
 
 type ProjectRow = {
   id: string;
@@ -53,6 +58,8 @@ type EscrowRow = {
   id: string;
   status: string;
   contract_address: string | null;
+  total_amount?: number;
+  total_funded?: number;
   amount: number;
   asset: string;
   created_at: string;
@@ -96,55 +103,67 @@ export function ProjectMilestonesView({
   mode: OrkaCustodyMode;
   stats: MilestoneStats;
 }) {
-  const [showModal, setShowModal] = useState(false);
   const [view, setView] = useState<"list" | "board">("list");
+  const [addOpen, setAddOpen] = useState(false);
+  const router = useRouter();
 
   const contractAddress = escrow?.contract_address ?? "";
+  const milestonePos = (id: string): number => {
+    const idx = milestones.findIndex((m) => m.id === id);
+    if (idx === -1) return 0;
+    return milestones[idx].position ?? idx + 1;
+  };
 
   const handleSubmitMilestone = async (milestoneId: string) => {
-    await submitMilestone({
-      orgId,
-      projectId,
-      contractAddress,
-      milestoneId,
-      mode,
+    const result = await submitMilestone({
+      orgId, projectId, contractAddress,
+      milestonePos: milestonePos(milestoneId), mode,
     });
+    if (result.ok) router.refresh();
   };
   const handleApproveMilestone = async (milestoneId: string) => {
-    await approveMilestone({
-      orgId,
-      projectId,
-      contractAddress,
-      milestoneId,
-      mode,
+    const result = await approveMilestone({
+      orgId, projectId, contractAddress,
+      milestonePos: milestonePos(milestoneId), mode,
     });
+    if (result.ok) router.refresh();
   };
   const handleRejectMilestone = async (milestoneId: string) => {
-    await rejectMilestone({
-      orgId,
-      projectId,
-      contractAddress,
-      milestoneId,
-      mode,
+    const result = await rejectMilestone({
+      orgId, projectId, contractAddress,
+      milestonePos: milestonePos(milestoneId), mode,
     });
+    if (result.ok) router.refresh();
   };
   const handleReleaseMilestone = async (milestoneId: string) => {
-    await releaseMilestone({
-      orgId,
-      projectId,
-      contractAddress,
-      milestoneId,
-      mode,
+    const result = await releaseMilestone({
+      orgId, projectId, contractAddress,
+      milestonePos: milestonePos(milestoneId), mode,
     });
+    if (result.ok) router.refresh();
+  };
+
+  const handleDeployEscrow = async () => {
+    const asset = milestones[0]?.asset ?? "USDC";
+    const milestoneIds = milestones.map((m) => m.id);
+    const result = await deployEscrow({ orgId, projectId, asset, milestoneIds, mode });
+    if (result.ok) {
+      toast.success("Escrow contract deployed");
+      router.refresh();
+    } else {
+      toast.error(result.error ?? "Failed to deploy escrow");
+    }
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
+      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-lg font-semibold text-gray-900">Milestones</h2>
           <p className="mt-0.5 text-sm text-gray-500">
-            Track deliverables, approvals and payments
+            {stats.totalMilestones} milestone{stats.totalMilestones !== 1 ? "s" : ""}
+            {stats.totalBudget > 0 ? ` · ${Number(stats.totalBudget).toLocaleString("en-US", { maximumFractionDigits: 0 })} ${stats.milestoneAsset} total` : ""}
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -174,63 +193,86 @@ export function ProjectMilestonesView({
               Board
             </button>
           </div>
-          <button
-            type="button"
-            onClick={() => setShowModal(true)}
-            className="inline-flex items-center gap-1.5 rounded-lg bg-[#7c3aed] px-3 py-1.5 text-sm font-medium text-white shadow-sm transition hover:bg-[#6d28d9]"
-          >
-            <Plus className="h-4 w-4" />
-            New Milestone
-          </button>
+          <AddMilestoneButton
+            onComplete={async (data) => {
+              const res = await saveMilestones({ orgId, projectId, slug, milestones: [data] });
+              if (res.ok) {
+                toast.success("Milestone created");
+                router.refresh();
+              } else {
+                toast.error(res.error ?? "Failed to create milestone");
+              }
+            }}
+          />
         </div>
       </div>
 
+      {/* Progress bar */}
       <MilestoneProgressOverview stats={stats} />
 
-      {milestones.length === 0 ? (
-        <MilestoneEmptyState onAdd={() => setShowModal(true)} />
-      ) : view === "list" ? (
-        <MilestoneTable milestones={milestones} onAdd={() => setShowModal(true)} />
-      ) : (
-        <BoardView
-          milestones={milestones}
-          state={workflowState}
-          role={role}
-          onSubmitMilestone={handleSubmitMilestone}
-        />
+      {/* Deploy escrow prompt (only at milestone_setup stage for agency) */}
+      {workflowState.stage === "milestone_setup" && role === "agency" && milestones.length > 0 && (
+        <div className="rounded-xl border border-[#7c3aed]/20 bg-gradient-to-r from-[#7c3aed]/5 to-[#a78bfa]/5 p-5 shadow-sm">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h3 className="text-sm font-semibold text-gray-900">Milestones Ready</h3>
+              <p className="mt-0.5 text-sm text-gray-500">
+                {milestones.length} milestone{milestones.length !== 1 ? "s" : ""} created. Deploy the escrow contract to lock in terms and begin funding.
+              </p>
+            </div>
+            <ActionButton
+              action="deploy_escrow"
+              role={role}
+              state={workflowState}
+              label="Deploy Escrow Contract"
+              onClick={handleDeployEscrow}
+            />
+          </div>
+        </div>
       )}
 
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-        <div className="flex flex-col gap-4 lg:col-span-2">
-          <MilestonePaymentFlow
-            milestones={milestones}
-            state={workflowState}
-            role={role}
-            contractAddress={escrow?.contract_address ?? ""}
-            onApprove={handleApproveMilestone}
-            onReject={handleRejectMilestone}
-            onRelease={handleReleaseMilestone}
-          />
-        </div>
-        <div className="flex flex-col gap-4">
-          <MilestoneSummaryCard stats={stats} owner={owner} />
-          <EscrowDetailsCard
-            escrow={escrow}
-            slug={slug}
-            projectId={projectId}
-          />
-          <UpcomingMilestonesCard
-            milestones={milestones}
-            slug={slug}
-            projectId={projectId}
-          />
-        </div>
-      </div>
+      {/* Main content: list/board + payment flow + sidebar */}
+      {milestones.length === 0 ? (
+        <MilestoneEmptyState onAdd={() => setAddOpen(true)} stage={workflowState.stage} />
+      ) : (
+        <div className="space-y-5">
+          {view === "list" ? (
+            <MilestoneTable
+              milestones={milestones}
+              onSubmitMilestone={handleSubmitMilestone}
+              onApprove={handleApproveMilestone}
+              onReject={handleRejectMilestone}
+              onRelease={handleReleaseMilestone}
+            />
+          ) : (
+            <BoardView
+              milestones={milestones}
+              state={workflowState}
+              role={role}
+              onSubmitMilestone={handleSubmitMilestone}
+            />
+          )}
 
-      <AddMilestoneModal
-        open={showModal}
-        onClose={() => setShowModal(false)}
-      />
+          <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
+            <div className="flex flex-col gap-5 lg:col-span-2">
+              <MilestonePaymentFlow
+                milestones={milestones}
+                state={workflowState}
+                role={role}
+                contractAddress={escrow?.contract_address ?? ""}
+                onApprove={handleApproveMilestone}
+                onReject={handleRejectMilestone}
+                onRelease={handleReleaseMilestone}
+              />
+            </div>
+            <div className="flex flex-col gap-4">
+              <MilestoneSummaryCard stats={stats} owner={owner} />
+              <EscrowDetailsCard escrow={escrow} slug={slug} projectId={projectId} />
+              <UpcomingMilestonesCard milestones={milestones} slug={slug} projectId={projectId} />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

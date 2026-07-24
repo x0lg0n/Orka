@@ -1,6 +1,7 @@
 // frontend/app/(app)/w/[slug]/projects/[id]/actions.ts
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { orkaClient, type OrkaCustodyMode } from "@/lib/stellar";
 import { blocksToMarkdown } from "@/lib/proposalBlocks";
@@ -78,14 +79,14 @@ export async function submitMilestone(input: {
   orgId: string;
   projectId: string;
   contractAddress: string;
-  milestoneId: string;
+  milestonePos: number;
   mode: OrkaCustodyMode;
 }): Promise<{ ok: true; txHash: string } | { ok: false; error: string }> {
   try {
     const client = orkaClient(input.mode);
     const res = await client.submitMilestone({
       contractId: input.contractAddress,
-      milestoneId: Number(input.milestoneId),
+      milestoneId: input.milestonePos,
     });
     const txHash = "txHash" in res ? res.txHash : "";
     return { ok: true, txHash };
@@ -98,14 +99,14 @@ export async function approveMilestone(input: {
   orgId: string;
   projectId: string;
   contractAddress: string;
-  milestoneId: string;
+  milestonePos: number;
   mode: OrkaCustodyMode;
 }): Promise<{ ok: true; txHash: string } | { ok: false; error: string }> {
   try {
     const client = orkaClient(input.mode);
     const res = await client.approveMilestone({
       contractId: input.contractAddress,
-      milestoneId: Number(input.milestoneId),
+      milestoneId: input.milestonePos,
     });
     const txHash = "txHash" in res ? res.txHash : "";
     return { ok: true, txHash };
@@ -118,14 +119,14 @@ export async function rejectMilestone(input: {
   orgId: string;
   projectId: string;
   contractAddress: string;
-  milestoneId: string;
+  milestonePos: number;
   mode: OrkaCustodyMode;
 }): Promise<{ ok: true; txHash: string } | { ok: false; error: string }> {
   try {
     const client = orkaClient(input.mode);
     const res = await client.rejectMilestone({
       contractId: input.contractAddress,
-      milestoneId: Number(input.milestoneId),
+      milestoneId: input.milestonePos,
     });
     const txHash = "txHash" in res ? res.txHash : "";
     return { ok: true, txHash };
@@ -141,14 +142,14 @@ export async function releaseMilestone(input: {
   orgId: string;
   projectId: string;
   contractAddress: string;
-  milestoneId: string;
+  milestonePos: number;
   mode: OrkaCustodyMode;
 }): Promise<{ ok: true; txHash: string } | { ok: false; error: string }> {
   try {
     const client = orkaClient(input.mode);
     const res = await client.releaseMilestone({
       contractId: input.contractAddress,
-      milestoneId: Number(input.milestoneId),
+      milestoneId: input.milestonePos,
     });
     const txHash = "txHash" in res ? res.txHash : "";
     return { ok: true, txHash };
@@ -572,5 +573,117 @@ export async function signContractAgency(input: {
       ok: false,
       error: err instanceof Error ? err.message : "signContractAgency failed",
     };
+  }
+}
+
+export async function saveMilestones(input: {
+  orgId: string;
+  projectId: string;
+  slug?: string;
+  milestones: Array<{
+    name: string;
+    description: string;
+    dueDate: string;
+    amount: string;
+    asset: string;
+  }>;
+}): Promise<{ ok: true } | { ok: false; error: string }> {
+  try {
+    const supabase = await createClient();
+    const rows = input.milestones.map((m, i) => ({
+      org_id: input.orgId,
+      project_id: input.projectId,
+      title: m.name,
+      description: m.description || null,
+      amount: Number(m.amount),
+      asset: m.asset,
+      status: "draft" as const,
+      due_date: m.dueDate || null,
+      position: i,
+    }));
+    const { error } = await supabase.from("milestones").insert(rows);
+    if (error) throw new Error(error.message);
+    revalidatePath(`/w/${input.slug ?? "[slug]"}/projects/${input.projectId}/milestones`);
+    return { ok: true };
+  } catch (err) {
+    return { ok: false, error: err instanceof Error ? err.message : "saveMilestones failed" };
+  }
+}
+
+export async function deployEscrow(input: {
+  orgId: string;
+  projectId: string;
+  asset: string;
+  milestoneIds: string[];
+  mode: OrkaCustodyMode;
+}): Promise<{ ok: true; contractAddress: string } | { ok: false; error: string }> {
+  try {
+    const supabase = await createClient();
+
+    const { data: project } = await supabase
+      .from("projects")
+      .select("client_id, created_by")
+      .eq("id", input.projectId)
+      .eq("org_id", input.orgId)
+      .single();
+    if (!project) return { ok: false, error: "Project not found" };
+
+    const { data: milestones } = await supabase
+      .from("milestones")
+      .select("id, amount, description, position")
+      .eq("project_id", input.projectId)
+      .order("position", { ascending: true });
+    if (!milestones || milestones.length === 0) {
+      return { ok: false, error: "No milestones found" };
+    }
+
+    let clientAddress = "";
+    if (project.client_id) {
+      const { data: client } = await supabase
+        .from("clients")
+        .select("stellar_address")
+        .eq("id", project.client_id)
+        .single();
+      clientAddress = client?.stellar_address ?? "";
+    }
+
+    let freelancerAddress = "";
+    if (project.created_by) {
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("stellar_address")
+        .eq("id", project.created_by)
+        .single();
+      freelancerAddress = profile?.stellar_address ?? "";
+    }
+
+    if (!clientAddress) {
+      return { ok: false, error: "Client Stellar address not set. Ask the client to connect their wallet." };
+    }
+    if (!freelancerAddress) {
+      return { ok: false, error: "Agency Stellar address not set. Connect your wallet first." };
+    }
+
+    const client = orkaClient(input.mode);
+    const result = await client.createEscrow({
+      orgId: input.orgId,
+      projectId: input.projectId,
+      client: clientAddress,
+      freelancer: freelancerAddress,
+      asset: input.asset,
+      milestones: milestones.map((m) => ({
+        amount: Number(m.amount),
+        description: m.description ?? "",
+      })),
+      milestoneIds: input.milestoneIds,
+    });
+
+    if ("txXdr" in result) {
+      return { ok: false, error: "Freighter mode not yet supported for escrow creation" };
+    }
+
+    return { ok: true, contractAddress: result.contractId };
+  } catch (err) {
+    return { ok: false, error: err instanceof Error ? err.message : "deployEscrow failed" };
   }
 }

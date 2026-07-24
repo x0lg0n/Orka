@@ -17,10 +17,10 @@ export default function PrevNextNav({
           href={`/blog/${prev.slug}`}
           className="group rounded-2xl border border-night/10 bg-white p-5 transition-all hover:-translate-y-0.5 hover:shadow-lg"
         >
-          <span className="text-[10px] font-black uppercase tracking-wider text-night/40">
+          <span className="text-2xs font-black uppercase tracking-wider text-night/40">
             ← Previous
           </span>
-          <p className="mt-2 text-[14px] font-bold text-night group-hover:text-violet transition-colors">
+          <p className="mt-2 text-sm font-bold text-night group-hover:text-violet transition-colors">
             {prev.title}
           </p>
         </Link>
@@ -32,10 +32,10 @@ export default function PrevNextNav({
           href={`/blog/${next.slug}`}
           className="group rounded-2xl border border-night/10 bg-white p-5 text-right transition-all hover:-translate-y-0.5 hover:shadow-lg"
         >
-          <span className="text-[10px] font-black uppercase tracking-wider text-night/40">
+          <span className="text-2xs font-black uppercase tracking-wider text-night/40">
             Next →
           </span>
-          <p className="mt-2 text-[14px] font-bold text-night group-hover:text-violet transition-colors">
+          <p className="mt-2 text-sm font-bold text-night group-hover:text-violet transition-colors">
             {next.title}
           </p>
         </Link>

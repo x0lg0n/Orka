@@ -31,7 +31,7 @@ export default async function ProjectOverviewPage({
 
   const { data: escrow } = await supabase
     .from("escrow_contracts")
-    .select("contract_address, total_funded, total_amount")
+    .select("contract_address, total_funded, total_amount, status")
     .eq("project_id", id)
     .maybeSingle();
 
@@ -158,6 +158,8 @@ export default async function ProjectOverviewPage({
         refundedAmount,
         milestoneAsset,
         escrowFundedPct,
+        contractAddress: escrow?.contract_address,
+        escrowStatus: escrow?.status,
       }}
     />
   );

@@ -5,6 +5,10 @@ import Image from "next/image";
 export default function BlogHero() {
   return (
     <section className="relative overflow-hidden rounded-b-[42px] bg-night px-4 pb-16 pt-5 text-white md:rounded-b-[72px] md:px-8 lg:px-12">
+      {/* Background gradient orbs */}
+      <div className="pointer-events-none absolute -right-32 -top-32 h-[500px] w-[500px] rounded-full bg-orange/5 blur-[120px]" />
+      <div className="pointer-events-none absolute -bottom-40 -left-20 h-[400px] w-[400px] rounded-full bg-violet/8 blur-[100px]" />
+
       {/* Floating decorations */}
       <Image
         src="/Elements/Star-Violet.svg"
@@ -70,10 +74,40 @@ export default function BlogHero() {
           </p>
         </div>
 
-        {/* Right: Colorful floating objects */}
-        <div className="relative mt-12 hidden h-[400px] lg:block">
+        {/* Right: Editorial illustration area */}
+        <div className="relative mt-12 hidden h-[420px] lg:block">
+          {/* Abstract editorial illustration - large flowing shape */}
+          <svg
+            className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+            width="380"
+            height="380"
+            viewBox="0 0 380 380"
+            fill="none"
+            aria-hidden
+          >
+            <circle cx="190" cy="190" r="180" stroke="rgba(255,255,255,0.04)" strokeWidth="1" />
+            <circle cx="190" cy="190" r="140" stroke="rgba(255,255,255,0.06)" strokeWidth="1" strokeDasharray="6 8" />
+            <circle cx="190" cy="190" r="90" stroke="rgba(255,255,255,0.08)" strokeWidth="1" />
+            <path d="M95 190 C95 137 137 95 190 95 C243 95 285 137 285 190" stroke="#FF8622" strokeWidth="2" strokeLinecap="round" opacity="0.3" />
+            <path d="M285 190 C285 243 243 285 190 285 C137 285 95 243 95 190" stroke="#7C3AED" strokeWidth="2" strokeLinecap="round" opacity="0.25" />
+            <line x1="190" y1="10" x2="190" y2="50" stroke="rgba(255,255,255,0.08)" strokeWidth="1" />
+            <line x1="190" y1="330" x2="190" y2="370" stroke="rgba(255,255,255,0.08)" strokeWidth="1" />
+            <line x1="10" y1="190" x2="50" y2="190" stroke="rgba(255,255,255,0.08)" strokeWidth="1" />
+            <line x1="330" y1="190" x2="370" y2="190" stroke="rgba(255,255,255,0.08)" strokeWidth="1" />
+
+            {/* Dots scattered along the arcs */}
+            <circle cx="120" cy="120" r="3" fill="rgba(124,58,237,0.4)" />
+            <circle cx="260" cy="120" r="3" fill="rgba(255,134,34,0.4)" />
+            <circle cx="120" cy="260" r="3" fill="rgba(20,184,166,0.4)" />
+            <circle cx="260" cy="260" r="3" fill="rgba(234,255,53,0.4)" />
+            <circle cx="155" cy="95" r="2" fill="rgba(255,255,255,0.15)" />
+            <circle cx="225" cy="95" r="2" fill="rgba(255,255,255,0.15)" />
+            <circle cx="155" cy="285" r="2" fill="rgba(255,255,255,0.15)" />
+            <circle cx="225" cy="285" r="2" fill="rgba(255,255,255,0.15)" />
+          </svg>
+
           {/* Sticker: Proposals */}
-          <div className="sticker absolute left-[10%] top-[5%] rounded-2xl bg-white px-5 py-4 shadow-[0_12px_40px_rgba(124,58,237,0.25)]">
+          <div className="sticker absolute left-[8%] top-[3%] z-10 rounded-2xl bg-white px-5 py-4 shadow-[0_12px_40px_rgba(124,58,237,0.3)]">
             <div className="mb-2 flex items-center gap-2">
               <span className="grid size-8 place-items-center rounded-lg bg-violet/10">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-violet"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
@@ -84,7 +118,7 @@ export default function BlogHero() {
           </div>
 
           {/* Sticker: Escrow */}
-          <div className="sticker absolute left-[0%] top-[40%] rounded-2xl bg-white px-5 py-4 shadow-[0_12px_40px_rgba(20,184,166,0.25)]" style={{ transform: "rotate(-2deg)" }}>
+          <div className="sticker absolute left-[0%] top-[42%] z-10 rounded-2xl bg-white px-5 py-4 shadow-[0_12px_40px_rgba(20,184,166,0.3)]" style={{ transform: "rotate(-2deg)" }}>
             <div className="mb-2 flex items-center gap-2">
               <span className="grid size-8 place-items-center rounded-lg bg-teal/10">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-teal"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
@@ -95,7 +129,7 @@ export default function BlogHero() {
           </div>
 
           {/* Sticker: Payments */}
-          <div className="sticker absolute right-[5%] top-[30%] rounded-2xl bg-white px-5 py-4 shadow-[0_12px_40px_rgba(255,134,34,0.25)]" style={{ transform: "rotate(3deg)" }}>
+          <div className="sticker absolute right-[3%] top-[32%] z-10 rounded-2xl bg-white px-5 py-4 shadow-[0_12px_40px_rgba(255,134,34,0.3)]" style={{ transform: "rotate(3deg)" }}>
             <div className="mb-2 flex items-center gap-2">
               <span className="grid size-8 place-items-center rounded-lg bg-orange/10">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-orange"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
@@ -106,7 +140,7 @@ export default function BlogHero() {
           </div>
 
           {/* Sticker: Milestones */}
-          <div className="sticker absolute right-[10%] bottom-[10%] rounded-2xl bg-white px-5 py-4 shadow-[0_12px_40px_rgba(234,255,53,0.2)]" style={{ transform: "rotate(-1deg)" }}>
+          <div className="sticker absolute right-[12%] bottom-[8%] z-10 rounded-2xl bg-white px-5 py-4 shadow-[0_12px_40px_rgba(234,255,53,0.22)]" style={{ transform: "rotate(-1deg)" }}>
             <div className="mb-2 flex items-center gap-2">
               <span className="grid size-8 place-items-center rounded-lg bg-lime/10">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="text-lime"><polyline points="20 6 9 17 4 12"/></svg>
@@ -115,6 +149,20 @@ export default function BlogHero() {
             </div>
             <span className="rounded-full bg-lime/10 px-3 py-1 text-2xs font-bold text-night">2 Done</span>
           </div>
+
+          {/* Bottom decorative dots pattern */}
+          <svg
+            className="pointer-events-none absolute bottom-0 left-1/2 -translate-x-1/2"
+            width="240"
+            height="16"
+            viewBox="0 0 240 16"
+            fill="none"
+            aria-hidden
+          >
+            {Array.from({ length: 15 }).map((_, i) => (
+              <circle key={i} cx={i * 16 + 8} cy="8" r="2" fill="rgba(255,255,255,0.08)" />
+            ))}
+          </svg>
         </div>
       </div>
     </section>

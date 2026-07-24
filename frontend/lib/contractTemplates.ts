@@ -1,16 +1,54 @@
 // frontend/lib/contractTemplates.ts
-// PartialBlock is the type BlockNote accepts for initialContent.
-// We use a loose shape so this file has zero @blocknote imports
-// (avoids SSR issues in test/server contexts).
-export type PartialBlock = {
+// Block-based contract template generation.
+
+type Block = {
   type: string;
   props?: Record<string, unknown>;
-  content?:
-    | string
-    | Array<{ type: string; text: string; styles?: Record<string, unknown> }>;
+  content?: { text: string }[] | string;
 };
 
-export type ContractTemplateData = {
+function heading(text: string, level = 1): Block {
+  return {
+    type: "heading",
+    props: { level },
+    content: [{ text }],
+  };
+}
+
+function paragraph(text: string): Block {
+  return {
+    type: "paragraph",
+    content: [{ text }],
+  };
+}
+
+function bullet(text: string): Block {
+  return {
+    type: "bulletListItem",
+    content: [{ text }],
+  };
+}
+
+function numbered(text: string): Block {
+  return {
+    type: "numberedListItem",
+    content: [{ text }],
+  };
+}
+
+// Default proposal template — used when creating a new proposal from scratch.
+export const PROPOSAL_TEMPLATE: Block[] = [
+  heading("Proposal", 1),
+  paragraph("Project overview and scope of work."),
+  heading("Deliverables", 2),
+  paragraph("List of deliverables to be completed."),
+  heading("Timeline", 2),
+  paragraph("Estimated project timeline."),
+  heading("Pricing", 2),
+  paragraph("Cost breakdown and payment terms."),
+];
+
+type ContractTemplateData = {
   projectName: string;
   orgName: string;
   clientName: string;
@@ -21,132 +59,40 @@ export type ContractTemplateData = {
   today: string;
 };
 
-function heading(text: string, level: 1 | 2 | 3 = 2): PartialBlock {
-  return {
-    type: "heading",
-    props: { level },
-    content: [{ type: "text", text, styles: {} }],
-  };
-}
-
-function para(text: string): PartialBlock {
-  return {
-    type: "paragraph",
-    content: [{ type: "text", text, styles: {} }],
-  };
-}
-
-function bullet(text: string): PartialBlock {
-  return {
-    type: "bulletListItem",
-    content: [{ type: "text", text, styles: {} }],
-  };
-}
-
-function emptyPara(): PartialBlock {
-  return { type: "paragraph", content: "" };
-}
-
-// Static proposal template — 8 sections, all empty for user to fill.
-export const PROPOSAL_TEMPLATE: PartialBlock[] = [
-  heading("Executive Summary"),
-  emptyPara(),
-  heading("About Us"),
-  emptyPara(),
-  heading("Scope of Work"),
-  emptyPara(),
-  heading("Deliverables"),
-  bullet(""),
-  bullet(""),
-  heading("Timeline & Milestones"),
-  emptyPara(),
-  heading("Investment"),
-  emptyPara(),
-  heading("Terms & Conditions"),
-  emptyPara(),
-  heading("Next Steps"),
-  emptyPara(),
-];
-
-// Contract template — pre-filled with project data from proposal.
-export function buildContractTemplate(data: ContractTemplateData): PartialBlock[] {
-  const deliverableBullets: PartialBlock[] =
+export function buildContractTemplate(data: ContractTemplateData): Block[] {
+  const deliverableLines =
     data.deliverables.length > 0
       ? data.deliverables.map((d) => bullet(d))
-      : [bullet("")];
+      : [bullet("Scope of work to be defined")];
 
   return [
     heading("Service Agreement", 1),
-    para(`Date: ${data.today}`),
-    para(`Project: ${data.projectName}`),
-    emptyPara(),
-
-    heading("1. Parties"),
-    para(
-      `This Service Agreement ("Agreement") is entered into as of ${data.today} between ` +
-        `${data.orgName} ("Agency") and ${data.clientName} ("Client").`
+    paragraph(
+      `This Service Agreement ("Agreement") is entered into as of ${data.today} between ${data.orgName} ("Agency") and ${data.clientName} ("Client") for the project "${data.projectName}".`
     ),
-    emptyPara(),
 
-    heading("2. Scope of Services"),
-    para("The Agency agrees to provide the following services:"),
-    ...deliverableBullets,
-    emptyPara(),
+    heading("Scope of Work", 2),
+    paragraph("The Agency agrees to provide the following deliverables:"),
+    ...deliverableLines,
 
-    heading("3. Project Timeline"),
-    para(
-      `This project is structured across ${data.milestoneCount} milestone(s). ` +
-        `Specific dates and deadlines are outlined below:`
+    heading("Payment Terms", 2),
+    paragraph(
+      data.amount
+        ? `Total project cost: ${data.amount} ${data.asset}.`
+        : `Payment amount to be determined.`
     ),
-    emptyPara(),
-
-    heading("4. Payment Terms"),
-    para(
-      `The total project value is ${data.amount} ${data.asset}. ` +
-        `Payment schedule and method are as follows:`
+    paragraph(
+      data.milestoneCount > 0
+        ? `Payments will be released upon completion of ${data.milestoneCount} milestones as defined in the escrow agreement.`
+        : "Milestone-based payments will be defined separately."
     ),
-    emptyPara(),
 
-    heading("5. Intellectual Property"),
-    para(
-      "Upon receipt of full and final payment, the Agency assigns to the Client all rights, " +
-        "title, and interest in the work product created specifically for this project. " +
-        "The Agency retains ownership of any pre-existing tools, frameworks, or methodologies used."
-    ),
-    emptyPara(),
+    heading("Timeline", 2),
+    paragraph("Project timeline and deadlines will be defined in the milestone plan."),
 
-    heading("6. Confidentiality"),
-    para(
-      "Both parties agree to keep confidential all non-public information disclosed during " +
-        "this engagement and to use such information solely for the purposes of this Agreement."
-    ),
-    emptyPara(),
-
-    heading("7. Revisions & Approval"),
-    para(
-      "The Client is entitled to two (2) rounds of revisions per deliverable. " +
-        "Additional revisions will be billed at the Agency's standard hourly rate."
-    ),
-    emptyPara(),
-
-    heading("8. Termination"),
-    para(
-      "Either party may terminate this Agreement with fourteen (14) days written notice. " +
-        "The Client shall pay for all work completed up to the termination date."
-    ),
-    emptyPara(),
-
-    heading("9. Governing Law"),
-    para(
-      "This Agreement shall be governed by and construed in accordance with applicable law. " +
-        "Any disputes shall be resolved through binding arbitration."
-    ),
-    emptyPara(),
-
-    heading("10. Signatures"),
-    para("By signing below, both parties agree to the terms of this Agreement."),
-    emptyPara(),
-    para(`Agency (${data.orgName}): ___________________________   Date: ____________`),
-    para(`Client (${data.clientName}): ___________________________   Date: ____________`),
+    heading("Terms", 2),
+    numbered("This Agreement is governed by the terms set forth in the ORKA platform."),
+    numbered("All disputes shall be resolved through the platform's dispute resolution process."),
+    numbered("Either party may terminate this Agreement with written notice."),
   ];
 }

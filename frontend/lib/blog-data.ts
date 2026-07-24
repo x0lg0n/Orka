@@ -50,7 +50,7 @@ export const blogPosts: BlogPost[] = [
     author: { name: "ORKA Team", initials: "OT", role: "ORKA Team" },
     readingTime: "7 min read",
     publishedAt: "2026-07-23",
-    featured: false,
+    featured: true,
   },
   {
     id: "3",
@@ -115,7 +115,7 @@ export const blogPosts: BlogPost[] = [
     author: { name: "ORKA Team", initials: "OT", role: "ORKA Team" },
     readingTime: "9 min read",
     publishedAt: "2026-07-18",
-    featured: false,
+    featured: true,
   },
   {
     id: "8",
@@ -349,7 +349,7 @@ export const blogPosts: BlogPost[] = [
     author: { name: "ORKA Team", initials: "OT", role: "ORKA Team" },
     readingTime: "6 min read",
     publishedAt: "2026-06-30",
-    featured: false,
+    featured: true,
   },
   {
     id: "26",

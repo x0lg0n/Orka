@@ -112,7 +112,7 @@ export default function LeadCaptureCard() {
           className="flex w-full items-center justify-center gap-2 rounded-xl bg-violet py-2.5 text-base font-black text-white transition-colors hover:bg-violet/90 disabled:opacity-60"
         >
           {loading && <Loader2 size={14} className="animate-spin" />}
-          {loading ? "Sending..." : "Explore Platform"}
+          {loading ? "Sending..." : "Get Early Access"}
           {!loading && <ArrowRight size={14} />}
         </button>
       </form>

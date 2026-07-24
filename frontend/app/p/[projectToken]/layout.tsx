@@ -1,23 +1,34 @@
-import Link from "next/link";
 import type { ReactNode } from "react";
+import { notFound } from "next/navigation";
+import { getPortalProject } from "@/lib/portal";
+import { PortalSidebar } from "./components/PortalSidebar";
+import { PortalTopBar } from "./components/PortalTopBar";
 
-export default function PortalLayout({ children }: { children: ReactNode }) {
+export default async function PortalLayout({
+  children,
+  params,
+}: {
+  children: ReactNode;
+  params: Promise<{ projectToken: string }>;
+}) {
+  const { projectToken } = await params;
+  const project = await getPortalProject(projectToken);
+  if (!project) notFound();
+
   return (
-    <div className="min-h-screen bg-shell text-night">
-      <header className="border-b border-border">
-        <div className="mx-auto flex max-w-3xl items-center justify-between px-6 py-4">
-          <Link href="/" className="text-lg font-extrabold tracking-tight text-night">
-            ORKA
-          </Link>
-          <span className="text-xs font-bold uppercase tracking-[0.12em] text-muted-foreground">
-            Client Portal
-          </span>
-        </div>
-      </header>
-      <main className="mx-auto max-w-3xl px-6 py-10">{children}</main>
-      <footer className="mx-auto max-w-3xl px-6 pb-10 text-center text-xs text-muted-foreground">
-        Powered by ORKA · Secure on-chain escrow
-      </footer>
+    <div className="flex h-dvh bg-[#F5F5F7]">
+      <PortalSidebar
+        token={projectToken}
+        orgName={project.organization?.name ?? "ORKA"}
+        clientName={project.client?.name ?? null}
+        clientEmail={project.client?.email ?? null}
+      />
+      <div className="flex flex-1 flex-col">
+        <PortalTopBar clientName={project.client?.name ?? null} />
+        <main className="flex-1 overflow-y-auto">
+          <div className="mx-auto max-w-7xl px-6 py-6">{children}</div>
+        </main>
+      </div>
     </div>
   );
 }

@@ -1,4 +1,3 @@
-import Link from "next/link";
 import type { BlogAuthor } from "@/lib/blogs/types";
 
 export default function AuthorCard({ author }: { author: BlogAuthor }) {
@@ -16,12 +15,6 @@ export default function AuthorCard({ author }: { author: BlogAuthor }) {
           <p className="text-sm font-bold text-night/50">{author.role}</p>
         </div>
       </div>
-      <Link
-        href="/blog"
-        className="mt-4 block text-center text-sm font-black text-violet hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet/50 rounded"
-      >
-        View all posts →
-      </Link>
     </div>
   );
 }

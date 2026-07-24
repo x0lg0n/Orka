@@ -1,11 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link2, Bookmark, Share2, Check } from "lucide-react";
 
 export default function ShareButtons() {
   const [copied, setCopied] = useState(false);
   const [saved, setSaved] = useState(false);
+
+  useEffect(() => {
+    const key = `saved-article-${window.location.pathname}`;
+    setSaved(localStorage.getItem(key) === "true");
+  }, []);
 
   async function handleCopyLink() {
     try {
@@ -23,7 +28,10 @@ export default function ShareButtons() {
   }
 
   function handleSave() {
-    setSaved(!saved);
+    const key = `saved-article-${window.location.pathname}`;
+    const next = !saved;
+    setSaved(next);
+    localStorage.setItem(key, String(next));
   }
 
   async function handleShare() {
