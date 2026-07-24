@@ -68,7 +68,7 @@ export default async function BlogPostPage({
       <ReadingProgress />
 
       {/* 3-column layout */}
-      <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-[1400px] px-4 pt-8 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-[22%_1fr_25%]">
           {/* Left sidebar — TOC (desktop) */}
           <aside className="hidden lg:block">
