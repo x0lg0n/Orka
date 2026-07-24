@@ -9,6 +9,7 @@ export const article: BlogArticle = {
   readingTime: "7 min read",
   publishedAt: "2026-04-12",
   coverGradient: "from-coral/12 via-orange/8 to-coral/5",
+  image: "/BlogImages/ChatGPT Image Jul 25, 2026, 12_27_51 AM.png",
   featured: false,
   seoTitle: "Late Payments: Why Clients Delay Paying (and How to Stop It) | ORKA",
   seoDescription: "Discover the real reasons clients delay payments and learn practical systems that help freelancers and agencies get paid faster.",

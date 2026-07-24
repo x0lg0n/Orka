@@ -54,11 +54,19 @@ export default function ArticleHeader({ post }: { post: BlogArticle }) {
 
       {/* Cover image */}
       <div
-        className={`mt-8 aspect-[16/9] w-full rounded-2xl bg-gradient-to-br ${post.coverGradient} p-8`}
+        className={`mt-8 aspect-[16/9] w-full rounded-2xl bg-gradient-to-br ${post.coverGradient} p-8 relative overflow-hidden`}
       >
-        <div className="flex size-14 items-center justify-center rounded-xl bg-white/80 shadow-sm">
-          <FileText size={28} className="text-violet" />
-        </div>
+        {post.image ? (
+          <img
+            src={post.image}
+            alt={post.title}
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+        ) : (
+          <div className="flex size-14 items-center justify-center rounded-xl bg-white/80 shadow-sm">
+            <FileText size={28} className="text-violet" />
+          </div>
+        )}
       </div>
     </>
   );

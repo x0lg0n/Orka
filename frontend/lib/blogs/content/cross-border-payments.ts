@@ -9,6 +9,7 @@ export const article: BlogArticle = {
   readingTime: "7 min read",
   publishedAt: "2026-04-02",
   coverGradient: "from-info/12 via-teal/8 to-info/5",
+  image: "/BlogImages/ChatGPT Image Jul 25, 2026, 12_28_48 AM.png",
   featured: false,
   seoTitle: "Cross-Border Payments for Freelancers | ORKA",
   seoDescription: "Learn how freelancers can receive international payments faster, reduce transaction fees, and build trust with global clients.",

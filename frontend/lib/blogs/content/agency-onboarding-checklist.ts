@@ -9,6 +9,7 @@ export const article: BlogArticle = {
   readingTime: "7 min read",
   publishedAt: "2026-05-06",
   coverGradient: "from-lime/12 via-lime/6 to-teal/5",
+  image: "/BlogImages/ChatGPT Image Jul 25, 2026, 12_26_39 AM.png",
   featured: false,
   seoTitle: "Agency Client Onboarding Checklist (Free Template Included) | ORKA",
   seoDescription: "Discover a proven onboarding process used by successful agencies. Includes a free client onboarding checklist to improve communication, reduce delays, and create a better client experience.",

@@ -9,6 +9,7 @@ export const article: BlogArticle = {
   readingTime: "4 min read",
   publishedAt: "2026-05-03",
   coverGradient: "from-violet/10 via-coral/8 to-orange/5",
+  image: "/BlogImages/ChatGPT Image Jul 25, 2026, 12_22_49 AM.png",
   featured: false,
   seoTitle: "Proposal vs Contract vs Invoice: What's the Difference? | ORKA",
   seoDescription: "Understand the difference between proposals, contracts, and invoices — and learn how using the right document at the right time helps you win clients, avoid disputes, and get paid faster.",

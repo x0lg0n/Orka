@@ -9,6 +9,7 @@ export const article: BlogArticle = {
   readingTime: "7 min read",
   publishedAt: "2026-04-08",
   coverGradient: "from-teal/10 via-violet/8 to-teal/5",
+  image: "/BlogImages/ChatGPT Image Jul 25, 2026, 12_28_19 AM.png",
   featured: false,
   seoTitle: "Milestone Payments vs Hourly Billing | ORKA",
   seoDescription: "Compare milestone payments and hourly billing to understand which pricing model helps freelancers and agencies improve cash flow, build trust, and scale sustainably.",

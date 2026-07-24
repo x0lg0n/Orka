@@ -9,6 +9,7 @@ export const article: BlogArticle = {
   readingTime: "7 min read",
   publishedAt: "2026-03-25",
   coverGradient: "from-violet/12 via-info/8 to-violet/5",
+  image: "/BlogImages/ChatGPT Image Jul 25, 2026, 12_29_26 AM.png",
   featured: true,
   seoTitle: "How AI Saves Agencies 10+ Hours Every Week | ORKA",
   seoDescription: "Learn how agencies use AI to automate proposals, meetings, project planning, documentation, and client communication — saving more than 10 hours every week.",

@@ -9,6 +9,7 @@ export const article: BlogArticle = {
   readingTime: "7 min read",
   publishedAt: "2026-03-22",
   coverGradient: "from-violet/10 via-info/10 to-violet/5",
+  image: "/BlogImages/ChatGPT Image Jul 25, 2026, 12_30_02 AM.png",
   featured: false,
   seoTitle: "How to Write Better Project Proposals with AI | ORKA",
   seoDescription: "Learn how AI helps agencies and freelancers write winning project proposals faster, personalize every pitch, and increase client conversion rates.",

@@ -9,6 +9,7 @@ export const article: BlogArticle = {
   readingTime: "5 min read",
   publishedAt: "2026-05-08",
   coverGradient: "from-orange/12 via-orange/6 to-coral/5",
+  image: "/BlogImages/ChatGPT Image Jul 25, 2026, 12_22_20 AM.png",
   featured: false,
   seoTitle: "Freelancer Contracts That Protect You (And Your Clients) | ORKA",
   seoDescription: "Discover the contract clauses every freelancer and agency should use to protect projects, avoid misunderstandings, and build long-term client trust.",

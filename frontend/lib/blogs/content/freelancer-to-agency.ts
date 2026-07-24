@@ -9,6 +9,7 @@ export const article: BlogArticle = {
   readingTime: "9 min read",
   publishedAt: "2026-04-28",
   coverGradient: "from-orange/10 via-lime/8 to-teal/5",
+  image: "/BlogImages/ChatGPT Image Jul 25, 2026, 12_25_54 AM.png",
   featured: false,
   seoTitle: "From Freelancer to Agency Owner: A Complete Guide | ORKA",
   seoDescription: "Learn how to transition from freelancer to agency owner with proven systems, hiring strategies, pricing models, and operational workflows.",

@@ -9,6 +9,7 @@ export const article: BlogArticle = {
   readingTime: "6 min read",
   publishedAt: "2026-04-18",
   coverGradient: "from-info/12 via-violet/8 to-teal/5",
+  image: "/BlogImages/ChatGPT Image Jul 25, 2026, 12_27_18 AM.png",
   featured: false,
   seoTitle: "What Is a Client Portal? Benefits for Agencies and Freelancers | ORKA",
   seoDescription: "Learn how a client portal helps agencies and freelancers centralize communication, manage projects, improve transparency, and deliver a premium client experience.",

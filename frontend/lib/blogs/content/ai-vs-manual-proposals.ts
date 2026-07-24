@@ -9,6 +9,7 @@ export const article: BlogArticle = {
   readingTime: "7 min read",
   publishedAt: "2026-03-06",
   coverGradient: "from-violet/12 via-coral/8 to-violet/5",
+  image: "/BlogImages/ChatGPT Image Jul 25, 2026, 12_30_26 AM.png",
   featured: false,
   seoTitle: "AI vs Manual Proposal Writing | ORKA",
   seoDescription: "Compare AI and manual proposal writing to discover which approach helps agencies and freelancers write better proposals, save time, and win more clients.",

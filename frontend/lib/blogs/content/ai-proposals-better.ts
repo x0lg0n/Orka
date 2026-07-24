@@ -9,6 +9,7 @@ export const article: BlogArticle = {
   readingTime: "8 min read",
   publishedAt: "2026-03-04",
   coverGradient: "from-violet/15 via-info/10 to-violet/5",
+  image: "/BlogImages/ChatGPT Image Jul 25, 2026, 12_12_12 AM.png",
   featured: false,
   seoTitle: "How AI Writes Better Proposals (That Clients Actually Accept) | ORKA",
   seoDescription: "Discover how AI helps agencies and freelancers write personalized, professional proposals faster, improve client confidence, and increase proposal acceptance rates.",

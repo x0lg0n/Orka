@@ -9,6 +9,7 @@ export const article: BlogArticle = {
   readingTime: "8 min read",
   publishedAt: "2026-05-15",
   coverGradient: "from-coral/12 via-orange/8 to-violet/5",
+  image: "/BlogImages/ChatGPT Image Jul 25, 2026, 12_26_24 AM.png",
   featured: true,
   seoTitle: "7 Client Management Mistakes That Cost Agencies Thousands Every Year | ORKA",
   seoDescription: "Learn the biggest client management mistakes agencies make and discover practical systems to improve client relationships, reduce payment delays, and grow profitably.",

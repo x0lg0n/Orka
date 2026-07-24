@@ -9,6 +9,7 @@ export const article: BlogArticle = {
   readingTime: "7 min read",
   publishedAt: "2026-05-09",
   coverGradient: "from-teal/15 via-teal/8 to-lime/5",
+  image: "/BlogImages/ChatGPT Image Jul 25, 2026, 12_22_04 AM.png",
   featured: false,
   seoTitle: "Why Escrow Is the Future of Client Payments | ORKA",
   seoDescription: "Learn how escrow payments eliminate payment disputes, improve client trust, and create predictable cash flow for modern service businesses.",

@@ -9,6 +9,7 @@ export const article: BlogArticle = {
   readingTime: "6 min read",
   publishedAt: "2026-04-10",
   coverGradient: "from-violet/12 via-teal/8 to-violet/5",
+  image: "/BlogImages/ChatGPT Image Jul 25, 2026, 12_28_04 AM.png",
   featured: false,
   seoTitle: "Best Invoicing Practices for Agencies | ORKA",
   seoDescription: "Discover invoicing best practices that help agencies reduce payment delays, improve cash flow, and create a smoother client experience.",

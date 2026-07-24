@@ -9,6 +9,7 @@ export const article: BlogArticle = {
   readingTime: "5 min read",
   publishedAt: "2026-04-25",
   coverGradient: "from-violet/15 via-violet/10 to-info/5",
+  image: "/BlogImages/ChatGPT Image Jul 25, 2026, 12_26_09 AM.png",
   featured: false,
   seoTitle: "How AI Helps Agencies Win More Clients in Less Time | ORKA",
   seoDescription: "Learn how agencies use AI to generate proposals, automate client communication, reduce admin work, and close more deals faster.",

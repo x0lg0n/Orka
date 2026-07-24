@@ -9,6 +9,7 @@ export const article: BlogArticle = {
   readingTime: "7 min read",
   publishedAt: "2026-03-15",
   coverGradient: "from-info/12 via-violet/8 to-info/5",
+  image: "/BlogImages/ChatGPT Image Jul 25, 2026, 12_31_32 AM.png",
   featured: false,
   seoTitle: "How to Build Better Client Relationships | ORKA",
   seoDescription: "Learn how freelancers and agencies can build stronger client relationships through communication, transparency, trust, and better project management.",

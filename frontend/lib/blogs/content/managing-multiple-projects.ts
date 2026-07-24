@@ -9,6 +9,7 @@ export const article: BlogArticle = {
   readingTime: "8 min read",
   publishedAt: "2026-05-05",
   coverGradient: "from-info/12 via-info/6 to-violet/5",
+  image: "/BlogImages/ChatGPT Image Jul 25, 2026, 12_22_35 AM.png",
   featured: false,
   seoTitle: "Managing Multiple Projects Without Losing Your Mind | ORKA",
   seoDescription: "Discover practical systems that help agencies and freelancers manage multiple client projects without burnout, missed deadlines, or endless context switching.",

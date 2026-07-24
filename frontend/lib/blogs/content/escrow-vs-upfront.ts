@@ -9,6 +9,7 @@ export const article: BlogArticle = {
   readingTime: "7 min read",
   publishedAt: "2026-04-05",
   coverGradient: "from-teal/12 via-lime/8 to-teal/5",
+  image: "/BlogImages/ChatGPT Image Jul 25, 2026, 12_28_38 AM.png",
   featured: false,
   seoTitle: "Escrow vs Upfront Payments | ORKA",
   seoDescription: "Compare escrow and upfront payments to understand which payment model offers better trust, security, and cash flow for freelancers and agencies.",

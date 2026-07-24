@@ -9,6 +9,7 @@ export const article: BlogArticle = {
   readingTime: "6 min read",
   publishedAt: "2026-05-01",
   coverGradient: "from-teal/12 via-violet/8 to-teal/5",
+  image: "/BlogImages/ChatGPT Image Jul 25, 2026, 12_25_36 AM.png",
   featured: false,
   seoTitle: "Why Milestone-Based Payments Build 10x More Client Trust | ORKA",
   seoDescription: "Discover why milestone-based payments are replacing traditional invoicing and how they help agencies and freelancers build stronger client relationships.",

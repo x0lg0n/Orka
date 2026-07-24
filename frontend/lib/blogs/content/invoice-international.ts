@@ -9,6 +9,7 @@ export const article: BlogArticle = {
   readingTime: "6 min read",
   publishedAt: "2026-03-30",
   coverGradient: "from-violet/10 via-info/8 to-violet/5",
+  image: "/BlogImages/ChatGPT Image Jul 25, 2026, 12_29_00 AM.png",
   featured: false,
   seoTitle: "How to Invoice International Clients | ORKA",
   seoDescription: "Learn how to create professional invoices for international clients, reduce payment delays, and simplify cross-border payments.",

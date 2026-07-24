@@ -9,6 +9,7 @@ export const article: BlogArticle = {
   readingTime: "6 min read",
   publishedAt: "2026-04-15",
   coverGradient: "from-teal/15 via-info/8 to-violet/5",
+  image: "/BlogImages/ChatGPT Image Jul 25, 2026, 12_27_37 AM.png",
   featured: false,
   seoTitle: "How to Get Paid Faster as a Freelancer | ORKA",
   seoDescription: "Learn proven strategies to reduce payment delays, improve cash flow, and create a payment process that works for both freelancers and clients.",

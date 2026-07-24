@@ -30,6 +30,7 @@ export interface BlogArticle {
   readingTime: string;
   publishedAt: string;
   coverGradient: string;
+  image?: string;
   featured: boolean;
   seoTitle?: string;
   seoDescription?: string;
@@ -48,6 +49,7 @@ export interface BlogPostMeta {
   title: string;
   excerpt: string;
   coverGradient: string;
+  image?: string;
   category: string;
   author: BlogAuthor;
   readingTime: string;

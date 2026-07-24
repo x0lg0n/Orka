@@ -9,6 +9,7 @@ export const article: BlogArticle = {
   readingTime: "7 min read",
   publishedAt: "2026-04-22",
   coverGradient: "from-lime/10 via-orange/8 to-violet/5",
+  image: "/BlogImages/ChatGPT Image Jul 25, 2026, 12_27_04 AM.png",
   featured: false,
   seoTitle: "How to Price Agency Services Without Losing Clients | ORKA",
   seoDescription: "Discover practical pricing strategies that help agencies win profitable clients without competing on price alone.",

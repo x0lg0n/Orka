@@ -9,6 +9,7 @@ export const article: BlogArticle = {
   readingTime: "8 min read",
   publishedAt: "2026-03-18",
   coverGradient: "from-lime/12 via-orange/8 to-teal/5",
+  image: "/BlogImages/ChatGPT Image Jul 25, 2026, 12_30_41 AM.png",
   featured: true,
   seoTitle: "How to Scale an Agency from 5 Clients to 50 | ORKA",
   seoDescription: "Learn how agencies scale from 5 to 50 clients by building systems, automating operations, improving client management, and creating repeatable processes.",
