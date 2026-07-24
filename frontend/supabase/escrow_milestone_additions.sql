@@ -1,9 +1,10 @@
 -- frontend/supabase/escrow_milestone_additions.sql
 -- Schema additions for escrow workflow
 
--- milestones: add description and position columns if not present
+-- milestones: add description, due_date, and position columns if not present
 ALTER TABLE public.milestones
   ADD COLUMN IF NOT EXISTS description TEXT,
+  ADD COLUMN IF NOT EXISTS due_date TIMESTAMPTZ,
   ADD COLUMN IF NOT EXISTS position INTEGER;
 
 -- escrow_contracts: ensure funding tracking columns exist

@@ -6,12 +6,11 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ChevronLeft, ChevronRight, Check } from "lucide-react";
+import { Plus, Check } from "lucide-react";
 
 type MilestoneData = {
   name: string;
@@ -21,7 +20,7 @@ type MilestoneData = {
   asset: string;
 };
 
-const STEPS = ["Basic Info", "Payment Details", "Review & Confirm"];
+const ASSETS = ["USDC", "XLM"];
 
 export function AddMilestoneWizard({
   open,
@@ -32,7 +31,6 @@ export function AddMilestoneWizard({
   onClose: () => void;
   onComplete: (data: MilestoneData) => void | Promise<void>;
 }) {
-  const [step, setStep] = useState(0);
   const [saving, setSaving] = useState(false);
   const [data, setData] = useState<MilestoneData>({
     name: "",
@@ -45,17 +43,16 @@ export function AddMilestoneWizard({
   const update = (field: keyof MilestoneData, value: string) =>
     setData((prev) => ({ ...prev, [field]: value }));
 
+  const isValid =
+    data.name.trim().length > 0 &&
+    data.amount.trim().length > 0 &&
+    Number(data.amount) > 0;
+
   const reset = () => {
-    setStep(0);
     setData({ name: "", description: "", dueDate: "", amount: "", asset: "USDC" });
   };
 
-  const canNext =
-    (step === 0 && data.name.trim().length > 0) ||
-    (step === 1 && data.amount.trim().length > 0 && Number(data.amount) > 0) ||
-    step === 2;
-
-  const handleSave = async () => {
+  const save = async () => {
     setSaving(true);
     try {
       await onComplete(data);
@@ -64,14 +61,14 @@ export function AddMilestoneWizard({
     }
   };
 
-  const handleComplete = async () => {
-    await handleSave();
+  const handleSaveAndClose = async () => {
+    await save();
     reset();
     onClose();
   };
 
-  const handleAddAnother = async () => {
-    await handleSave();
+  const handleSaveAndAddAnother = async () => {
+    await save();
     reset();
   };
 
@@ -87,75 +84,59 @@ export function AddMilestoneWizard({
     >
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>Add Milestone</DialogTitle>
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#7c3aed]/10">
+              <Plus className="h-5 w-5 text-[#7c3aed]" />
+            </div>
+            <div>
+              <DialogTitle>New Milestone</DialogTitle>
+              <p className="mt-0.5 text-sm text-gray-500">
+                Define a milestone for this project
+              </p>
+            </div>
+          </div>
         </DialogHeader>
 
-        {/* Step indicator */}
-        <div className="flex items-center gap-2">
-          {STEPS.map((label, i) => (
-            <div key={label} className="flex items-center gap-2">
-              <div
-                className={`flex h-7 w-7 items-center justify-center rounded-full text-xs font-medium ${
-                  i < step
-                    ? "bg-[#7c3aed] text-white"
-                    : i === step
-                      ? "bg-[#7c3aed]/10 text-[#7c3aed] ring-2 ring-[#7c3aed]"
-                      : "bg-gray-100 text-gray-400"
-                }`}
-              >
-                {i < step ? <Check className="h-3.5 w-3.5" /> : i + 1}
-              </div>
-              {i < STEPS.length - 1 && (
-                <div
-                  className={`h-0.5 w-8 ${i < step ? "bg-[#7c3aed]" : "bg-gray-200"}`}
-                />
-              )}
-            </div>
-          ))}
-        </div>
+        <div className="flex flex-col gap-5">
+          {/* Milestone Name */}
+          <div>
+            <Label htmlFor="ms-name" className="text-sm font-medium text-gray-700">
+              Milestone Name *
+            </Label>
+            <Input
+              id="ms-name"
+              value={data.name}
+              onChange={(e) => update("name", e.target.value)}
+              placeholder="e.g. Discovery & Research"
+              className="mt-1.5"
+            />
+          </div>
 
-        {/* Step content */}
-        <div className="min-h-[200px]">
-          {step === 0 && (
-            <div className="flex flex-col gap-4">
-              <div>
-                <Label htmlFor="ms-name">Milestone Name *</Label>
-                <Input
-                  id="ms-name"
-                  value={data.name}
-                  onChange={(e) => update("name", e.target.value)}
-                  placeholder="e.g. Discovery & Research"
-                  className="mt-1"
-                />
-              </div>
-              <div>
-                <Label htmlFor="ms-desc">Description</Label>
-                <textarea
-                  id="ms-desc"
-                  value={data.description}
-                  onChange={(e) => update("description", e.target.value)}
-                  placeholder="Describe the deliverables for this milestone..."
-                  rows={3}
-                  className="mt-1 w-full resize-none rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-[#7c3aed] focus:outline-none focus:ring-1 focus:ring-[#7c3aed]"
-                />
-              </div>
-              <div>
-                <Label htmlFor="ms-due">Due Date</Label>
-                <Input
-                  id="ms-due"
-                  type="date"
-                  value={data.dueDate}
-                  onChange={(e) => update("dueDate", e.target.value)}
-                  className="mt-1"
-                />
-              </div>
-            </div>
-          )}
+          {/* Description */}
+          <div>
+            <Label htmlFor="ms-desc" className="text-sm font-medium text-gray-700">
+              Description
+            </Label>
+            <textarea
+              id="ms-desc"
+              value={data.description}
+              onChange={(e) => update("description", e.target.value)}
+              placeholder="Describe the deliverables, acceptance criteria, or key outcomes..."
+              rows={4}
+              className="mt-1.5 w-full resize-none rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 transition focus:border-[#7c3aed] focus:outline-none focus:ring-2 focus:ring-[#7c3aed]/15"
+            />
+          </div>
 
-          {step === 1 && (
-            <div className="flex flex-col gap-4">
-              <div>
-                <Label htmlFor="ms-amount">Amount *</Label>
+          {/* Amount + Asset row */}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="ms-amount" className="text-sm font-medium text-gray-700">
+                Amount *
+              </Label>
+              <div className="relative mt-1.5">
+                <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-gray-400">
+                  $
+                </span>
                 <Input
                   id="ms-amount"
                   type="number"
@@ -164,100 +145,70 @@ export function AddMilestoneWizard({
                   value={data.amount}
                   onChange={(e) => update("amount", e.target.value)}
                   placeholder="0.00"
-                  className="mt-1"
+                  className="pl-6"
                 />
               </div>
-              <div>
-                <Label htmlFor="ms-asset">Asset</Label>
-                <select
-                  id="ms-asset"
-                  value={data.asset}
-                  onChange={(e) => update("asset", e.target.value)}
-                  className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-900 focus:border-[#7c3aed] focus:outline-none focus:ring-1 focus:ring-[#7c3aed]"
-                >
-                  <option value="USDC">USDC</option>
-                  <option value="XLM">XLM</option>
-                </select>
-              </div>
             </div>
-          )}
+            <div>
+              <Label htmlFor="ms-asset" className="text-sm font-medium text-gray-700">
+                Asset
+              </Label>
+              <select
+                id="ms-asset"
+                value={data.asset}
+                onChange={(e) => update("asset", e.target.value)}
+                className="mt-1.5 w-full rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm text-gray-900 transition focus:border-[#7c3aed] focus:outline-none focus:ring-2 focus:ring-[#7c3aed]/15"
+              >
+                {ASSETS.map((a) => (
+                  <option key={a} value={a}>{a}</option>
+                ))}
+              </select>
+            </div>
+          </div>
 
-          {step === 2 && (
-            <div className="flex flex-col gap-3 rounded-lg border border-gray-200 bg-gray-50 p-4">
-              <div className="flex justify-between">
-                <span className="text-sm text-gray-500">Name</span>
-                <span className="text-sm font-medium text-gray-900">
-                  {data.name || "—"}
-                </span>
-              </div>
-              {data.description && (
-                <div className="flex justify-between">
-                  <span className="text-sm text-gray-500">Description</span>
-                  <span className="max-w-[60%] text-right text-sm text-gray-900">
-                    {data.description}
-                  </span>
-                </div>
-              )}
-              {data.dueDate && (
-                <div className="flex justify-between">
-                  <span className="text-sm text-gray-500">Due Date</span>
-                  <span className="text-sm font-medium text-gray-900">
-                    {data.dueDate}
-                  </span>
-                </div>
-              )}
-              <div className="flex justify-between border-t border-gray-200 pt-2">
-                <span className="text-sm text-gray-500">Amount</span>
-                <span className="text-sm font-semibold text-gray-900">
-                  {Number(data.amount).toLocaleString()} {data.asset}
-                </span>
-              </div>
-            </div>
-          )}
+          {/* Due Date */}
+          <div>
+            <Label htmlFor="ms-due" className="text-sm font-medium text-gray-700">
+              Due Date
+            </Label>
+            <Input
+              id="ms-due"
+              type="date"
+              value={data.dueDate}
+              onChange={(e) => update("dueDate", e.target.value)}
+              className="mt-1.5"
+            />
+          </div>
         </div>
 
-        <DialogFooter>
-          <div className="flex w-full items-center justify-between">
+        {/* Footer */}
+        <div className="flex items-center justify-between border-t border-gray-100 pt-5">
+          <Button variant="outline" onClick={onClose} disabled={saving}>
+            Cancel
+          </Button>
+          <div className="flex items-center gap-2">
             <Button
+              onClick={handleSaveAndAddAnother}
+              disabled={!isValid || saving}
               variant="outline"
-              onClick={() => (step > 0 ? setStep(step - 1) : onClose())}
             >
-              {step > 0 ? (
-                <>
-                  <ChevronLeft className="mr-1 h-4 w-4" /> Back
-                </>
+              {saving ? "Saving..." : "Save & Add Another"}
+            </Button>
+            <Button
+              onClick={handleSaveAndClose}
+              disabled={!isValid || saving}
+              className="bg-[#7c3aed] hover:bg-[#6d28d9]"
+            >
+              {saving ? (
+                "Saving..."
               ) : (
-                "Cancel"
+                <>
+                  <Check className="mr-1 h-4 w-4" /> Save & Close
+                </>
               )}
             </Button>
-            {step < 2 ? (
-              <Button
-                onClick={() => setStep(step + 1)}
-                disabled={!canNext || saving}
-                className="bg-[#7c3aed] hover:bg-[#6d28d9]"
-              >
-                Next <ChevronRight className="ml-1 h-4 w-4" />
-              </Button>
-            ) : (
-              <div className="flex gap-2">
-                <Button
-                  onClick={handleAddAnother}
-                  disabled={saving}
-                  variant="outline"
-                >
-                  {saving ? "Saving..." : "Add Another"}
-                </Button>
-                <Button
-                  onClick={handleComplete}
-                  disabled={saving}
-                  className="bg-[#7c3aed] hover:bg-[#6d28d9]"
-                >
-                  <Check className="mr-1 h-4 w-4" /> Confirm & Close
-                </Button>
-              </div>
-            )}
           </div>
-        </DialogFooter>
+        </div>
       </DialogContent>
     </Dialog>
   );
