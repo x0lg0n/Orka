@@ -21,7 +21,9 @@ import {
   rejectMilestone,
   releaseMilestone,
   saveMilestones,
+  deployEscrow,
 } from "../../actions";
+import { ActionButton } from "../../components/ActionButton";
 
 type ProjectRow = {
   id: string;
@@ -141,6 +143,18 @@ export function ProjectMilestonesView({
     if (result.ok) router.refresh();
   };
 
+  const handleDeployEscrow = async () => {
+    const asset = milestones[0]?.asset ?? "USDC";
+    const milestoneIds = milestones.map((m) => m.id);
+    const result = await deployEscrow({ orgId, projectId, asset, milestoneIds, mode });
+    if (result.ok) {
+      toast.success("Escrow contract deployed");
+      router.refresh();
+    } else {
+      toast.error(result.error ?? "Failed to deploy escrow");
+    }
+  };
+
   return (
     <div className="space-y-5">
       {/* Header */}
@@ -196,9 +210,30 @@ export function ProjectMilestonesView({
       {/* Progress bar */}
       <MilestoneProgressOverview stats={stats} />
 
+      {/* Deploy escrow prompt (only at milestone_setup stage for agency) */}
+      {workflowState.stage === "milestone_setup" && role === "agency" && milestones.length > 0 && (
+        <div className="rounded-xl border border-[#7c3aed]/20 bg-gradient-to-r from-[#7c3aed]/5 to-[#a78bfa]/5 p-5 shadow-sm">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h3 className="text-sm font-semibold text-gray-900">Milestones Ready</h3>
+              <p className="mt-0.5 text-sm text-gray-500">
+                {milestones.length} milestone{milestones.length !== 1 ? "s" : ""} created. Deploy the escrow contract to lock in terms and begin funding.
+              </p>
+            </div>
+            <ActionButton
+              action="deploy_escrow"
+              role={role}
+              state={workflowState}
+              label="Deploy Escrow Contract"
+              onClick={handleDeployEscrow}
+            />
+          </div>
+        </div>
+      )}
+
       {/* Main content: list/board + payment flow + sidebar */}
       {milestones.length === 0 ? (
-        <MilestoneEmptyState onAdd={() => setAddOpen(true)} />
+        <MilestoneEmptyState onAdd={() => setAddOpen(true)} stage={workflowState.stage} />
       ) : (
         <div className="space-y-5">
           {view === "list" ? (

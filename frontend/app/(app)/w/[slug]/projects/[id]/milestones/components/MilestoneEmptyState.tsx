@@ -2,19 +2,24 @@ import { Flag, Plus } from "lucide-react";
 
 export function MilestoneEmptyState({
   onAdd,
+  stage,
 }: {
   onAdd: () => void;
+  stage?: string;
 }) {
+  const isSetup = stage === "contract_signed";
   return (
     <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-gray-200 bg-white py-16 text-center">
       <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-[#7c3aed]/10 to-[#a78bfa]/10">
         <Flag className="h-8 w-8 text-[#7c3aed]" />
       </div>
       <h3 className="mt-4 text-lg font-semibold text-gray-900">
-        No milestones yet
+        {isSetup ? "Set Up Milestones" : "No milestones yet"}
       </h3>
       <p className="mt-1 max-w-sm text-sm text-gray-500">
-        Create your first milestone to start tracking deliverables and automate escrow payments.
+        {isSetup
+          ? "Break the project into milestones with deliverables, amounts, and due dates. Milestones power escrow payments."
+          : "Create your first milestone to start tracking deliverables and automate escrow payments."}
       </p>
       <button
         type="button"
