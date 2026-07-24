@@ -151,6 +151,7 @@ export function ProjectOverviewView({
           asset={stats.milestoneAsset}
           escrowFundedPct={stats.escrowFundedPct}
           slug={slug}
+          projectId={projectId}
           contractAddress={stats.contractAddress}
           escrowStatus={stats.escrowStatus}
         />

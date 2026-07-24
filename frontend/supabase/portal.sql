@@ -32,7 +32,12 @@ begin
       from public.organizations o where o.id = p.org_id
     ),
     'client', (
-      select jsonb_build_object('name', c.name)
+      select jsonb_build_object(
+        'id', c.id,
+        'name', c.name,
+        'email', c.email,
+        'stellar_address', c.stellar_address
+      )
       from public.clients c where c.id = p.client_id
     ),
     'milestones', coalesce((
@@ -73,7 +78,9 @@ begin
     ),
     'custody_mode', coalesce((
       select prof.custody_mode::text
-      from public.profiles prof where prof.org_id = p.org_id and prof.custody_mode is not null
+      from public.profiles prof
+      join public.organization_members om on om.user_id = prof.id
+      where om.org_id = p.org_id and prof.custody_mode is not null
       limit 1
     ), 'orka')
   )

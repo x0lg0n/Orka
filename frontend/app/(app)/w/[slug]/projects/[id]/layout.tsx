@@ -45,6 +45,10 @@ export default async function ProjectLayout({
           projectId={id}
           title={project.title}
           status={project.status}
+          clientName={project.client_name}
+          createdAt={project.created_at}
+          updatedAt={project.updated_at}
+          sharedToken={project.shared_token}
         />
         <ProjectTabs slug={slug} projectId={id} />
       </div>

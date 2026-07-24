@@ -7,6 +7,7 @@ import type { MilestoneStatus } from "@/lib/orka";
 import { WorkflowStepper } from "../../components/WorkflowStepper";
 import { EscrowDeploymentFlow } from "./EscrowDeploymentFlow";
 import { deployEscrow } from "../../actions";
+import { CopyPortalLink } from "./CopyPortalLink";
 
 type ProjectEscrowViewProps = {
   slug: string;
@@ -16,11 +17,12 @@ type ProjectEscrowViewProps = {
     id: string;
     shared_token?: string | null;
     sharedToken?: string | null;
-    asset?: string | null;
-    client_sig?: string | null;
-    freelancer_sig?: string | null;
-    contract_status?: string | null;
   };
+  contract: {
+    client_sig: string | null;
+    freelancer_sig: string | null;
+    status: string | null;
+  } | null;
   escrow: {
     id: string;
     status: string;
@@ -40,6 +42,7 @@ export function ProjectEscrowView({
   orgId,
   projectId,
   project,
+  contract,
   escrow,
   milestones,
   role,
@@ -48,9 +51,9 @@ export function ProjectEscrowView({
 
   const state: WorkflowState = deriveWorkflowState({
     contract: {
-      client_sig: project.client_sig ?? null,
-      freelancer_sig: project.freelancer_sig ?? null,
-      status: project.contract_status ?? undefined,
+      client_sig: contract?.client_sig ?? null,
+      freelancer_sig: contract?.freelancer_sig ?? null,
+      status: contract?.status ?? undefined,
     },
     escrow: escrow
       ? {
@@ -64,7 +67,7 @@ export function ProjectEscrowView({
   });
 
   const handleDeploy = async () => {
-    const asset = escrow?.asset ?? project.asset ?? "CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC";
+    const asset = escrow?.asset ?? "CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC";
     const milestoneIds = milestones.map((m) => m.id);
     const res = await deployEscrow({
       projectId,
@@ -100,7 +103,7 @@ export function ProjectEscrowView({
   const totalFunded = Number(escrow.total_funded ?? 0);
   const pct = totalAmount > 0 ? Math.min(100, Math.round((totalFunded / totalAmount) * 100)) : 0;
   const custodyMode = escrow.custody_mode ?? "orka";
-  const asset = escrow.asset ?? project.asset ?? "XLM";
+  const asset = escrow.asset ?? "XLM";
 
   return (
     <div className="space-y-6">
@@ -188,10 +191,14 @@ export function ProjectEscrowView({
             )}
           </div>
           {state.stage === "escrow_deployed" && (
-            <p className="mt-3 text-xs text-gray-500">
-              The client funds the escrow from the public portal. Copy the portal
-              link to your client to complete funding.
-            </p>
+            <div className="mt-3 space-y-2">
+              <p className="text-xs text-gray-500">
+                The client funds the escrow from the public portal.
+              </p>
+              {project.shared_token || project.sharedToken ? (
+                <CopyPortalLink path={`/p/${project.shared_token ?? project.sharedToken}`} />
+              ) : null}
+            </div>
           )}
         </section>
       </div>

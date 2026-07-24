@@ -15,12 +15,14 @@ export function PortalMilestoneActions({
   milestonePos,
   status,
   mode,
+  clientAddress,
 }: {
   token: string;
   contractAddress: string;
   milestonePos: number;
   status: string;
   mode: Mode;
+  clientAddress: string | null;
 }) {
   const [pending, startTransition] = useTransition();
   const [done, setDone] = useState(false);
@@ -29,6 +31,7 @@ export function PortalMilestoneActions({
   // Release is only available once the milestone has been approved by the
   // client. The contract/backend still enforces client+operator multi-sig.
   const canRelease = status === "approved";
+  const needsWallet = mode === "freighter" && !clientAddress;
 
   function run(fn: () => Promise<{ ok: true; txHash: string } | { ok: false; error: string }>) {
     setError(null);
@@ -40,14 +43,14 @@ export function PortalMilestoneActions({
   }
 
   const btn =
-    "inline-flex items-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-indigo-500 disabled:opacity-50";
+    "inline-flex items-center rounded-lg bg-[#7c3aed] px-3 py-1.5 text-sm font-semibold text-white hover:bg-[#6d28d9] disabled:opacity-50";
 
   return (
     <div className="flex items-center gap-2">
       {!done ? (
         <button
           type="button"
-          disabled={pending}
+          disabled={pending || needsWallet}
           onClick={() =>
             run(() =>
               portalApproveMilestone({ token, contractAddress, milestonePos, mode }),
@@ -62,7 +65,7 @@ export function PortalMilestoneActions({
       {canRelease && !done ? (
         <button
           type="button"
-          disabled={pending}
+          disabled={pending || needsWallet}
           onClick={() =>
             run(() =>
               portalReleaseMilestone({ token, contractAddress, milestonePos, mode }),
@@ -72,6 +75,12 @@ export function PortalMilestoneActions({
         >
           {pending ? "Pending confirmation…" : "Release"}
         </button>
+      ) : null}
+
+      {needsWallet ? (
+        <span className="text-xs text-amber-600">
+          Connect your wallet to use these actions.
+        </span>
       ) : null}
 
       {done ? (

@@ -121,6 +121,28 @@ export async function portalReleaseMilestone(input: {
 // is allowed. Accepting the proposal advances the workflow to Contract stage
 // (deriveWorkflowState gates on proposal acceptance); requesting changes is a
 // soft state the agency picks up and re-sends.
+export async function portalConnectWallet(input: {
+  token: string;
+  address: string;
+}): Promise<ActionResult> {
+  try {
+    const project = await getPortalProject(input.token);
+    if (!project) return { ok: false, error: "Project not found" };
+    if (!project.client?.id) return { ok: false, error: "Client not found" };
+
+    const supabase = await createClient();
+    const { error } = await supabase
+      .from("clients")
+      .update({ stellar_address: input.address })
+      .eq("id", project.client.id);
+
+    if (error) throw new Error(error.message);
+    return { ok: true, txHash: input.address };
+  } catch (err) {
+    return { ok: false, error: err instanceof Error ? err.message : "portalConnectWallet failed" };
+  }
+}
+
 export async function portalAcceptProposal(input: {
   token: string;
 }): Promise<ActionResult> {

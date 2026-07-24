@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Rocket, ExternalLink, Check, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { CopyPortalLink } from "./CopyPortalLink";
 
 type EscrowDeploymentFlowProps = {
   projectSlug: string;
@@ -125,15 +126,19 @@ export function EscrowDeploymentFlow({
             Share the client portal link so the client can fund the escrow pool.
           </p>
           {portalUrl && (
-            <a
-              href={portalUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 text-sm font-medium text-[#7c3aed] hover:underline"
-            >
-              <ExternalLink className="h-4 w-4" />
-              Open client portal
-            </a>
+            <div className="flex items-center justify-center gap-3">
+              <a
+                href={portalUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 text-sm font-medium text-[#7c3aed] hover:underline"
+              >
+                <ExternalLink className="h-4 w-4" />
+                Open client portal
+              </a>
+              <span className="text-gray-300">|</span>
+              <CopyPortalLink path={portalUrl} />
+            </div>
           )}
         </div>
       )}

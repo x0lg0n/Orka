@@ -46,6 +46,7 @@ export function EscrowOverviewCard({
   asset,
   escrowFundedPct,
   slug,
+  projectId,
   contractAddress,
   escrowStatus,
 }: {
@@ -57,6 +58,7 @@ export function EscrowOverviewCard({
   asset: string;
   escrowFundedPct?: number;
   slug: string;
+  projectId: string;
   contractAddress?: string | null;
   escrowStatus?: string | null;
 }) {
@@ -74,7 +76,7 @@ export function EscrowOverviewCard({
           Escrow &amp; Payment Overview
         </h3>
         <Link
-          href={`/w/${slug}/projects/escrow`}
+          href={`/w/${slug}/projects/${projectId}/escrow`}
           className="text-sm font-medium text-[#7c3aed] hover:underline"
         >
           View Details

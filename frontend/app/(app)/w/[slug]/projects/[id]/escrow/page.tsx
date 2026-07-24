@@ -15,12 +15,18 @@ export default async function EscrowPage({
 
   const { data: project } = await supabase
     .from("projects")
-    .select("id, shared_token, asset, client_sig, freelancer_sig, contract_status")
+    .select("id, shared_token")
     .eq("org_id", org.id)
     .eq("id", id)
     .single();
 
   if (!project) redirect(`/w/${slug}/projects`);
+
+  const { data: contract } = await supabase
+    .from("contracts")
+    .select("client_sig, freelancer_sig, status")
+    .eq("project_id", id)
+    .maybeSingle();
 
   const { data: escrow } = await supabase
     .from("escrow_contracts")
@@ -36,7 +42,7 @@ export default async function EscrowPage({
     .eq("project_id", id);
 
   const role =
-    project.client_sig && project.freelancer_sig
+    contract?.client_sig && contract?.freelancer_sig
       ? "client"
       : "agency";
 
@@ -46,6 +52,7 @@ export default async function EscrowPage({
       orgId={org.id}
       projectId={id}
       project={project}
+      contract={contract}
       escrow={escrow}
       milestones={milestones ?? []}
       role={role}
