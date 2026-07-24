@@ -1,104 +1,71 @@
 import Link from "next/link";
-import { FileText, ArrowRight } from "lucide-react";
+import { FileText, ArrowRight, BookOpen } from "lucide-react";
 import NewsletterWidget from "./NewsletterWidget";
+import CategoryFilter from "./CategoryFilter";
 
-const resources = [
+const freeResources = [
   "Proposal Template",
   "Contract Template",
   "Invoice Template",
   "Agency Onboarding Checklist",
+  "Client Discovery Questions",
+  "Project Kickoff Checklist",
 ];
 
-const recommended = [
-  {
-    title: "5 Pricing Strategies for Agencies That Actually Work",
-    readingTime: "7 min read",
-  },
-  {
-    title: "How Milestone Payments Improve Client Relationships",
-    readingTime: "6 min read",
-  },
-  {
-    title: "From Freelancer to Agency Owner: A Complete Guide",
-    readingTime: "9 min read",
-  },
+const popularGuides = [
+  { title: "Proposal vs Contract vs Invoice", readingTime: "4 min read" },
+  { title: "How Agencies Lose 40% Revenue", readingTime: "8 min read" },
+  { title: "Managing Multiple Projects", readingTime: "8 min read" },
+  { title: "Why Escrow is the Future", readingTime: "7 min read" },
 ];
 
-export default function BlogSidebar() {
+interface BlogSidebarProps {
+  activeCategory: string;
+  onCategoryChange: (category: string) => void;
+}
+
+export default function BlogSidebar({ activeCategory, onCategoryChange }: BlogSidebarProps) {
   return (
-    <aside className="hidden w-full shrink-0 lg:block lg:w-[300px]">
-      <div className="sticky top-24 space-y-5">
+    <aside className="hidden w-full shrink-0 lg:block lg:w-[280px]">
+      <div className="sticky top-24 space-y-6">
+        {/* Section 1: Categories */}
+        <div>
+          <h3 className="mb-3 text-xs font-black uppercase tracking-wider text-night/50">
+            Categories
+          </h3>
+          <CategoryFilter
+            activeCategory={activeCategory}
+            onCategoryChange={onCategoryChange}
+          />
+        </div>
+
+        {/* Section 2: Stay in the Loop */}
         <NewsletterWidget />
 
+        {/* Section 3: Popular Guides */}
         <div className="rounded-2xl border border-night/10 bg-white p-5">
           <h3 className="text-xs font-black uppercase tracking-wider text-night/50">
-            Free Resources
+            Popular Guides
           </h3>
-          <div className="mt-3 space-y-2.5">
-            {resources.map((r) => (
-              <div
-                key={r}
-                className="flex items-center justify-between text-sm font-bold text-night/70 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet/50"
-              >
-                <span className="flex items-center gap-2">
-                  <FileText size={13} className="text-violet" />
-                  {r}
-                </span>
-                <span className="text-2xs font-bold text-night/30">
-                  Free
-                </span>
+          <div className="mt-3 space-y-0">
+            {popularGuides.map((guide, i) => (
+              <div key={guide.title}>
+                <Link
+                  href="/blog"
+                  className="group flex items-start gap-3 rounded py-2.5 text-sm font-bold text-night/70 transition-colors hover:text-violet focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet/50"
+                >
+                  <BookOpen size={14} className="mt-0.5 shrink-0 text-violet/50" />
+                  <div>
+                    {guide.title}
+                    <span className="mt-0.5 block text-2xs font-bold text-night/35">
+                      {guide.readingTime}
+                    </span>
+                  </div>
+                </Link>
+                {i < popularGuides.length - 1 && (
+                  <div className="border-b border-night/5" />
+                )}
               </div>
-            ))}
-          </div>
-          <Link
-            href="/resources"
-            className="mt-3 block text-center text-xs font-black text-violet hover:underline"
-          >
-            View all resources →
-          </Link>
-        </div>
-
-        <div className="rounded-2xl border border-violet/20 bg-violet/5 p-5">
-          <h3 className="text-md font-black text-night">
-            See Orka in Action
-          </h3>
-          <p className="mt-1 text-sm font-bold leading-5 text-night/50">
-            Book a 15-min demo and see how Orka can streamline your operations.
-          </p>
-          <div className="mt-3 flex gap-2">
-            <Link
-              href="/demo"
-              className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-violet px-3 py-2 text-sm font-black text-white transition-colors hover:bg-violet/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
-            >
-              Book a Demo <ArrowRight size={12} />
-            </Link>
-            <a
-              href="https://forms.gle/MucRjiXUXS9soq37A"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-night/20 px-3 py-2 text-sm font-bold text-night/60 transition-colors hover:border-violet/30 hover:text-violet focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet/50"
-            >
-              Feedback
-            </a>
-          </div>
-        </div>
-
-        <div className="rounded-2xl border border-night/10 bg-white p-5">
-          <h3 className="text-xs font-black uppercase tracking-wider text-night/50">
-            Recommended Reads
-          </h3>
-          <div className="mt-3 space-y-3">
-            {recommended.map((r) => (
-              <Link
-                key={r.title}
-                href="/blog"
-                className="group block text-sm font-bold text-night/70 transition-colors hover:text-violet focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet/50 rounded"
-              >
-                {r.title}
-                <span className="mt-0.5 block text-2xs font-bold text-night/35">
-                  {r.readingTime}
-                </span>
-              </Link>
             ))}
           </div>
           <Link
@@ -106,6 +73,34 @@ export default function BlogSidebar() {
             className="mt-3 block text-center text-xs font-black text-violet hover:underline"
           >
             View all articles →
+          </Link>
+        </div>
+
+        {/* Section 4: Free Resources */}
+        <div className="rounded-2xl border border-night/10 bg-white p-5">
+          <h3 className="text-xs font-black uppercase tracking-wider text-night/50">
+            Free Resources
+          </h3>
+          <div className="mt-3 space-y-2.5">
+            {freeResources.map((r) => (
+              <Link
+                key={r}
+                href="/resources"
+                className="flex items-center justify-between text-sm font-bold text-night/70 transition-colors hover:text-violet focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet/50 rounded"
+              >
+                <span className="flex items-center gap-2">
+                  <FileText size={13} className="text-violet" />
+                  {r}
+                </span>
+                <ArrowRight size={12} className="text-night/20" />
+              </Link>
+            ))}
+          </div>
+          <Link
+            href="/resources"
+            className="mt-3 block text-center text-xs font-black text-violet hover:underline"
+          >
+            View all resources →
           </Link>
         </div>
       </div>

@@ -2,26 +2,37 @@
 
 import { useState, useMemo } from "react";
 import BlogHero from "./components/BlogHero";
-import CategoryFilter from "./components/CategoryFilter";
-import FeaturedCard from "./components/FeaturedCard";
 import BlogGrid from "./components/BlogGrid";
 import BlogSidebar from "./components/BlogSidebar";
 import Pagination from "./components/Pagination";
 import BlogCta from "./components/BlogCta";
-import BlogSearch from "./components/BlogSearch";
+import SortDropdown, { type SortValue } from "./components/SortDropdown";
 import {
-  getFeaturedPost,
   getPostsByCategory,
 } from "@/lib/blog-data";
 
-const POSTS_PER_PAGE = 6;
+const POSTS_PER_PAGE = 9;
+
+function sortPosts(posts: ReturnType<typeof getPostsByCategory>, sort: SortValue) {
+  const sorted = [...posts];
+  switch (sort) {
+    case "oldest":
+      return sorted.sort((a, b) => new Date(a.publishedAt).getTime() - new Date(b.publishedAt).getTime());
+    case "popular":
+      return sorted.sort((a, b) => (a.featured ? -1 : 1) - (b.featured ? -1 : 1));
+    case "reading-time":
+      return sorted.sort((a, b) => parseInt(a.readingTime) - parseInt(b.readingTime));
+    case "latest":
+    default:
+      return sorted.sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime());
+  }
+}
 
 export default function BlogPage() {
   const [activeCategory, setActiveCategory] = useState("All");
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
-
-  const featured = getFeaturedPost();
+  const [sort, setSort] = useState<SortValue>("latest");
 
   const filtered = useMemo(() => {
     const posts = getPostsByCategory(activeCategory);
@@ -35,8 +46,10 @@ export default function BlogPage() {
     );
   }, [activeCategory, searchQuery]);
 
-  const totalPages = Math.ceil(filtered.length / POSTS_PER_PAGE);
-  const paginated = filtered.slice(
+  const sorted = useMemo(() => sortPosts(filtered, sort), [filtered, sort]);
+
+  const totalPages = Math.ceil(sorted.length / POSTS_PER_PAGE);
+  const paginated = sorted.slice(
     (currentPage - 1) * POSTS_PER_PAGE,
     currentPage * POSTS_PER_PAGE
   );
@@ -45,27 +58,29 @@ export default function BlogPage() {
     <main className="min-h-screen bg-paper">
       <BlogHero searchQuery={searchQuery} onSearchChange={setSearchQuery} />
 
+      {/* Two-column layout: Sidebar + Content */}
       <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-        <FeaturedCard post={featured} />
-      </section>
+        <div className="flex gap-8">
+          {/* Left Sidebar */}
+          <BlogSidebar
+            activeCategory={activeCategory}
+            onCategoryChange={(cat) => {
+              setActiveCategory(cat);
+              setCurrentPage(1);
+            }}
+          />
 
-      <section className="mx-auto max-w-7xl px-4 pb-4 sm:px-6 lg:px-8">
-        <BlogSearch value={searchQuery} onChange={setSearchQuery} />
-      </section>
+          {/* Main Content */}
+          <div className="min-w-0 flex-1">
+            {/* Above-grid bar: count + sort */}
+            <div className="mb-6 flex items-center justify-between">
+              <p className="text-sm font-bold text-night/50">
+                Showing {filtered.length} {filtered.length === 1 ? "article" : "articles"}
+              </p>
+              <SortDropdown value={sort} onChange={setSort} />
+            </div>
 
-      <section className="mx-auto max-w-7xl px-4 pb-8 sm:px-6 lg:px-8">
-        <CategoryFilter
-          activeCategory={activeCategory}
-          onCategoryChange={(cat) => {
-            setActiveCategory(cat);
-            setCurrentPage(1);
-          }}
-        />
-      </section>
-
-      <section className="mx-auto max-w-7xl px-4 pb-20 sm:px-6 lg:px-8">
-        <div className="grid gap-10 lg:grid-cols-[1fr_300px]">
-          <div>
+            {/* Blog Grid */}
             {filtered.length === 0 ? (
               <div className="rounded-2xl border border-night/10 bg-white p-12 text-center">
                 <p className="text-md font-bold text-night/50">
@@ -92,7 +107,6 @@ export default function BlogPage() {
               </>
             )}
           </div>
-          <BlogSidebar />
         </div>
       </section>
 
