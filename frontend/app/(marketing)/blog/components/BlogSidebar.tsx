@@ -2,6 +2,7 @@ import Link from "next/link";
 import { FileText, ArrowRight, BookOpen } from "lucide-react";
 import NewsletterWidget from "./NewsletterWidget";
 import CategoryFilter from "./CategoryFilter";
+import BlogSearch from "./BlogSearch";
 
 const freeResources = [
   "Proposal Template",
@@ -22,13 +23,18 @@ const popularGuides = [
 interface BlogSidebarProps {
   activeCategory: string;
   onCategoryChange: (category: string) => void;
+  searchQuery: string;
+  onSearchChange: (v: string) => void;
 }
 
-export default function BlogSidebar({ activeCategory, onCategoryChange }: BlogSidebarProps) {
+export default function BlogSidebar({ activeCategory, onCategoryChange, searchQuery, onSearchChange }: BlogSidebarProps) {
   return (
     <aside className="hidden w-full shrink-0 lg:block lg:w-[280px]">
       <div className="sticky top-24 space-y-6">
-        {/* Section 1: Categories */}
+        {/* Section 1: Search */}
+        <BlogSearch value={searchQuery} onChange={onSearchChange} />
+
+        {/* Section 2: Categories */}
         <div>
           <h3 className="mb-3 text-xs font-black uppercase tracking-wider text-night/50">
             Categories
@@ -39,10 +45,10 @@ export default function BlogSidebar({ activeCategory, onCategoryChange }: BlogSi
           />
         </div>
 
-        {/* Section 2: Stay in the Loop */}
+        {/* Section 3: Stay in the Loop */}
         <NewsletterWidget />
 
-        {/* Section 3: Popular Guides */}
+        {/* Section 4: Popular Guides */}
         <div className="rounded-2xl border border-night/10 bg-white p-5">
           <h3 className="text-xs font-black uppercase tracking-wider text-night/50">
             Popular Guides
@@ -76,7 +82,7 @@ export default function BlogSidebar({ activeCategory, onCategoryChange }: BlogSi
           </Link>
         </div>
 
-        {/* Section 4: Free Resources */}
+        {/* Section 5: Free Resources */}
         <div className="rounded-2xl border border-night/10 bg-white p-5">
           <h3 className="text-xs font-black uppercase tracking-wider text-night/50">
             Free Resources

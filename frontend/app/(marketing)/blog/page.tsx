@@ -56,7 +56,7 @@ export default function BlogPage() {
 
   return (
     <main className="min-h-screen bg-paper">
-      <BlogHero searchQuery={searchQuery} onSearchChange={setSearchQuery} />
+      <BlogHero />
 
       {/* Two-column layout: Sidebar + Content */}
       <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
@@ -68,6 +68,8 @@ export default function BlogPage() {
               setActiveCategory(cat);
               setCurrentPage(1);
             }}
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
           />
 
           {/* Main Content */}
