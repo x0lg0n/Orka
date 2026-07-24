@@ -387,11 +387,13 @@ export default function Navbar() {
               className="text-sm font-semibold text-white">
               Pricing
             </Link>
+          </div>
+          <div className="flex gap-4 border-b border-white/10 px-2 py-4">
             <Link
               href="/blog"
               onClick={closeAll}
               className="text-sm font-semibold text-white">
-              Blog
+              Blogs
             </Link>
           </div>
           <div className="grid grid-cols-2 gap-2 pt-4">
