@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { BlogAuthor } from "../../components/types";
+import type { BlogAuthor } from "@/lib/blogs/types";
 
 export default function AuthorCard({ author }: { author: BlogAuthor }) {
   return (

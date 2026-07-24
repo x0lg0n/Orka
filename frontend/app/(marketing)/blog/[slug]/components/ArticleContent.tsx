@@ -1,36 +1,62 @@
-import fs from "fs";
-import path from "path";
-import { renderBlogContent } from "@/lib/blog-renderer";
+import type { SectionContent, ContentBlock } from "@/lib/blogs/types";
+import Callout from "./Callout";
+import QuoteBlock from "./QuoteBlock";
 
-export default async function ArticleContent({ slug }: { slug: string }) {
-  const filePath = path.join(process.cwd(), "content/blog", `${slug}.mdx`);
+function renderBlock(block: ContentBlock, index: number) {
+  switch (block.type) {
+    case "paragraph":
+      return <p key={index}>{block.text}</p>;
+    case "list":
+      return (
+        <ul key={index}>
+          {block.items.map((item, i) => (
+            <li key={i}>{item}</li>
+          ))}
+        </ul>
+      );
+    case "ordered-list":
+      return (
+        <ol key={index}>
+          {block.items.map((item, i) => (
+            <li key={i}>{item}</li>
+          ))}
+        </ol>
+      );
+    case "callout":
+      return (
+        <Callout key={index} variant={block.variant}>
+          {block.text}
+        </Callout>
+      );
+    case "quote":
+      return <QuoteBlock key={index}>{block.text}</QuoteBlock>;
+    default:
+      return null;
+  }
+}
 
-  if (!fs.existsSync(filePath)) {
+function renderSectionContent(item: SectionContent, index: number) {
+  if ("id" in item && "heading" in item && "blocks" in item) {
+    const HeadingTag = item.level === 2 ? "h2" : "h3";
     return (
-      <div className="rounded-2xl border border-night/10 bg-white p-12 text-center">
-        <p className="text-base font-bold text-night/50">
-          This article is coming soon.
-        </p>
-      </div>
+      <section key={index}>
+        <HeadingTag id={item.id}>{item.heading}</HeadingTag>
+        {item.blocks.map((block, i) => renderBlock(block, i))}
+      </section>
     );
   }
 
-  const raw = fs.readFileSync(filePath, "utf-8");
-  const trimmed = raw.trim();
+  return renderBlock(item as ContentBlock, index);
+}
 
-  const isPlaceholder =
-    !trimmed.startsWith("#") &&
-    trimmed.length < 200;
-
-  if (isPlaceholder) {
-    return (
-      <div className="rounded-2xl border border-night/10 bg-white p-12 text-center">
-        <p className="text-base font-bold text-night/50">{trimmed}</p>
-      </div>
-    );
-  }
-
-  const content = await renderBlogContent(raw);
-
-  return <article className="prose-orka">{content}</article>;
+export default function ArticleContent({
+  sections,
+}: {
+  sections: SectionContent[];
+}) {
+  return (
+    <article className="prose-orka">
+      {sections.map((item, i) => renderSectionContent(item, i))}
+    </article>
+  );
 }
