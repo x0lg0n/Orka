@@ -1,33 +1,65 @@
 import type { BlogArticle, BlogPostMeta, TocItem } from "./types";
 
-import { article as agenciesLoseRevenue } from "./content/agencies-lose-revenue";
-import { article as aiWritesBetterProposals } from "./content/ai-writes-better-proposals";
-import { article as escrowFuture } from "./content/escrow-future";
-import { article as freelancerContracts } from "./content/freelancer-contracts";
-import { article as agencyOnboardingChecklist } from "./content/agency-onboarding-checklist";
+import { article as aiProposalsBetter } from "./content/ai-proposals-better";
+import { article as escrowFuturePayments } from "./content/escrow-future-payments";
+import { article as freelancerContractsProtect } from "./content/freelancer-contracts-protect";
 import { article as managingMultipleProjects } from "./content/managing-multiple-projects";
-import { article as proposalVsContract } from "./content/proposal-vs-contract";
-import { article as milestonePayments } from "./content/milestone-payments";
+import { article as proposalVsContractVsInvoice } from "./content/proposal-vs-contract-vs-invoice";
+import { article as milestonePaymentsTrust } from "./content/milestone-payments-trust";
 import { article as freelancerToAgency } from "./content/freelancer-to-agency";
-import { article as aiHelpsAgencies } from "./content/ai-helps-agencies";
-import { article as pricingStrategies } from "./content/pricing-strategies";
-import { article as clientPortal } from "./content/client-portal";
+import { article as aiHelpsWinClients } from "./content/ai-helps-win-clients";
+import { article as clientManagementMistakes } from "./content/client-management-mistakes";
+import { article as agencyOnboardingChecklist } from "./content/agency-onboarding-checklist";
+import { article as pricingServices } from "./content/pricing-services";
+import { article as clientPortalBenefits } from "./content/client-portal-benefits";
+import { article as getPaidFaster } from "./content/get-paid-faster";
+import { article as latePayments } from "./content/late-payments";
+import { article as invoicingPractices } from "./content/invoicing-practices";
+import { article as milestoneVsHourly } from "./content/milestone-vs-hourly";
+import { article as escrowVsUpfront } from "./content/escrow-vs-upfront";
+import { article as crossBorderPayments } from "./content/cross-border-payments";
+import { article as invoiceInternational } from "./content/invoice-international";
+import { article as bestAiTools } from "./content/best-ai-tools";
+import { article as aiSavesHours } from "./content/ai-saves-hours";
+import { article as betterProposalsAi } from "./content/better-proposals-ai";
+import { article as aiVsManualProposals } from "./content/ai-vs-manual-proposals";
+import { article as scaleAgency } from "./content/scale-agency";
+import { article as clientRelationships } from "./content/client-relationships";
+import { article as difficultClients } from "./content/difficult-clients";
+import { article as clientCommunication } from "./content/client-communication";
+import { article as reduceScopeCreep } from "./content/reduce-scope-creep";
 
 export type { BlogArticle, BlogPostMeta, TocItem, SectionContent, ContentSection, ContentBlock } from "./types";
 
 const articles: BlogArticle[] = [
-  agenciesLoseRevenue,
-  aiWritesBetterProposals,
-  escrowFuture,
-  freelancerContracts,
-  agencyOnboardingChecklist,
+  aiProposalsBetter,
+  escrowFuturePayments,
+  freelancerContractsProtect,
   managingMultipleProjects,
-  proposalVsContract,
-  milestonePayments,
+  proposalVsContractVsInvoice,
+  milestonePaymentsTrust,
   freelancerToAgency,
-  aiHelpsAgencies,
-  pricingStrategies,
-  clientPortal,
+  aiHelpsWinClients,
+  clientManagementMistakes,
+  agencyOnboardingChecklist,
+  pricingServices,
+  clientPortalBenefits,
+  getPaidFaster,
+  latePayments,
+  invoicingPractices,
+  milestoneVsHourly,
+  escrowVsUpfront,
+  crossBorderPayments,
+  invoiceInternational,
+  bestAiTools,
+  aiSavesHours,
+  betterProposalsAi,
+  aiVsManualProposals,
+  scaleAgency,
+  clientRelationships,
+  difficultClients,
+  clientCommunication,
+  reduceScopeCreep,
 ];
 
 const articleMap = new Map(articles.map((a) => [a.slug, a]));

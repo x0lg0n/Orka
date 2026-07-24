@@ -224,7 +224,7 @@ export function renderBlogContent(mdxSource: string): React.ReactNode {
         break;
       case "callout":
         elements.push(
-          <Callout key={i} variant={block.meta as any}>
+          <Callout key={i} variant={block.meta as "insight" | "best-practice" | "tip" | "warning" | "example"}>
             {block.lines.join(" ")}
           </Callout>
         );

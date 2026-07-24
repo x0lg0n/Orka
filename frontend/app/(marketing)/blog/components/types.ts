@@ -10,6 +10,7 @@ export interface BlogPost {
   title: string;
   excerpt: string;
   coverGradient: string;
+  image?: string;
   category: string;
   author: BlogAuthor;
   readingTime: string;
